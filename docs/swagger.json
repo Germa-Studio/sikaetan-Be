@@ -11,11 +11,166 @@
       "description": "Development Server"
     },
     {
-      "url": "http://localhost:3001",
+      "url": "https://siketan-api.up.railway.app",
       "description": "Staging Server"
     }
   ],
-  "paths": {},
+  "paths": {
+    "/auth/login": {
+      "post": {
+        "summary": "Login",
+        "tags": ["Auth"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "format": "email",
+                    "example": "user@example.com"
+                  },
+                  "password": {
+                    "type": "string",
+                    "format": "password",
+                    "example": "password123"
+                  }
+                },
+                "required": ["email", "password"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Login Berhasil",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Login Berhasil"
+                    },
+                    "token": {
+                      "type": "string",
+                      "example": "sldnwijhdsnduisfh8734283298"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Email Tidak Terdaftar",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Email Tidak Terdaftar"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/register": {
+      "post": {
+        "summary": "Register",
+        "tags": ["Auth"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "format": "email",
+                    "example": "user@example.com"
+                  },
+                  "no_wa": {
+                    "type": "string",
+                    "example": "08123456789"
+                  },
+                  "nama": {
+                    "type": "string",
+                    "example": "John Doe"
+                  },
+                  "password": {
+                    "type": "string",
+                    "format": "password",
+                    "example": "password123"
+                  },
+                  "pekerjaan": {
+                    "type": "string",
+                    "example": "Pegawai"
+                  },
+                  "peran": {
+                    "type": "string",
+                    "example": "User"
+                  },
+                  "foto": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                },
+                "required": ["email", "no_wa", "nama", "password", "pekerjaan", "peran", "foto"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Register Berhasil",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Register Berhasil"
+                    },
+                    "token": {
+                      "type": "string",
+                      "example": "sldnwijhdsnduisfh8734283298"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Email Telah Terdaftar",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Email Telah Terdaftar"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
   "components": {
     "schemas": {},
     "securitySchemes": {
