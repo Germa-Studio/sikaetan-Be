@@ -1,6 +1,6 @@
 const express = require('express');
 const cors = require('cors');
-const router = require('./app/router.js');
+const router = require('./app/router');
 
 const app = express();
 const { PORT = 3000, } = process.env;
@@ -17,6 +17,5 @@ app.use(router);
 
 
 app.listen(PORT, () => {
-  // eslint-disable-next-line no-console
-  console.log('server is running!');
+  console.log(`server is running! on http://localhost:${PORT}`);
 });
