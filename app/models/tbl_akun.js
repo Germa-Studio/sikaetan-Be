@@ -24,6 +24,7 @@ module.exports = (sequelize, DataTypes) => {
   }, {
     sequelize,
     modelName: 'tbl_akun',
+    tableName:'tbl_akun'
   });
   return tbl_akun;
 };
