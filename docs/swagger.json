@@ -169,10 +169,121 @@
           }
         }
       }
+    },
+    "/cek-nik": {
+      "post": {
+        "tags": [
+          "Cek NIK"
+        ],
+        "summary": "Memeriksa data berdasarkan NIK",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "nik": {
+                    "type": "string",
+                    "example": "301292810919"
+                  }
+                },
+                "required": ["email", "password"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Data ditemukan",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "Data dengan NIK {nik} ditemukan"
+                },
+                "user": {
+                  "$ref": "#/components/schemas/User"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Data Tidak Ditemukan",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Data dengan nik {nik} Tidak Ditemukan"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
-    "schemas": {},
+    "schemas": {
+      "User": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32",
+            "example": 1
+          },
+          "NIK": {
+            "type": "string",
+            "example": "123456789"
+          },
+          "NIP": {
+            "type": "string",
+            "example": "123456789"
+          },
+          "NoWa": {
+            "type": "string",
+            "example": "0878702545145"
+          },
+          "alamat": {
+            "type": "string",
+            "example": "taktakan serang banten"
+          },
+          "desa": {
+            "type": "string",
+            "example": "taktakan"
+          },
+          "nama": {
+            "type": "string",
+            "example": "fian"
+          },
+          "kecamatan": {
+            "type": "string",
+            "example": "taktakan"
+          },
+          "password": {
+            "type": "string",
+            "example": "yskdjdyuuu"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2023-06-07T03:54:47.000Z"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2023-06-07T03:54:47.000Z"
+          }
+        }
+      }
+    },
     "securitySchemes": {
       "BearerAuth": {
         "type": "http",

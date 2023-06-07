@@ -1,19 +1,50 @@
 const { tbl_akun: tblAkun } = require('../models');
 const ApiError = require('../../utils/ApiError');
-const isEmailValid = require('../../utils/emailValidation');
 const imageKit = require('../../midleware/imageKit');
 
-const infoTani = async()=>{
-
+const infoTani = async(req, res)=>{
+  try {
+    res.status(200).json({
+      message: '',
+    });  
+  } catch (error) {
+    res.status(error.statusCode || 500).json({
+      message: error.message,
+    });
+  }
 }
-const tambahInfoTani = async()=>{
-
+const tambahInfoTani = async(req, res)=>{
+  try {
+    res.status(200).json({
+      message: '',
+    });  
+  } catch (error) {
+    res.status(error.statusCode || 500).json({
+      message: error.message,
+    });
+  }
 }
-const eventTani = async()=>{
-
+const eventTani = async(req, res)=>{
+  try {
+    res.status(200).json({
+      message: '',
+    });  
+  } catch (error) {
+    res.status(error.statusCode || 500).json({
+      message: error.message,
+    });
+  }
 }
-const tambahEventTani = async()=>{
-
+const tambahEventTani = async(req, res)=>{
+  try {
+    res.status(200).json({
+      message: '',
+    });  
+  } catch (error) {
+    res.status(error.statusCode || 500).json({
+      message: error.message,
+    });
+  }
 }
 
 
