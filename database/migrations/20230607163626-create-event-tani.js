@@ -24,6 +24,15 @@ module.exports = {
       peserta: {
         type: Sequelize.STRING
       },
+      fotoKegiatan: {
+        type: Sequelize.TEXT
+      },
+      createdBy: {
+        type: Sequelize.STRING
+      },
+      isi: {
+        type: Sequelize.TEXT
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE

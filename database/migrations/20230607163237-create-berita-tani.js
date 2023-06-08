@@ -21,6 +21,15 @@ module.exports = {
       kategori: {
         type: Sequelize.STRING
       },
+      fotoBerita: {
+        type: Sequelize.TEXT
+      },
+      createdBy: {
+        type: Sequelize.STRING
+      },
+      isi: {
+        type: Sequelize.TEXT
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE

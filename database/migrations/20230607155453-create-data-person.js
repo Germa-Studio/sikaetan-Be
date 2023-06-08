@@ -21,6 +21,9 @@ module.exports = {
       alamat: {
         type: Sequelize.TEXT
       },
+      foto: {
+        type: Sequelize.TEXT
+      }, 
       desa: {
         type: Sequelize.STRING
       },
@@ -33,12 +36,21 @@ module.exports = {
       password: {
         type: Sequelize.TEXT
       },
+      tanamanPetaniId: {
+        type: Sequelize.INTEGER
+      },
+      kelompokId: {
+        type: Sequelize.INTEGER
+      },
+      laporanTanamId: {
+        type: Sequelize.INTEGER
+      },
       createdAt: {
-        allowNull: false,
+        allowNull: true,
         type: Sequelize.DATE
       },
       updatedAt: {
-        allowNull: false,
+        allowNull: true,
         type: Sequelize.DATE
       }
     });

@@ -176,6 +176,11 @@
           "Cek NIK"
         ],
         "summary": "Memeriksa data berdasarkan NIK",
+        "security": [
+          {
+            "bearerToken": []
+          }
+        ],
         "requestBody": {
           "required": true,
           "content": {
@@ -187,8 +192,7 @@
                     "type": "string",
                     "example": "301292810919"
                   }
-                },
-                "required": ["email", "password"]
+                }
               }
             }
           }
@@ -221,6 +225,572 @@
                       "example": "Data dengan nik {nik} Tidak Ditemukan"
                     }
                   }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+"/daftar-tani/add": {
+      "post": {
+        "tags": ["Data Tani"],
+        "summary": "Menambahkan data daftar tani",
+        "consumes": ["multipart/form-data"],
+        "parameters": [],
+        "security": [
+          {
+            "bearerToken": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "NIK": {
+                    "type": "string"
+                  },
+                  "NoWa": {
+                    "type": "string"
+                  },
+                  "alamat": {
+                    "type": "string"
+                  },
+                  "desa": {
+                    "type": "string"
+                  },
+                  "nama": {
+                    "type": "string"
+                  },
+                  "kecamatan": {
+                    "type": "string"
+                  },
+                  "password": {
+                    "type": "string",
+                    "format": "password"
+                  },
+                  "gapoktan": {
+                    "type": "string"
+                  },
+                  "penyuluh": {
+                    "type": "string"
+                  },
+                  "namaKelompok": {
+                    "type": "string"
+                  },
+                  "statusLahan": {
+                    "type": "string"
+                  },
+                  "luasLahan": {
+                    "type": "number"
+                  },
+                  "kategori": {
+                    "type": "string"
+                  },
+                  "jenis": {
+                    "type": "string"
+                  },
+                  "komoditas": {
+                    "type": "string"
+                  },
+                  "musimTanam": {
+                    "type": "integer"
+                  },
+                  "tanggalTanam": {
+                    "type": "string",
+                    "format": "date"
+                  },
+                  "perkiraanPanen": {
+                    "type": "string",
+                    "format": "date"
+                  },
+                  "foto": {
+                    "type": "file"
+                  }
+                },
+                "required": ["NIK", "nama"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Berhasil menambahkan daftar tani",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "Berhasil Menambahkan Daftar Tani"
+                },
+                "daftarTani": {
+                  "$ref": "#/components/schemas/DaftarTani"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "NIK tidak boleh kosong"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server Error",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "Terjadi kesalahan pada server"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+      "/laporan-tani/add": {
+        "post": {
+          "tags": ["Data Tani"],
+          "summary": "Menambahkan laporan tani",
+          "security": [
+            {
+              "bearerToken": []
+            }
+          ],
+          "consumes": ["multipart/form-data"],
+          "requestBody": {
+            "content": {
+              "multipart/form-data": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "NIK": {
+                      "type": "string"
+                    },
+                    "tanggalLaporan": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "kondisiTanaman": {
+                      "type": "string"
+                    },
+                    "deskripsi": {
+                      "type": "string"
+                    },
+                    "fotoTanaman": {
+                      "type": "string",
+                      "format": "binary"
+                    }
+                  },
+                  "required": ["NIK", "tanggalLaporan", "kondisiTanaman", "deskripsi"]
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "Berhasil menambahkan laporan",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "message": {
+                        "type": "string",
+                        "example": "Berhasil Menambahkan Laporan"
+                      },
+                      "dataLaporanTanam": {
+                        "$ref": "#/components/schemas/LaporanTanam"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Bad Request",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "message": {
+                        "type": "string",
+                        "example": "NIK tidak boleh kosong"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "Server Error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "message": {
+                        "type": "string",
+                        "example": "Internal Server Error"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/laporan-petani": {
+        "get": {
+          "tags": ["Data Tani"],
+          "summary": "Mendapatkan laporan petani",
+          "security": [
+            {
+              "bearerToken": []
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Data laporan Tani berhasil diperoleh",
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "message": {
+                    "type": "string",
+                    "example": "Data laporan Tani Berhasil Diperoleh"
+                  },
+                  "tani": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/components/schemas/DaftarTani"
+                    }
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "Server Error",
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "message": {
+                    "type": "string",
+                    "example": "Internal Server Error"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/laporan-penyuluh": {
+        "get": {
+          "tags": ["Data Tani"],
+          "summary": "Mendapatkan laporan penyuluh",
+          "security": [
+            {
+              "bearerToken": []
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Data laporan Penyuluh berhasil diperoleh",
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "message": {
+                    "type": "string",
+                    "example": "Data laporan Penyuluh Berhasil Diperoleh"
+                  },
+                  "penyuluh": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/components/schemas/DaftarTani"
+                    }
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "Server Error",
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "message": {
+                    "type": "string",
+                    "example": "Internal Server Error"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+   "/event-tani/add": {
+      "post": {
+        "tags": ["Info Tani"],
+        "summary": "Menambahkan event tani",
+        "security": [
+          {
+            "bearerToken": []
+          }
+        ],
+        "consumes": ["multipart/form-data"],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "namaKegiatan": {
+                    "type": "string"
+                  },
+                  "tanggalAcara": {
+                    "type": "string",
+                    "format": "date"
+                  },
+                  "waktuAcara": {
+                    "type": "string"
+                  },
+                  "tempat": {
+                    "type": "string"
+                  },
+                  "peserta": {
+                    "type": "string"
+                  },
+                  "isi": {
+                    "type": "string"
+                  },
+                  "fotoKegiatan": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                },
+                "required": ["namaKegiatan", "tanggalAcara"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Berhasil menambahkan event",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "Event Berhasil Dibuat"
+                },
+                "eventTani": {
+                  "$ref": "#/components/schemas/EventTani"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "Wrong Image Format"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server Error",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "Internal Server Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/info-tani/add": {
+      "post": {
+        "tags": ["Info Tani"],
+        "summary": "Menambahkan info tani",
+        "security": [
+          {
+            "bearerToken": []
+          }
+        ],
+        "consumes": ["multipart/form-data"],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "judul": {
+                    "type": "string"
+                  },
+                  "tanggal": {
+                    "type": "string",
+                    "format": "date"
+                  },
+                  "status": {
+                    "type": "string"
+                  },
+                  "kategori": {
+                    "type": "string"
+                  },
+                  "isi": {
+                    "type": "string"
+                  },
+                  "fotoBerita": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                },
+                "required": ["judul", "tanggal", "status", "kategori"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Info Tani Berhasil Dibuat",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "Info Tani Berhasil Dibuat"
+                },
+                "infoTani": {
+                  "$ref": "#/components/schemas/InfoTani"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "Wrong Image Format"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server Error",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "Internal Server Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/info-tani": {
+      "get": {
+        "tags": ["Info Tani"],
+        "summary": "Mendapatkan data info tani",
+        "security": [
+          {
+            "bearerToken": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Berhasil mendapatkan data info tani",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "Berhasil Mendapatkan Data Info Tani"
+                },
+                "infotani": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/InfoTani"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server Error",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "Internal Server Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/event-tani": {
+      "get": {
+        "tags": ["Info Tani"],
+        "summary": "Mendapatkan data event tani",
+        "security": [
+          {
+            "bearerToken": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Berhasil mendapatkan data event tani",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "Berhasil Mendapatkan Data Event Tani"
+                },
+                "eventTani": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/EventTani"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server Error",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "Internal Server Error"
                 }
               }
             }
@@ -282,13 +852,157 @@
             "example": "2023-06-07T03:54:47.000Z"
           }
         }
+      },
+       "DaftarTani": {
+      "type": "object",
+      "properties": {
+        "NIK": {
+          "type": "string"
+        },
+        "NoWa": {
+          "type": "string"
+        },
+        "alamat": {
+          "type": "string"
+        },
+        "desa": {
+          "type": "string"
+        },
+        "nama": {
+          "type": "string"
+        },
+        "kecamatan": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        },
+        "tanamanPetaniId": {
+          "type": "integer"
+        },
+        "kelompokId": {
+          "type": "integer"
+        },
+        "laporanTanamId": {
+          "type": "integer"
+        },
+        "gapoktan": {
+          "type": "string"
+        },
+        "penyuluh": {
+          "type": "string"
+        },
+        "namaKelompok": {
+          "type": "string"
+        },
+        "foto": {
+          "type": "string"
+        },
+        "statusLahan": {
+          "type": "string"
+        },
+        "luasLahan": {
+          "type": "string"
+        },
+        "kategori": {
+          "type": "string"
+        },
+        "jenis": {
+          "type": "string"
+        },
+        "komoditas": {
+          "type": "string"
+        },
+        "musimTanam": {
+          "type": "integer"
+        },
+        "tanggalTanam": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "perkiraanPanen": {
+          "type": "string",
+          "format": "date-time"
+        }
       }
     },
+    "LaporanTanam": {
+      "type": "object",
+      "properties": {
+        "tanggalLaporan": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "komdisiTanaman": {
+          "type": "string"
+        },
+        "deskripsi": {
+          "type": "string"
+        },
+        "fotoTanaman": {
+          "type": "string"
+        }
+      }
+    },
+    "EventTani": {
+      "type": "object",
+      "properties": {
+        "namaKegiatan": {
+          "type": "string"
+        },
+        "tanggalAcara": {
+          "type": "string",
+          "format": "date"
+        },
+        "waktuAcara": {
+          "type": "string"
+        },
+        "tempat": {
+          "type": "string"
+        },
+        "peserta": {
+          "type": "string"
+        },
+        "isi": {
+          "type": "string"
+        },
+        "fotoKegiatan": {
+          "type": "string",
+          "format": "binary"
+        }
+      }
+    },
+    "InfoTani": {
+      "type": "object",
+      "properties": {
+        "judul": {
+          "type": "string"
+        },
+        "tanggal": {
+          "type": "string",
+          "format": "date"
+        },
+        "status": {
+          "type": "string"
+        },
+        "kategori": {
+          "type": "string"
+        },
+        "isi": {
+          "type": "string"
+        },
+        "fotoBerita": {
+          "type": "string",
+          "format": "binary"
+        }
+      }
+    }
+  },
     "securitySchemes": {
-      "BearerAuth": {
-        "type": "http",
-        "scheme": "bearer",
-        "bearerFormat": "JWT"
+      "bearerToken": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization"
       }
     }
   }
