@@ -1,5 +1,5 @@
 const router = require('express').Router();
-// const auth = require('../../midleware/auth');
+const auth = require('../../midleware/auth');
 const upload = require('../../midleware/uploader');
 const {
   tambahDaftarPenjual,
@@ -7,9 +7,8 @@ const {
   productPenyuluh,
 } = require('../controllers/tokoTani');
 
-router.post('/event-tani/add', upload.single('foto') ,tambahEventTani);
-router.post('/info-tani/add', tambahInfoTani);
-router.get('/info-tani', infoTani);
-router.get('/event-tani', eventTani);
+router.post('/daftar-penjual/add', upload.single('fotoTanaman') ,tambahDaftarPenjual);
+router.get('/product-penyuluh', productPenyuluh);
+router.get('/product-petani', productPetani);
 
 module.exports = router;

@@ -797,6 +797,190 @@
           }
         }
       }
+    },
+    "/daftar-penjual/add": {
+      "post": {
+        "tags": ["Toko Tani"],
+        "summary": "Menambahkan daftar penjual",
+        "consumes": ["multipart/form-data"],
+        "parameters": [],
+        "security": [
+          {
+            "bearerToken": []
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "NIK": {
+                    "type": "string"
+                  },
+                  "profesiPenjual": {
+                    "type": "string"
+                  },
+                  "namaProducts": {
+                    "type": "string"
+                  },
+                  "stok": {
+                    "type": "integer"
+                  },
+                  "satuan": {
+                    "type": "string"
+                  },
+                  "harga": {
+                    "type": "string"
+                  },
+                  "deskripsi": {
+                    "type": "string"
+                  },
+                  "status": {
+                    "type": "string"
+                  },
+                  "fotoTanaman": {
+                    "type": "file"
+                  }
+                },
+                "required": ["NIK", "profesiPenjual", "namaProducts", "stok", "satuan", "harga", "status"]
+              },
+              "encoding": {
+                "fotoTanaman": {
+                  "contentType": "multipart/form-data"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Berhasil Membuat Data Penjual",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "Berhasil Membuat Data Penjual"
+                },
+                "dataPenjual": {
+                  "$ref": "#/definitions/Penjual"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "Wrong Image Format"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server Error",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "Internal Server Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/product-penyuluh": {
+      "get": {
+        "tags": ["Toko Tani"],
+        "summary": "Mendapatkan data product penyuluh",
+        "security": [
+          {
+            "bearerToken": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Berhasil Mendapatkan Product Penyuluh",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "Berhasil Mendapatkan Product Penyuluh"
+                },
+                "productPenyuluh": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/Penjual"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server Error",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "Internal Server Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/product-petani": {
+      "get": {
+        "tags": ["Toko Tani"],
+        "summary": "Mendapatkan data product petani",
+        "security": [
+          {
+            "bearerToken": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Berhasil Mendapatkan Product Petani",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "Berhasil Mendapatkan Product Petani"
+                },
+                "productPetani": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/Penjual"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server Error",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "Internal Server Error"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -994,6 +1178,36 @@
         "fotoBerita": {
           "type": "string",
           "format": "binary"
+        }
+      }
+    },
+    "Penjual": {
+      "type": "object",
+      "properties": {
+        "profesiPenjual": {
+          "type": "string"
+        },
+        "namaProducts": {
+          "type": "string"
+        },
+        "stok": {
+          "type": "integer"
+        },
+        "satuan": {
+          "type": "string"
+        },
+        "harga": {
+          "type": "string"
+        },
+        "deskripsi": {
+          "type": "string"
+        },
+        "fotoTanaman": {
+          "type": "string",
+          "format": "binary"
+        },
+        "status": {
+          "type": "string"
         }
       }
     }

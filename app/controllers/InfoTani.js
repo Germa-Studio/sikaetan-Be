@@ -49,7 +49,6 @@ const tambahInfoTani = async(req, res)=>{
       });
       urlImg = img.url
     }
-    console.log(urlImg)
     const infoTani = await beritaTani.create({judul, tanggal, status, kategori, fotoBerita:urlImg, createdBy:nama, isi})
     res.status(200).json({
       message: 'Info Tani Berhasil Dibuat',

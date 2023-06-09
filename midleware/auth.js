@@ -5,7 +5,6 @@ dotenv.config();
 const auth = (req, res, next) => {
   try {
     const bearerToken = req.headers.authorization;
-    console.log(bearerToken);
     // const token = bearerToken.split('Bearer')[1];
     if (!bearerToken) {
       return res.status(401).json({

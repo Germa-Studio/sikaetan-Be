@@ -2,35 +2,26 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('penjuals', {
+    await queryInterface.createTable('jurnalHarians', {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      profesiPenjual: {
+      judul: {
         type: Sequelize.STRING
       },
-      namaProducts: {
-        type: Sequelize.STRING
+      tanggalDibuat: {
+        type: Sequelize.DATE
       },
-      stok: {
-        type: Sequelize.INTEGER
-      },
-      satuan: {
-        type: Sequelize.STRING
-      },
-      harga: {
-        type: Sequelize.STRING
-      },
-      deskripsi: {
-        type: Sequelize.STRING
-      },
-      fotoTanaman: {
+      uraian: {
         type: Sequelize.TEXT
       },
-      status: {
+      gambar: {
+        type: Sequelize.TEXT
+      },
+      statusJurnal: {
         type: Sequelize.STRING
       },
       createdAt: {
@@ -44,6 +35,6 @@ module.exports = {
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('penjuals');
+    await queryInterface.dropTable('jurnalHarians');
   }
 };

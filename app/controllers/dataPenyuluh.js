@@ -2,7 +2,7 @@ const { tbl_akun: tblAkun } = require('../models');
 const ApiError = require('../../utils/ApiError');
 const imageKit = require('../../midleware/imageKit');
 
-const infoTani = async(req, res)=>{
+const tambahDataPenyuluh = async(req, res)=>{
   try {
     res.status(200).json({
       message: '',
@@ -14,7 +14,7 @@ const infoTani = async(req, res)=>{
   }
 
 }
-const tambahInfoTani = async(req, res)=>{
+const presensiKehadiran = async(req, res)=>{
   try {
     res.status(200).json({
       message: '',
@@ -25,7 +25,7 @@ const tambahInfoTani = async(req, res)=>{
     });
   }
 }
-const eventTani = async(req, res)=>{
+const jurnalKegiatan = async(req, res)=>{
   try {
     res.status(200).json({
       message: '',
@@ -36,7 +36,7 @@ const eventTani = async(req, res)=>{
     });
   }
 }
-const tambahEventTani = async(req, res)=>{
+const RiwayatChat = async(req, res)=>{
   try {
     res.status(200).json({
       message: '',
@@ -51,8 +51,8 @@ const tambahEventTani = async(req, res)=>{
 
 
 module.exports = {
-        infoTani,
-        tambahInfoTani,
-        eventTani,
-        tambahEventTani
-    }
+  tambahDataPenyuluh,
+  presensiKehadiran,
+  jurnalKegiatan,
+  RiwayatChat
+}

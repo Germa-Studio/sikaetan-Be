@@ -14,6 +14,10 @@ module.exports = (sequelize, DataTypes) => {
       this.belongsTo(models.tanamanPetani, { foreignKey: 'tanamanPetaniId' });
       this.belongsTo(models.kelompok, { foreignKey: 'kelompokId' });
       this.belongsTo(models.laporanTanam, { foreignKey: 'laporanTanamId' });
+      this.belongsTo(models.dataPenyuluh, { foreignKey: 'dataPenyuluhId' });
+      this.belongsTo(models.penjual, { foreignKey: 'penjualId' });
+      this.hasMany(models.chatt, { foreignKey: 'dari' });
+      this.hasMany(models.chatt, { foreignKey: 'tujuan' });
     }
   }
   dataPerson.init({
@@ -28,7 +32,9 @@ module.exports = (sequelize, DataTypes) => {
     password: DataTypes.TEXT,
     tanamanPetaniId: DataTypes.INTEGER,
     kelompokId: DataTypes.INTEGER,
-    laporanTanamId: DataTypes.INTEGER
+    laporanTanamId: DataTypes.INTEGER,
+    dataPenyuluhId: DataTypes.INTEGER,
+    penjualId: DataTypes.INTEGER
   }, {
     sequelize,
     modelName: 'dataPerson',

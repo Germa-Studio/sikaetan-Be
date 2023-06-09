@@ -45,6 +45,9 @@ module.exports = {
       laporanTanamId: {
         type: Sequelize.INTEGER
       },
+      dataPenyuluhId: {
+        type: Sequelize.INTEGER
+      },
       createdAt: {
         allowNull: true,
         type: Sequelize.DATE

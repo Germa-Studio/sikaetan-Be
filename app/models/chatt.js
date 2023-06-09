@@ -11,12 +11,15 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      this.belongsTo(models.dataPerson, { foreignKey: 'dari' });
+      this.belongsTo(models.dataPerson, { foreignKey: 'tujuan' });
     }
   }
   chatt.init({
     dari: DataTypes.INTEGER,
-    tujuan: DataTypes.STRING,
-    aksi: DataTypes.STRING
+    tujuan: DataTypes.INTEGER,
+    aksi: DataTypes.STRING,
+    status:string
   }, {
     sequelize,
     modelName: 'chatt',
