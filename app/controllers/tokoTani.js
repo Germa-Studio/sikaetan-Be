@@ -2,6 +2,7 @@ const { dataPerson, penjual  } = require('../models');
 const ApiError = require('../../utils/ApiError');
 const imageKit = require('../../midleware/imageKit');
 
+
 const tambahDaftarPenjual = async(req, res)=>{
   try {
     const {
@@ -14,8 +15,8 @@ const tambahDaftarPenjual = async(req, res)=>{
       deskripsi,
       status
     }= req.body
-    const tani = await dataPerson.findOne({ where: { NIK, }, });
-    if(tani) throw new ApiError(400, `data dengan nik ${NIK} tidak terdaftar`)
+    const persons = await dataPerson.findOne({ where: { NIK, }, });
+    if(!persons) throw new ApiError(400, `data dengan nik ${NIK} tidak terdaftar`)
    const { file, } = req;
     let urlImg = ''
     if (file) {
@@ -40,9 +41,8 @@ const tambahDaftarPenjual = async(req, res)=>{
       });
       urlImg = img.url
     }
-    const newPenjual = await penjual.create({profesiPenjual, namaProducts, stok, satuan, harga, deskripsi, fotoTanaman, status })
-    await dataPerson.update({penjualId:newPenjual.id},{where:{NIK}})
-    const dataPenjual = await penjual.findOne({where:{id:newPenjual.id}})
+    const newPenjual = await penjual.create({profesiPenjual, namaProducts, stok, satuan, harga, deskripsi, fotoTanaman:urlImg, status, dataPersonId:persons.id })
+    const dataPenjual = await penjual.findOne({where:{id:newPenjual.id}, include:dataPerson})
     res.status(200).json({
       message: 'Berhasil Membuat Data Penjual',
       dataPenjual

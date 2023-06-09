@@ -11,7 +11,7 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      this.hasMany(models.dataPerson, { foreignKey: 'penjualId' });
+      this.belongsTo(models.dataPerson, { foreignKey: 'dataPersonId' });
     }
   }
   penjual.init({
@@ -22,7 +22,8 @@ module.exports = (sequelize, DataTypes) => {
     harga: DataTypes.STRING,
     deskripsi: DataTypes.STRING,
     fotoTanaman: DataTypes.TEXT,
-    status: DataTypes.STRING
+    status: DataTypes.STRING,
+    dataPersonId: DataTypes.INTEGER
   }, {
     sequelize,
     modelName: 'penjual',

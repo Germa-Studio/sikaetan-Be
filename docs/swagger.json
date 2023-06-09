@@ -125,7 +125,7 @@
                     "format": "binary"
                   }
                 },
-                "required": ["email", "no_wa", "nama", "password", "pekerjaan", "peran", "foto"]
+                "required": ["email", "no_wa", "nama", "password"]
               }
             }
           }
@@ -864,7 +864,7 @@
                   "example": "Berhasil Membuat Data Penjual"
                 },
                 "dataPenjual": {
-                  "$ref": "#/definitions/Penjual"
+                  "$ref": "#/components/schemas/Penjual"
                 }
               }
             }
@@ -918,7 +918,7 @@
                 "productPenyuluh": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/definitions/Penjual"
+                    "$ref": "#/components/schemas/Penjual"
                   }
                 }
               }
@@ -961,8 +961,516 @@
                 "productPetani": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/definitions/Penjual"
+                    "$ref": "#/components/schemas/Penjual"
                   }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server Error",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "Internal Server Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+  "/penyuluh/add": {
+      "post": {
+        "tags": ["Data Penyuluh"],
+        "summary": "Tambah Data Penyuluh",
+        "security": [
+          {
+            "bearerToken": []
+          }
+        ],
+        "consumes": ["multipart/form-data"],
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "NIP": {
+                    "type": "string"
+                  },
+                  "NoWa": {
+                    "type": "string"
+                  },
+                  "alamat": {
+                    "type": "string"
+                  },
+                  "desa": {
+                    "type": "string"
+                  },
+                  "nama": {
+                    "type": "string"
+                  },
+                  "kecamatan": {
+                    "type": "string"
+                  },
+                  "password": {
+                    "type": "string"
+                  },
+                  "namaProduct": {
+                    "type": "string"
+                  },
+                  "desaBinaan": {
+                    "type": "string"
+                  },
+                  "foto": {
+                    "type": "file"
+                  }
+                }
+              },
+              "encoding": {
+                "foto": {
+                  "contentType": "multipart/form-data"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Berhasil menambahkan data Penyuluh",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string"
+                },
+                "newDataPenyuluh": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/presensi-kehadiran/add": {
+      "post": {
+        "tags": ["Data Penyuluh"],
+        "summary": "Tambah Presensi Kehadiran",
+        "security": [
+          {
+            "bearerToken": []
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "NIP": {
+                    "type": "string"
+                  },
+                  "tanggalPresensi": {
+                    "type": "string",
+                    "format": "date"
+                  },
+                  "jamKedatangan": {
+                    "type": "string",
+                    "format": "time"
+                  },
+                  "jamPulang": {
+                    "type": "string",
+                    "format": "time"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Berhasil menambahkan data Presensi Kehadiran",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string"
+                },
+                "newData": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/jurnal-kegiatan/add": {
+      "post": {
+        "tags": ["Data Penyuluh"],
+        "summary": "Tambah Jurnal Kegiatan",
+        "security": [
+          {
+            "bearerToken": []
+          }
+        ],
+        "consumes": ["multipart/form-data"],
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "NIP": {
+                    "type": "string"
+                  },
+                  "judul": {
+                    "type": "string"
+                  },
+                  "tanggalDibuat": {
+                    "type": "string",
+                    "format": "date"
+                  },
+                  "uraian": {
+                    "type": "string"
+                  },
+                  "statusJurnal": {
+                    "type": "string"
+                  },
+                  "gambar": {
+                    "type": "file"
+                  }
+                }
+              },
+              "encoding": {
+                "gambar": {
+                  "contentType": "multipart/form-data"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Berhasil menambahkan data Jurnal",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string"
+                },
+                "newData": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/presensi-kehadiran": {
+      "get": {
+        "tags": ["Data Penyuluh"],
+        "summary": "Semua Data Presensi Kehadiran",
+        "security": [
+          {
+            "bearerToken": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string"
+                },
+                "DataPresesiKehadiran": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/jurnal-kegiatan": {
+      "get": {
+        "tags": ["Data Penyuluh"],
+        "summary": "Semua Data Jurnal Kegiatan",
+        "security": [
+          {
+            "bearerToken": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string"
+                },
+                "DataJurnalKegiatan": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/riwayat-chat": {
+      "get": {
+        "tags": ["Data Penyuluh"],
+        "summary": "Semua Data Riwayat Chat",
+        "security": [
+          {
+            "bearerToken": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string"
+                },
+                "DataRiwayatChat": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/chat/add": {
+      "post": {
+        "tags": ["Live Chat"],
+        "summary": "Menambahkan pesan chat",
+        "security": [
+          {
+            "bearerToken": []
+          }
+        ],
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "dari": {
+                    "type": "string"
+                  },
+                  "tujuan": {
+                    "type": "string"
+                  },
+                  "aksi": {
+                    "type": "string"
+                  },
+                  "status": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Berhasil Menambahkan Chatt",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "Berhasil Menambahkan Chatt"
+                },
+                "datachatt": {
+                  "$ref": "#/components/schemas/Chat"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server Error",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "Internal Server Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/rating/add": {
+      "post": {
+        "tags": ["Live Chat"],
+        "summary": "Menambahkan rating",
+        "security": [
+          {
+            "bearerToken": []
+          }
+        ],
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "NIP": {
+                    "type": "string"
+                  },
+                  "response": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Berhasil membuat Rating",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "Berhasil membuat Rating"
+                },
+                "rating": {
+                  "$ref": "#/components/schemas/Rating"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server Error",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "Internal Server Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/chat": {
+      "get": {
+        "tags": ["Live Chat"],
+        "summary": "Mendapatkan data chat",
+        "security": [
+          {
+            "bearerToken": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Berhasil Mendapatkan data Chatt",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "Berhasil Mendapatkan data Chatt"
+                },
+                "chatts": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Chat"
+                  }
+                },
+                "chattReply": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Chat"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server Error",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "Internal Server Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/rating": {
+      "get": {
+        "tags": ["Live Chat"],
+        "summary": "Mendapatkan data rating",
+        "security": [
+          {
+            "bearerToken": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Berhasil Mendapatkan data rating",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "Berhasil Mendapatkan data rating"
                 }
               }
             }

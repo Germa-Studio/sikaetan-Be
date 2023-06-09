@@ -25,6 +25,7 @@ const tambahInfoTani = async(req, res)=>{
     isi
     } = req.body
     const {nama} = req.user
+    console.log(nama)
     const { file, } = req;
     let urlImg = ''
     if (file) {
@@ -83,6 +84,7 @@ const tambahEventTani = async(req, res)=>{
     peserta,
     isi
     } = req.body
+    console.log(req.user)
     const {nama} = req.user
     const { file, } = req;
     let urlImg = ''

@@ -45,7 +45,19 @@ module.exports = {
       laporanTanamId: {
         type: Sequelize.INTEGER
       },
-      dataPenyuluhId: {
+      rattingId: {
+        type: Sequelize.INTEGER
+      },
+      presesiKehadiranId: {
+        type: Sequelize.INTEGER
+      },
+      jurnalKegiatanId: {
+        type: Sequelize.INTEGER
+      },
+      riwayatChatId: {
+        type: Sequelize.INTEGER
+      },
+      responseRatingId: {
         type: Sequelize.INTEGER
       },
       createdAt: {

@@ -10,7 +10,10 @@ module.exports = {
         type: Sequelize.INTEGER
       },
       response: {
-        type: Sequelize.STRING
+        type: Sequelize.INTEGER
+      },
+      dataPersonId: {
+        type: Sequelize.INTEGER
       },
       createdAt: {
         allowNull: false,

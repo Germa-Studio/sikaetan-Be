@@ -14,10 +14,15 @@ module.exports = (sequelize, DataTypes) => {
       this.belongsTo(models.tanamanPetani, { foreignKey: 'tanamanPetaniId' });
       this.belongsTo(models.kelompok, { foreignKey: 'kelompokId' });
       this.belongsTo(models.laporanTanam, { foreignKey: 'laporanTanamId' });
-      this.belongsTo(models.dataPenyuluh, { foreignKey: 'dataPenyuluhId' });
-      this.belongsTo(models.penjual, { foreignKey: 'penjualId' });
-      this.hasMany(models.chatt, { foreignKey: 'dari' });
-      this.hasMany(models.chatt, { foreignKey: 'tujuan' });
+      this.hasMany(models.dataPenyuluh, { foreignKey: 'dataPersonId' });
+      this.hasMany(models.penjual, { foreignKey: 'dataPersonId'});
+      this.hasOne(models.chatt, {  as: 'from',foreignKey: 'dari' });
+      this.hasOne(models.chatt, {  as: 'to',foreignKey: 'tujuan' });
+      this.belongsTo(models.ratting, { foreignKey: 'rattingId' });
+      this.belongsTo(models.jurnalHarian, { foreignKey: 'jurnalKegiatanId' });
+      this.belongsTo(models.riwayatChat, { foreignKey: 'riwayatChatId' });
+      this.belongsTo(models.responseRating, { foreignKey: 'responseRatingId' });
+      this.belongsTo(models.presesiKehadiran, { foreignKey: 'presesiKehadiranId' });
     }
   }
   dataPerson.init({
@@ -33,8 +38,11 @@ module.exports = (sequelize, DataTypes) => {
     tanamanPetaniId: DataTypes.INTEGER,
     kelompokId: DataTypes.INTEGER,
     laporanTanamId: DataTypes.INTEGER,
-    dataPenyuluhId: DataTypes.INTEGER,
-    penjualId: DataTypes.INTEGER
+    rattingId:  DataTypes.INTEGER,
+    presesiKehadiranId: DataTypes.INTEGER,
+    jurnalKegiatanId: DataTypes.INTEGER,
+    riwayatChatId: DataTypes.INTEGER,
+    responseRatingId: DataTypes.INTEGER
   }, {
     sequelize,
     modelName: 'dataPerson',

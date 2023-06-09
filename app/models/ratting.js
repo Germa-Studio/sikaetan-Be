@@ -11,10 +11,12 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      this.hasOne(models.dataPerson, { foreignKey: 'rattingId' });
     }
   }
   ratting.init({
-    response: DataTypes.STRING
+    response: DataTypes.INTEGER,
+    dataPersonId: DataTypes.INTEGER
   }, {
     sequelize,
     modelName: 'ratting',

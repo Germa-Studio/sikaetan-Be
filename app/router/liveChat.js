@@ -1,16 +1,16 @@
 const router = require('express').Router();
-// const auth = require('../../midleware/auth');
+const auth = require('../../midleware/auth');
 const upload = require('../../midleware/uploader');
 const {
-  infoTani,
-  tambahInfoTani,
-  eventTani,
-  tambahEventTani
-} = require('../controllers/InfoTani');
+  chat,
+  tambahChat,
+  rating,
+  tambahRating
+} = require('../controllers/liveChat');
 
-router.post('/event-tani/add', upload.single('foto') ,tambahEventTani);
-router.post('/info-tani/add', tambahInfoTani);
-router.get('/info-tani', infoTani);
-router.get('/event-tani', eventTani);
+router.post('/chat/add', auth, tambahChat);
+router.post('/rating/add', auth, tambahRating);
+router.get('/chat', auth, chat);
+router.get('/rating', auth, rating);
 
 module.exports = router;
