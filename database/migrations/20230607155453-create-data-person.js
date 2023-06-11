@@ -33,6 +33,9 @@ module.exports = {
       kecamatan: {
         type: Sequelize.STRING
       },
+      role: {
+        type: Sequelize.STRING
+      },
       password: {
         type: Sequelize.TEXT
       },
