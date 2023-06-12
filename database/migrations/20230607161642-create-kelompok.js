@@ -12,18 +12,21 @@ module.exports = {
       gapoktan: {
         type: Sequelize.STRING
       },
-      desa: {
-        type: Sequelize.STRING
-      },
       namaKelompok: {
         type: Sequelize.STRING
       },
+      desa: {
+        type: Sequelize.STRING
+      },
+      penyuluh: {
+        type: Sequelize.STRING
+      },
       createdAt: {
-        allowNull: false,
+        allowNull: true,
         type: Sequelize.DATE
       },
       updatedAt: {
-        allowNull: false,
+        allowNull: true,
         type: Sequelize.DATE
       }
     });

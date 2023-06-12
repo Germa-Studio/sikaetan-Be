@@ -88,6 +88,7 @@ const tambahDaftarTani = async(req, res)=>{
 
     if(!NIK) throw new ApiError(400, "NIK tidak boleh kosong")
     if(!nama) throw new ApiError(400, "nama tidak boleh kosong")
+    if(!penyuluh) throw new ApiError(400, "penyuluh tidak boleh kosong")
     const tani = await dataPerson.findOne({ where: { NIK, }, });
     if(tani) throw new ApiError(400, "NIK sudah digunakan")
     const { file, } = req;
@@ -114,7 +115,7 @@ const tambahDaftarTani = async(req, res)=>{
       });
       urlImg = img.url
     }
-    const dataKelompok = await kelompok.create({gapoktan, penyuluh, namaKelompok})
+    const dataKelompok = await kelompok.create({gapoktan, penyuluh, namaKelompok, desa})
     const dataTanamanPetani = await tanamanPetani.create({statusLahan, luasLahan, kategori, jenis, komoditas, musimTanam, tanggalTanam, perkiraanPanen })
     const daftarTani = await dataPerson.create({NIK, NoWa, role:"petani", alamat, desa, nama, kecamatan, password, tanamanPetaniId: dataTanamanPetani.id,kelompokId:dataKelompok.id, foto:urlImg })
 

@@ -16,8 +16,9 @@ module.exports = (sequelize, DataTypes) => {
   }
   kelompok.init({
     gapoktan: DataTypes.STRING,
+    namaKelompok: DataTypes.STRING,
     desa: DataTypes.STRING,
-    namaKelompok: DataTypes.STRING
+    penyuluh: DataTypes.STRING
   }, {
     sequelize,
     modelName: 'kelompok',
