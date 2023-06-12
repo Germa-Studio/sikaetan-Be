@@ -7,7 +7,8 @@ const {
   jurnalKegiatan,
   RiwayatChat,
   tambahJurnalKegiatan,
-  tambahPresensiKehadiran
+  tambahPresensiKehadiran,
+  daftarPenyuluh
 } = require('../controllers/dataPenyuluh');
 
 router.post('/penyuluh/add', upload.single('foto') ,tambahDataPenyuluh);
@@ -16,5 +17,6 @@ router.post('/jurnal-kegiatan/add',upload.single('gambar'), tambahJurnalKegiatan
 router.get('/presensi-kehadiran', presensiKehadiran);
 router.get('/jurnal-kegiatan', jurnalKegiatan);
 router.get('/riwayat-chat', RiwayatChat);
+router.get('/daftar-penyuluh', daftarPenyuluh);
 
 module.exports = router;

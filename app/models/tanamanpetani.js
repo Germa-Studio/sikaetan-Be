@@ -22,7 +22,9 @@ module.exports = (sequelize, DataTypes) => {
     komoditas: DataTypes.STRING,
     musimTanam: DataTypes.INTEGER,
     tanggalTanam: DataTypes.DATE,
-    perkiraanPanen: DataTypes.DATE
+    perkiraanPanen: DataTypes.DATE,
+    perkiraanHasilPanen: DataTypes.INTEGER,
+    realisasiHasilPanen: DataTypes.INTEGER
   }, {
     sequelize,
     modelName: 'tanamanPetani',

@@ -12,7 +12,7 @@ module.exports = {
       gapoktan: {
         type: Sequelize.STRING
       },
-      penyuluh: {
+      desa: {
         type: Sequelize.STRING
       },
       namaKelompok: {

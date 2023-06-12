@@ -15,6 +15,9 @@ module.exports = {
       desaBinaan: {
         type: Sequelize.STRING
       },
+      kecamatanBinaan: {
+        type: Sequelize.STRING
+      },
       dataPersonId: {
         type: Sequelize.INTEGER
       },

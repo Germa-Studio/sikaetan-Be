@@ -33,6 +33,12 @@ module.exports = {
       perkiraanPanen: {
         type: Sequelize.DATE
       },
+      perkiraanHasilPanen: {
+        type: Sequelize.INTEGER
+      },
+      realisasiHasilPanen: {
+        type: Sequelize.INTEGER
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE

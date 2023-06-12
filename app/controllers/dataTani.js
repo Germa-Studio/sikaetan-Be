@@ -19,9 +19,7 @@ const laporanPetani = async(req, res)=>{
         }
       ],
       where: {
-        NIK: {
-          [Op.not]: null
-        }
+        role:"petani"
       },
     });
     res.status(200).json({
@@ -118,7 +116,7 @@ const tambahDaftarTani = async(req, res)=>{
     }
     const dataKelompok = await kelompok.create({gapoktan, penyuluh, namaKelompok})
     const dataTanamanPetani = await tanamanPetani.create({statusLahan, luasLahan, kategori, jenis, komoditas, musimTanam, tanggalTanam, perkiraanPanen })
-    const daftarTani = await dataPerson.create({NIK, NoWa, alamat, desa, nama, kecamatan, password, tanamanPetaniId: dataTanamanPetani.id,kelompokId:dataKelompok.id, foto:urlImg })
+    const daftarTani = await dataPerson.create({NIK, NoWa, role:"petani", alamat, desa, nama, kecamatan, password, tanamanPetaniId: dataTanamanPetani.id,kelompokId:dataKelompok.id, foto:urlImg })
 
     res.status(200).json({
       message: 'Berhasil Menambahakan Daftar Tani',
