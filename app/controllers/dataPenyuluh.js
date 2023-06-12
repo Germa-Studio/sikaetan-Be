@@ -184,14 +184,15 @@ const RiwayatChat = async(req, res)=>{
 }
 const daftarPenyuluh = async(req, res)=>{
   try {
-    const dataPenyuluh = await dataPerson.findAll({where:{role:"penyuluh"},include:[{model:dataPenyuluh}]});
+    const dataDaftarPenyuluh = await dataPerson.findAll({where:{role:"penyuluh"},include:[{model:dataPenyuluh}]});
     res.status(200).json({
       message: 'Semua Data Riwayat Chat',
-      dataPenyuluh
+      dataDaftarPenyuluh
     });  
   } catch (error) {
     res.status(error.statusCode || 500).json({
       message: error.message,
+      O:"kkkkkkkkkkkkk"
     });
   }
 }
