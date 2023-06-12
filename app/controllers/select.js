@@ -2,7 +2,7 @@ const { kelompok, dataPerson, dataPenyuluh } = require('../models');
 
 const selectTani = async(req, res)=>{
   try {
-    const {desa} =req.body
+    const {desa} =req.query
     const data = await kelompok.findAll({where:{desa}});
     // const penyuluh = await dataPenyuluh.findAll({where:{desa}, include:[{model:dataPerson}]});
     const penyuluh = await dataPerson.findAll({where:{desa, role:"penyuluh"}});
