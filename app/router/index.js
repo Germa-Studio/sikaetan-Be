@@ -10,6 +10,7 @@ const InfoTani = require('./InfoTani');
 const tokoTani = require('./tokoTani');
 const liveChat = require('./liveChat');
 const dataPenyuluh = require('./dataPenyuluh');
+const select = require('./select');
 
 router.use('/api-docs', swaggerUI.serve);
 router.get('/api-docs', swaggerUI.setup(swaggerDocument));
@@ -27,5 +28,6 @@ router.use('/', InfoTani);
 router.use('/', tokoTani);
 router.use('/', liveChat);
 router.use('/', dataPenyuluh);
+router.use('/', select);
 
 module.exports = router;
