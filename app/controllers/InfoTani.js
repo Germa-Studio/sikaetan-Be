@@ -4,7 +4,7 @@ const imageKit = require('../../midleware/imageKit');
 
 const infoTani = async(req, res)=>{
   try {
-    const data = await beritaTani.findAll();
+    const data = await beritaTani.findAll({order: [['id', 'DESC']]});
     res.status(200).json({
       message: 'Berhasil Mendapatkan Data Info Tani',
       infotani:data
@@ -63,7 +63,7 @@ const tambahInfoTani = async(req, res)=>{
 }
 const eventTani = async(req, res)=>{
   try {
-    const data = await EventTani.findAll();
+    const data = await EventTani.findAll({order: [['id', 'DESC']]});
     res.status(200).json({
       message: 'Berhasil Mendapatkan Data Info Tani',
       infotani:data
