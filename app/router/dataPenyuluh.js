@@ -1,5 +1,5 @@
 const router = require('express').Router();
-// const auth = require('../../midleware/auth');
+const auth = require('../../midleware/auth');
 const upload = require('../../midleware/uploader');
 const {
   tambahDataPenyuluh,
@@ -17,6 +17,6 @@ router.post('/jurnal-kegiatan/add',upload.single('gambar'), tambahJurnalKegiatan
 router.get('/presensi-kehadiran', presensiKehadiran);
 router.get('/jurnal-kegiatan', jurnalKegiatan);
 router.get('/riwayat-chat', RiwayatChat);
-router.get('/daftar-penyuluh', daftarPenyuluh);
+router.get('/daftar-penyuluh', auth, daftarPenyuluh);
 
 module.exports = router;

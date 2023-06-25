@@ -178,12 +178,29 @@ const tambahLaporanTani = async(req, res)=>{
     });
   }
 }
-
+const daftarTani = async(req, res)=>{
+  try {
+    const data = await dataPerson.findAll({
+      where: {
+        role:"petani"
+      },
+    });
+    res.status(200).json({
+      message: 'Data laporan Tani Berhasil Diperoleh',
+      tani:data
+    });  
+  } catch (error) {
+    res.status(error.statusCode || 500).json({
+      message: error.message,
+    });
+  }
+}
 
 
 module.exports = {
   laporanPetani,
   laporanPenyuluh,
   tambahDaftarTani,
-  tambahLaporanTani
+  tambahLaporanTani,
+  daftarTani
 }
