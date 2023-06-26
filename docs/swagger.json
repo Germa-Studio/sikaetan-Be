@@ -285,7 +285,7 @@
                     "format": "binary"
                   }
                 },
-                "required": ["NIK", "noWa", "nama", "password"]
+                "required": ["NIK", "NoWa", "nama", "password"]
               }
             }
           }
@@ -1765,7 +1765,145 @@
           }
         }
       }
-    }
+    },
+    "/info-tani/{id}": {
+          "delete": {
+            "summary": "Menghapus data berita tani berdasarkan ID",
+            "tags":["Info Tani"],
+            "security": [
+              {
+                "bearerToken": []
+              }
+            ],
+            "parameters": [
+              {
+                "in": "path",
+                "name": "id",
+                "required": true,
+                "schema": {
+                  "type": "integer"
+                },
+                "description": "ID data yang akan dihapus"
+              }
+            ],
+            "responses": {
+              "200": {
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "message": {
+                        "type": "string",
+                        "example":  "data berhasil dihapus"
+                      }
+                    }
+                  }
+                }
+              }
+              },
+              "400": {
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "message": {
+                        "type": "string",
+                        "example":  "ID tidak valid atau data tidak ditemukan"
+                      }
+                    }
+                  }
+                }
+              }
+              },
+              "500": {
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "message": {
+                        "type": "string",
+                        "example":  "Terjadi kesalahan pada server"
+                      }
+                    }
+                  }
+                }
+              }
+              }
+            }
+          }
+        },
+    "/event-tani/{id}": {
+          "delete": {
+            "summary": "Menghapus event tani berdasarkan ID",
+            "security": [
+              {
+                "bearerToken": []
+              }
+            ],
+            "tags":["Info Tani"],
+            "parameters": [
+              {
+                "in": "path",
+                "name": "id",
+                "required": true,
+                "schema": {
+                  "type": "integer"
+                },
+                "description": "ID data yang akan dihapus"
+              }
+            ],
+            "responses": {
+              "200": {
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "message": {
+                        "type": "string",
+                        "example":  "data berhasil dihapus"
+                      }
+                    }
+                  }
+                }
+              }
+              },
+              "400": {
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "message": {
+                        "type": "string",
+                        "example":  "ID tidak valid atau data tidak ditemukan"
+                      }
+                    }
+                  }
+                }
+              }
+              },
+              "500": {
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "message": {
+                        "type": "string",
+                        "example":  "Terjadi kesalahan pada server"
+                      }
+                    }
+                  }
+                }
+              }
+              }
+            }
+          }
+        }
   },
   "components": {
     "schemas": {

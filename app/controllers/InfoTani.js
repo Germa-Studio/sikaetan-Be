@@ -25,7 +25,10 @@ const tambahInfoTani = async(req, res)=>{
     isi
     } = req.body
     const {nama} = req.user
-    console.log(nama)
+    if (!judul) throw new ApiError(400, 'Judul tidak boleh kosong.');
+    if (!tanggal) throw new ApiError(400, 'tanggal tidak boleh kosong.');
+    if (!kategori) throw new ApiError(400, 'kategori tidak boleh kosong.');
+    if (!isi) throw new ApiError(400, 'isi tidak boleh kosong.');
     const { file, } = req;
     let urlImg = ''
     if (file) {
@@ -84,7 +87,8 @@ const tambahEventTani = async(req, res)=>{
     peserta,
     isi
     } = req.body
-    console.log(req.user)
+    if (!namaKegiatan) throw new ApiError(400, 'namaKegiatan tidak boleh kosong.');
+    if (!tanggalAcara) throw new ApiError(400, 'tanggalAcara tidak boleh kosong.');
     const {nama} = req.user
     const { file, } = req;
     let urlImg = ''
@@ -122,11 +126,58 @@ const tambahEventTani = async(req, res)=>{
   }
 }
 
-
+const deleteInfoTani = async(req, res)=>{
+  try {
+    const beritaId = req.params.id;
+    const data = await beritaTani.findOne({
+      where: {
+        id: beritaId
+      }
+    });
+    if(!data) throw new ApiError(400, 'data tidak ditemukan.');
+    await beritaTani.destroy({
+      where: {
+        id: beritaId
+      }
+    });
+    res.status(200).json({
+      message: 'Berita Tani Berhasil DI Hapus',
+    });  
+  } catch (error) {
+    res.status(error.statusCode || 500).json({
+      message: `gagal menghapus data, ${error.message}`,
+    });
+  }
+}
+const deleteEventTani = async(req, res)=>{
+  try {
+    const eventId = req.params.id;
+    const data = await EventTani.findOne({
+      where: {
+        id: eventId
+      }
+    });
+    if(!data) throw new ApiError(400, 'data tidak ditemukan.');
+    await EventTani.destroy({
+      where: {
+        id: eventId
+      }
+    });
+    res.status(200).json({
+      message: 'event Tani Berhasil DI Hapus',
+    });  
+  } catch (error) {
+    res.status(error.statusCode || 500).json({
+      message: `gagal menghapus data, ${error.message}`,
+    });
+  }
+}
 
 module.exports = {
         infoTani,
         tambahInfoTani,
         eventTani,
-        tambahEventTani
+        tambahEventTani,
+        deleteInfoTani,
+        deleteEventTani
     }

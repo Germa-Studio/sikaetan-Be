@@ -127,7 +127,7 @@ const loginPetani = async (req, res) => {
     } else if (NIP) {
       user = await dataPerson.findOne({ where: { NIP } });
     }
-    if (!user) throw new ApiError(400, 'Email tidak terdaftar.');
+    if (!user) throw new ApiError(400, 'NIK tidak terdaftar.');
     if (password != user.password) {
       throw new ApiError(400, 'Password salah.');
     }

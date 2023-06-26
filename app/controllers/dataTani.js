@@ -15,7 +15,6 @@ const laporanPetani = async(req, res)=>{
         },
         {
           model: laporanTanam,
-          required: true
         }
       ],
       where: {
