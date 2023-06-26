@@ -23,7 +23,6 @@ const auth = (req, res, next) => {
         req.user = instance;
         return next();
       });
-      next()
     }
   } catch {
     res.status(401).json({
