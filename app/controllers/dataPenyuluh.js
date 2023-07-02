@@ -29,7 +29,7 @@ const tambahDataPenyuluh = async(req, res)=>{
         file.mimetype === 'image/jpeg' ||
         file.mimetype === 'image/gif';
       if (!validFormat) {
-        res.status(400).json({
+        return res.status(400).json({
           status: 'failed',
           message: 'Wrong Image Format',
         });
@@ -135,7 +135,7 @@ const tambahJurnalKegiatan = async(req, res)=>{
         file.mimetype === 'image/jpeg' ||
         file.mimetype === 'image/gif';
       if (!validFormat) {
-        res.status(400).json({
+        return res.status(400).json({
           status: 'failed',
           message: 'Wrong Image Format',
         });
