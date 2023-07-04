@@ -15,6 +15,20 @@ const infoTani = async(req, res)=>{
     });
   }
 }
+const infoTaniById = async(req, res)=>{
+  const { id } = req.params
+  try {
+    const data = await beritaTani.findOne({where:{id}});
+    res.status(200).json({
+      message: 'Berhasil Mendapatkan Data Info Tani',
+      infotani:data
+    });  
+  } catch (error) {
+    res.status(error.statusCode || 500).json({
+      message: error.message,
+    });
+  }
+}
 const tambahInfoTani = async(req, res)=>{
   try {
     const {
@@ -67,6 +81,20 @@ const tambahInfoTani = async(req, res)=>{
 const eventTani = async(req, res)=>{
   try {
     const data = await EventTani.findAll({order: [['id', 'DESC']]});
+    res.status(200).json({
+      message: 'Berhasil Mendapatkan Data Info Tani',
+      infotani:data
+    });  
+  } catch (error) {
+    res.status(error.statusCode || 500).json({
+      message: error.message,
+    });
+  }
+}
+const eventTaniById = async(req, res)=>{
+  const { id } = req.params
+  try {
+    const data = await EventTani.findOne({where:{id}});
     res.status(200).json({
       message: 'Berhasil Mendapatkan Data Info Tani',
       infotani:data
@@ -179,5 +207,7 @@ module.exports = {
         eventTani,
         tambahEventTani,
         deleteInfoTani,
-        deleteEventTani
+        deleteEventTani,
+        infoTaniById,
+        eventTaniById
     }

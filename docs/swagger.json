@@ -1767,6 +1767,73 @@
       }
     },
     "/info-tani/{id}": {
+          "get": {
+            "summary": "Menghapus data berita tani berdasarkan ID",
+            "tags":["Info Tani"],
+            "security": [
+              {
+                "bearerToken": []
+              }
+            ],
+            "parameters": [
+              {
+                "in": "path",
+                "name": "id",
+                "required": true,
+                "schema": {
+                  "type": "integer"
+                },
+                "description": "ID yang akan di cari"
+              }
+            ],
+            "responses": {
+              "200": {
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "message": {
+                        "type": "string",
+                        "example":  "data berhasil dihapus"
+                      }
+                    }
+                  }
+                }
+              }
+              },
+              "400": {
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "message": {
+                        "type": "string",
+                        "example":  "ID tidak valid atau data tidak ditemukan"
+                      }
+                    }
+                  }
+                }
+              }
+              },
+              "500": {
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "message": {
+                        "type": "string",
+                        "example":  "Terjadi kesalahan pada server"
+                      }
+                    }
+                  }
+                }
+              }
+              }
+            }
+          },
           "delete": {
             "summary": "Menghapus data berita tani berdasarkan ID",
             "tags":["Info Tani"],
@@ -1836,7 +1903,7 @@
           }
         },
     "/event-tani/{id}": {
-          "delete": {
+          "get": {
             "summary": "Menghapus event tani berdasarkan ID",
             "security": [
               {
@@ -1864,7 +1931,74 @@
                     "properties": {
                       "message": {
                         "type": "string",
-                        "example":  "data berhasil dihapus"
+                        "example":  "data berhasil ditemukan"
+                      }
+                    }
+                  }
+                }
+              }
+              },
+              "400": {
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "message": {
+                        "type": "string",
+                        "example":  "ID tidak valid atau data tidak ditemukan"
+                      }
+                    }
+                  }
+                }
+              }
+              },
+              "500": {
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "message": {
+                        "type": "string",
+                        "example":  "Terjadi kesalahan pada server"
+                      }
+                    }
+                  }
+                }
+              }
+              }
+            }
+          },
+          "delete": {
+            "summary": "Menghapus event tani berdasarkan ID",
+            "security": [
+              {
+                "bearerToken": []
+              }
+            ],
+            "tags":["Info Tani"],
+            "parameters": [
+              {
+                "in": "path",
+                "name": "id",
+                "required": true,
+                "schema": {
+                  "type": "integer"
+                },
+                "description": "ID data yang akan dicari"
+              }
+            ],
+            "responses": {
+              "200": {
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "message": {
+                        "type": "string",
+                        "example":  "data berhasil ditemukan"
                       }
                     }
                   }

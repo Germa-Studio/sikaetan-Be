@@ -7,13 +7,17 @@ const {
   eventTani,
   tambahEventTani,
   deleteInfoTani,
-  deleteEventTani
+  deleteEventTani,
+  infoTaniById,
+  eventTaniById
 } = require('../controllers/InfoTani');
 
 router.post('/event-tani/add', auth, upload.single('fotoKegiatan') ,tambahEventTani);
 router.post('/info-tani/add', auth,upload.single('fotoBerita'), tambahInfoTani);
 router.get('/info-tani', auth, infoTani);
 router.get('/event-tani', auth, eventTani);
+router.get('/event-tani/:id', auth, eventTaniById);
+router.get('/info-tani/:id', auth, infoTaniById);
 router.delete('/info-tani/:id', auth, deleteInfoTani);
 router.delete('/event-tani/:id', auth, deleteEventTani);
 
