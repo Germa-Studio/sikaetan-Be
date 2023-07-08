@@ -194,6 +194,29 @@ const daftarTani = async(req, res)=>{
     });
   }
 }
+const deleteDaftarTani = async(req, res)=>{
+  const { id } = req.params
+  try {
+    const data = await dataPerson.findOne({
+      where: {
+        id
+      }
+    });
+    if(!data) throw new ApiError(400, 'data tidak ditemukan.');
+    await dataPerson.destroy({
+      where: {
+        id
+      }
+    });
+    res.status(200).json({
+      message: 'Petani Berhasil Di Hapus',
+    });  
+  } catch (error) {
+    res.status(error.statusCode || 500).json({
+      message: `gagal menghapus data petani, ${error.message}`,
+    });
+  }
+}
 
 
 module.exports = {
@@ -201,5 +224,6 @@ module.exports = {
   laporanPenyuluh,
   tambahDaftarTani,
   tambahLaporanTani,
-  daftarTani
+  daftarTani,
+  deleteDaftarTani
 }

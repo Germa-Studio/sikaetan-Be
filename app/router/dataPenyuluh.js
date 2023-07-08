@@ -8,7 +8,8 @@ const {
   RiwayatChat,
   tambahJurnalKegiatan,
   tambahPresensiKehadiran,
-  daftarPenyuluh
+  daftarPenyuluh,
+  deleteDaftarPenyuluh
 } = require('../controllers/dataPenyuluh');
 
 router.post('/penyuluh/add', upload.single('foto') ,tambahDataPenyuluh);
@@ -18,5 +19,6 @@ router.get('/presensi-kehadiran', presensiKehadiran);
 router.get('/jurnal-kegiatan', jurnalKegiatan);
 router.get('/riwayat-chat', RiwayatChat);
 router.get('/daftar-penyuluh', auth, daftarPenyuluh);
+router.delete('/daftar-penyuluh/:id', auth, deleteDaftarPenyuluh);
 
 module.exports = router;

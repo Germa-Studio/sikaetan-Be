@@ -1,9 +1,9 @@
 {
   "openapi": "3.0.0",
   "info": {
-    "title": "API Documentation",
+    "title": "API Documentation Siketan",
     "version": "1.0.0",
-    "description": "API Documentation using Swagger"
+    "description": "API Documentation Siketan"
   },
   "servers": [
     {
@@ -1901,7 +1901,7 @@
               }
             }
           }
-        },
+    },
     "/event-tani/{id}": {
           "get": {
             "summary": "Menghapus event tani berdasarkan ID",
@@ -2037,7 +2037,145 @@
               }
             }
           }
-        }
+    },
+    "/daftar-tani/{id}": {
+          "delete": {
+            "summary": "Menghapus event tani berdasarkan ID",
+            "security": [
+              {
+                "bearerToken": []
+              }
+            ],
+            "tags":["Data Tani"],
+            "parameters": [
+              {
+                "in": "path",
+                "name": "id",
+                "required": true,
+                "schema": {
+                  "type": "integer"
+                },
+                "description": "ID data yang akan dicari"
+              }
+            ],
+            "responses": {
+              "200": {
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "message": {
+                        "type": "string",
+                        "example":  "data petani berhasil dihapus"
+                      }
+                    }
+                  }
+                }
+              }
+              },
+              "400": {
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "message": {
+                        "type": "string",
+                        "example":  "ID tidak valid atau data tidak ditemukan"
+                      }
+                    }
+                  }
+                }
+              }
+              },
+              "500": {
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "message": {
+                        "type": "string",
+                        "example":  "Terjadi kesalahan pada server"
+                      }
+                    }
+                  }
+                }
+              }
+              }
+            }
+          }
+    },
+    "/daftar-penyuluh/{id}": {
+          "delete": {
+            "summary": "Menghapus event tani berdasarkan ID",
+            "security": [
+              {
+                "bearerToken": []
+              }
+            ],
+            "tags":["Data Penyuluh"],
+            "parameters": [
+              {
+                "in": "path",
+                "name": "id",
+                "required": true,
+                "schema": {
+                  "type": "integer"
+                },
+                "description": "ID data yang akan dicari"
+              }
+            ],
+            "responses": {
+              "200": {
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "message": {
+                        "type": "string",
+                        "example":  "data petani berhasil dihapus"
+                      }
+                    }
+                  }
+                }
+              }
+              },
+              "400": {
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "message": {
+                        "type": "string",
+                        "example":  "ID tidak valid atau data tidak ditemukan"
+                      }
+                    }
+                  }
+                }
+              }
+              },
+              "500": {
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "message": {
+                        "type": "string",
+                        "example":  "Terjadi kesalahan pada server"
+                      }
+                    }
+                  }
+                }
+              }
+              }
+            }
+          }
+    }
   },
   "components": {
     "schemas": {
