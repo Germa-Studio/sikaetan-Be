@@ -5,6 +5,6 @@ const {
 } = require('../controllers/select');
 
 
-router.get('/select-tani', auth, selectTani);
+router.get('/select-tani/:kecamatan', auth, selectTani);
 
 module.exports = router;

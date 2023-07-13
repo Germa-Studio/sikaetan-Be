@@ -200,6 +200,102 @@ const deleteEventTani = async(req, res)=>{
     });
   }
 }
+const updateInfoTani = async(req, res)=>{
+  try {
+    const {
+    judul,
+    tanggal,
+    status,
+    kategori,
+    createdBy,
+    isi
+    } = req.body
+    const beritaId = req.params.id;
+
+    const data = await beritaTani.findOne({
+      where: {
+        id: beritaId
+      }
+    });
+    if(!data) throw new ApiError(400, 'data tidak ditemukan.');
+    const { file, } = req;
+    if (file) {
+      const validFormat =
+        file.mimetype === 'image/png' ||
+        file.mimetype === 'image/jpg' ||
+        file.mimetype === 'image/jpeg' ||
+        file.mimetype === 'image/gif';
+      if (!validFormat) {
+        return res.status(400).json({
+          status: 'failed',
+          message: 'Wrong Image Format',
+        });
+      }
+      const split = file.originalname.split('.');
+      const ext = split[split.length - 1];
+
+      // upload file ke imagekit
+      const img = await imageKit.upload({
+        file: file.buffer,
+        fileName: `IMG-${Date.now()}.${ext}`,
+      });
+      await beritaTani.update(  
+        { 
+          judul,status,kategori,fotoBerita: img.url,isi
+        },
+        { where: { id: beritaId } })
+      return res.status(200).json({
+        message: 'Berita Tani Berhasil Di ubah',
+      });
+    }
+    await beritaTani.update(  
+      { 
+        judul,status,kategori,isi
+      },
+      { where: { id: beritaId } })
+    res.status(200).json({
+      message: 'Berita Tani Berhasil DI ubah tanpa image',
+    });
+  } catch (error) {
+        console.log(error)
+    res.status(error.statusCode || 500).json({
+      message: `gagal menghapus data, ${error.message}`,
+    });
+  }
+}
+const updateEventTani = async(req, res)=>{
+  try {
+    const {
+      namaKegiatan,
+      tanggalAcara,
+      waktuAcara,
+      tempat,
+      peserta,
+      fotoKegiatan,
+      createdBy,
+      isi
+    } = req.body
+    const eventId = req.params.id;
+    const data = await EventTani.findOne({
+      where: {
+        id: eventId
+      }
+    });
+    if(!data) throw new ApiError(400, 'data tidak ditemukan.');
+    await EventTani.update(  
+      { 
+        namaKegiatan,tanggalAcara,waktuAcara,tempat,peserta,fotoKegiatan,createdBy,isi
+      },
+      { where: { id: beritaId } })
+    res.status(200).json({
+      message: 'event Tani Berhasil DI update',
+    });  
+  } catch (error) {
+    res.status(error.statusCode || 500).json({
+      message: `gagal menghapus data, ${error.message}`,
+    });
+  }
+}
 
 module.exports = {
         infoTani,
@@ -209,5 +305,7 @@ module.exports = {
         deleteInfoTani,
         deleteEventTani,
         infoTaniById,
-        eventTaniById
+        eventTaniById,
+        updateEventTani,
+        updateInfoTani
     }

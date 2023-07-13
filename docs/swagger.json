@@ -1767,276 +1767,445 @@
       }
     },
     "/info-tani/{id}": {
-          "get": {
-            "summary": "Menghapus data berita tani berdasarkan ID",
-            "tags":["Info Tani"],
-            "security": [
-              {
-                "bearerToken": []
-              }
-            ],
-            "parameters": [
-              {
-                "in": "path",
-                "name": "id",
-                "required": true,
-                "schema": {
-                  "type": "integer"
-                },
-                "description": "ID yang akan di cari"
-              }
-            ],
-            "responses": {
-              "200": {
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "type": "object",
-                    "properties": {
-                      "message": {
-                        "type": "string",
-                        "example":  "data berhasil dihapus"
-                      }
-                    }
+      "get": {
+        "summary": "Menghapus data berita tani berdasarkan ID",
+        "tags":["Info Tani"],
+        "security": [
+          {
+            "bearerToken": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "ID yang akan di cari"
+          }
+        ],
+        "responses": {
+          "200": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "message": {
+                    "type": "string",
+                    "example":  "data berhasil dihapus"
                   }
                 }
-              }
-              },
-              "400": {
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "type": "object",
-                    "properties": {
-                      "message": {
-                        "type": "string",
-                        "example":  "ID tidak valid atau data tidak ditemukan"
-                      }
-                    }
-                  }
-                }
-              }
-              },
-              "500": {
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "type": "object",
-                    "properties": {
-                      "message": {
-                        "type": "string",
-                        "example":  "Terjadi kesalahan pada server"
-                      }
-                    }
-                  }
-                }
-              }
-              }
-            }
-          },
-          "delete": {
-            "summary": "Menghapus data berita tani berdasarkan ID",
-            "tags":["Info Tani"],
-            "security": [
-              {
-                "bearerToken": []
-              }
-            ],
-            "parameters": [
-              {
-                "in": "path",
-                "name": "id",
-                "required": true,
-                "schema": {
-                  "type": "integer"
-                },
-                "description": "ID data yang akan dihapus"
-              }
-            ],
-            "responses": {
-              "200": {
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "type": "object",
-                    "properties": {
-                      "message": {
-                        "type": "string",
-                        "example":  "data berhasil dihapus"
-                      }
-                    }
-                  }
-                }
-              }
-              },
-              "400": {
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "type": "object",
-                    "properties": {
-                      "message": {
-                        "type": "string",
-                        "example":  "ID tidak valid atau data tidak ditemukan"
-                      }
-                    }
-                  }
-                }
-              }
-              },
-              "500": {
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "type": "object",
-                    "properties": {
-                      "message": {
-                        "type": "string",
-                        "example":  "Terjadi kesalahan pada server"
-                      }
-                    }
-                  }
-                }
-              }
               }
             }
           }
+          },
+          "400": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "message": {
+                    "type": "string",
+                    "example":  "ID tidak valid atau data tidak ditemukan"
+                  }
+                }
+              }
+            }
+          }
+          },
+          "500": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "message": {
+                    "type": "string",
+                    "example":  "Terjadi kesalahan pada server"
+                  }
+                }
+              }
+            }
+          }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Menghapus data berita tani berdasarkan ID",
+        "tags":["Info Tani"],
+        "security": [
+          {
+            "bearerToken": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "ID data yang akan dihapus"
+          }
+        ],
+        "responses": {
+          "200": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "message": {
+                    "type": "string",
+                    "example":  "data berhasil dihapus"
+                  }
+                }
+              }
+            }
+          }
+          },
+          "400": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "message": {
+                    "type": "string",
+                    "example":  "ID tidak valid atau data tidak ditemukan"
+                  }
+                }
+              }
+            }
+          }
+          },
+          "500": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "message": {
+                    "type": "string",
+                    "example":  "Terjadi kesalahan pada server"
+                  }
+                }
+              }
+            }
+          }
+          }
+        }
+      },
+      "put": {
+        "summary": "Merubah data berita tani berdasarkan ID",
+        "tags":["Info Tani"],
+        "security": [
+          {
+            "bearerToken": []
+          }
+        ],
+      "consumes": ["multipart/form-data"],
+    "requestBody": {
+      "content": {
+        "multipart/form-data": {
+          "schema": {
+            "type": "object",
+            "properties": {
+              "judul": {
+                "type": "string"
+              },
+              "tanggal": {
+                "type": "string",
+                "format": "date"
+              },
+              "status": {
+                "type": "string"
+              },
+              "kategori": {
+                "type": "string"
+              },
+              "isi": {
+                "type": "string"
+              },
+              "fotoBerita": {
+                "type": "string",
+                "format": "binary"
+              }
+            },
+            "required": ["judul", "tanggal", "status", "kategori"]
+          }
+        }
+      }
+    },
+    "responses": {
+      "200": {
+        "description": "Info Tani Berhasil Dibuat",
+        "schema": {
+          "type": "object",
+          "properties": {
+            "message": {
+              "type": "string",
+              "example": "Info Tani Berhasil Dibuat"
+            },
+            "infoTani": {
+              "$ref": "#/components/schemas/InfoTani"
+            }
+          }
+        }
+      },
+      "400": {
+        "description": "Bad Request",
+        "schema": {
+          "type": "object",
+          "properties": {
+            "message": {
+              "type": "string",
+              "example": "Wrong Image Format"
+            }
+          }
+        }
+      },
+      "500": {
+        "description": "Server Error",
+        "schema": {
+          "type": "object",
+          "properties": {
+            "message": {
+              "type": "string",
+              "example": "Internal Server Error"
+            }
+          }
+        }
+      }
+    }
+      }
     },
     "/event-tani/{id}": {
-          "get": {
-            "summary": "Menghapus event tani berdasarkan ID",
-            "security": [
-              {
-                "bearerToken": []
-              }
-            ],
-            "tags":["Info Tani"],
-            "parameters": [
-              {
-                "in": "path",
-                "name": "id",
-                "required": true,
-                "schema": {
-                  "type": "integer"
-                },
-                "description": "ID data yang akan dihapus"
-              }
-            ],
-            "responses": {
-              "200": {
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "type": "object",
-                    "properties": {
-                      "message": {
-                        "type": "string",
-                        "example":  "data berhasil ditemukan"
-                      }
-                    }
+      "get": {
+        "summary": "Menghapus event tani berdasarkan ID",
+        "security": [
+          {
+            "bearerToken": []
+          }
+        ],
+        "tags":["Info Tani"],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "ID data yang akan dihapus"
+          }
+        ],
+        "responses": {
+          "200": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "message": {
+                    "type": "string",
+                    "example":  "data berhasil ditemukan"
                   }
                 }
-              }
-              },
-              "400": {
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "type": "object",
-                    "properties": {
-                      "message": {
-                        "type": "string",
-                        "example":  "ID tidak valid atau data tidak ditemukan"
-                      }
-                    }
-                  }
-                }
-              }
-              },
-              "500": {
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "type": "object",
-                    "properties": {
-                      "message": {
-                        "type": "string",
-                        "example":  "Terjadi kesalahan pada server"
-                      }
-                    }
-                  }
-                }
-              }
-              }
-            }
-          },
-          "delete": {
-            "summary": "Menghapus event tani berdasarkan ID",
-            "security": [
-              {
-                "bearerToken": []
-              }
-            ],
-            "tags":["Info Tani"],
-            "parameters": [
-              {
-                "in": "path",
-                "name": "id",
-                "required": true,
-                "schema": {
-                  "type": "integer"
-                },
-                "description": "ID data yang akan dicari"
-              }
-            ],
-            "responses": {
-              "200": {
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "type": "object",
-                    "properties": {
-                      "message": {
-                        "type": "string",
-                        "example":  "data berhasil ditemukan"
-                      }
-                    }
-                  }
-                }
-              }
-              },
-              "400": {
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "type": "object",
-                    "properties": {
-                      "message": {
-                        "type": "string",
-                        "example":  "ID tidak valid atau data tidak ditemukan"
-                      }
-                    }
-                  }
-                }
-              }
-              },
-              "500": {
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "type": "object",
-                    "properties": {
-                      "message": {
-                        "type": "string",
-                        "example":  "Terjadi kesalahan pada server"
-                      }
-                    }
-                  }
-                }
-              }
               }
             }
           }
+          },
+          "400": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "message": {
+                    "type": "string",
+                    "example":  "ID tidak valid atau data tidak ditemukan"
+                  }
+                }
+              }
+            }
+          }
+          },
+          "500": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "message": {
+                    "type": "string",
+                    "example":  "Terjadi kesalahan pada server"
+                  }
+                }
+              }
+            }
+          }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Menghapus event tani berdasarkan ID",
+        "security": [
+          {
+            "bearerToken": []
+          }
+        ],
+        "tags":["Info Tani"],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "ID data yang akan dicari"
+          }
+        ],
+        "responses": {
+          "200": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "message": {
+                    "type": "string",
+                    "example":  "data berhasil ditemukan"
+                  }
+                }
+              }
+            }
+          }
+          },
+          "400": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "message": {
+                    "type": "string",
+                    "example":  "ID tidak valid atau data tidak ditemukan"
+                  }
+                }
+              }
+            }
+          }
+          },
+          "500": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "message": {
+                    "type": "string",
+                    "example":  "Terjadi kesalahan pada server"
+                  }
+                }
+              }
+            }
+          }
+          }
+        }
+      },
+      "put": {
+        "summary": "Merubah data event tani berdasarkan ID",
+        "tags":["Info Tani"],
+        "security": [
+          {
+            "bearerToken": []
+          }
+        ],
+        "consumes": ["multipart/form-data"],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "namaKegiatan": {
+                    "type": "string"
+                  },
+                  "tanggalAcara": {
+                    "type": "string",
+                    "format": "date"
+                  },
+                  "waktuAcara": {
+                    "type": "string"
+                  },
+                  "tempat": {
+                    "type": "string"
+                  },
+                  "peserta": {
+                    "type": "string"
+                  },
+                  "isi": {
+                    "type": "string"
+                  },
+                  "fotoKegiatan": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                },
+                "required": ["namaKegiatan", "tanggalAcara"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Berhasil Merubah event",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "Event Berhasil di Ubah"
+                },
+                "eventTani": {
+                  "$ref": "#/components/schemas/EventTani"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "Wrong Image Format"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server Error",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "Internal Server Error"
+                }
+              }
+            }
+          }
+        }
+      }
     },
     "/daftar-tani/{id}": {
           "delete": {
@@ -2175,6 +2344,92 @@
               }
             }
           }
+    },
+    "/select-tani/{kecamatan}": {
+      "get": {
+        "summary": "Menacari Penyuluh berdasarkan Kecamantan Yang Dikirim",
+        "security": [
+          {
+            "bearerToken": []
+          }
+        ],
+        "tags": ["Select"],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "kecamatan penyuluh yang akan dicari"
+          }
+        ],
+        "responses": {
+          "200": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "message": {
+                    "type": "string",
+                    "example":  "data penyuluh berhasil ditemukan"
+                  },
+                  "penyuluh": {
+                    "type": "object",
+                    "properties":{
+                      "nama":{
+                        "type": "string",
+                        "example":  "mario fian"
+                      },
+                      "kecamatan": {
+                        "type": "string",
+                        "example":  "muara lama banget"
+                      },
+                      "role":{
+                        "type": "string",
+                        "example":  "penyuluh"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+          },
+          "400": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "message": {
+                    "type": "string",
+                    "example":  "ID tidak valid atau data tidak ditemukan"
+                  }
+                }
+              }
+            }
+          }
+          },
+          "500": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "message": {
+                    "type": "string",
+                    "example":  "Terjadi kesalahan pada server"
+                  }
+                }
+              }
+            }
+          }
+          }
+        }
+      }
     }
   },
   "components": {
