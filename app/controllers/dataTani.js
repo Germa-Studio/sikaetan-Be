@@ -217,6 +217,85 @@ const deleteDaftarTani = async(req, res)=>{
     });
   }
 }
+const dataTaniDetail = async(req, res)=>{
+  const { id } = req.params
+  try {
+    const data = await dataPerson.findOne({
+      where: {
+        id
+      }
+    });
+    res.status(200).json({
+      message: 'Petani Berhasil Di Peroleh',
+      detailTani: data
+    });  
+  } catch (error) {
+    res.status(error.statusCode || 500).json({
+      message: `gagal mendapatkan data petani, ${error.message}`,
+    });
+  }
+}
+const updateTaniDetail = async(req, res)=>{
+  const { id } = req.params
+  const {NIK, NoWa, alamat, desa, nama, kecamatan, password } = req.body
+
+  try {
+    const data = await dataPerson.findOne({
+      where: {
+        id
+      }
+    });
+    if(!data) throw new ApiError(400, 'data tidak ditemukan.');
+    const { file, } = req;
+    if (file) {
+      const validFormat =
+        file.mimetype === 'image/png' ||
+        file.mimetype === 'image/jpg' ||
+        file.mimetype === 'image/jpeg' ||
+        file.mimetype === 'image/gif';
+      if (!validFormat) {
+        return res.status(400).json({
+          status: 'failed',
+          message: 'Wrong Image Format',
+        });
+      }
+      const split = file.originalname.split('.');
+      const ext = split[split.length - 1];
+
+      // upload file ke imagekit
+      const img = await imageKit.upload({
+        file: file.buffer,
+        fileName: `IMG-${Date.now()}.${ext}`,
+      });
+      await dataPerson.update({
+        NIK, NoWa, alamat, desa, nama, kecamatan, password, foto: img.url
+      },{
+        where: {
+          id
+        }
+      });
+      return res.status(200).json({
+          message: 'Petani Berhasil Di update',
+          detailTani: data
+        });
+    }
+    await dataPerson.update({
+      NIK, NoWa, alamat, desa, nama, kecamatan, password
+    },{
+      where: {
+        id
+      }
+    });
+    res.status(200).json({
+      message: 'Petani Berhasil Di update',
+      detailTani: data
+    });  
+  } catch (error) {
+    res.status(error.statusCode || 500).json({
+      message: `gagal update data petani`,
+    });
+  }
+}
 
 
 module.exports = {
@@ -225,5 +304,7 @@ module.exports = {
   tambahDaftarTani,
   tambahLaporanTani,
   daftarTani,
-  deleteDaftarTani
+  deleteDaftarTani,
+  dataTaniDetail,
+  updateTaniDetail
 }

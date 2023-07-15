@@ -2208,42 +2208,94 @@
       }
     },
     "/daftar-tani/{id}": {
-          "delete": {
-            "summary": "Menghapus event tani berdasarkan ID",
-            "security": [
-              {
-                "bearerToken": []
-              }
-            ],
-            "tags":["Data Tani"],
-            "parameters": [
-              {
-                "in": "path",
-                "name": "id",
-                "required": true,
+        "delete": {
+          "summary": "Menghapus event tani berdasarkan ID",
+          "security": [
+            {
+              "bearerToken": []
+            }
+          ],
+          "tags":["Data Tani"],
+          "parameters": [
+            {
+              "in": "path",
+              "name": "id",
+              "required": true,
+              "schema": {
+                "type": "integer"
+              },
+              "description": "ID data yang akan dicari"
+            }
+          ],
+          "responses": {
+            "200": {
+            "content": {
+              "application/json": {
                 "schema": {
-                  "type": "integer"
-                },
-                "description": "ID data yang akan dicari"
-              }
-            ],
-            "responses": {
-              "200": {
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "type": "object",
-                    "properties": {
-                      "message": {
-                        "type": "string",
-                        "example":  "data petani berhasil dihapus"
-                      }
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example":  "data petani berhasil dihapus"
                     }
                   }
                 }
               }
+            }
+            },
+            "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example":  "ID tidak valid atau data tidak ditemukan"
+                    }
+                  }
+                }
+              }
+            }
+            },
+            "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example":  "Terjadi kesalahan pada server"
+                    }
+                  }
+                }
+              }
+            }
+            }
+          }
+        },
+        "get": {
+          "summary": "Mendapatkan detail petani berdasarkan ID",
+          "security": [
+            {
+              "bearerToken": []
+            }
+          ],
+          "tags": ["Data Tani"],
+          "parameters": [
+            {
+              "in": "path",
+              "name": "id",
+              "required": true,
+              "schema": {
+                "type": "integer"
               },
-              "400": {
+              "description": "ID data petani yang akan dicari"
+            }
+          ],
+          "responses": {
+            "200": {
               "content": {
                 "application/json": {
                   "schema": {
@@ -2251,14 +2303,55 @@
                     "properties": {
                       "message": {
                         "type": "string",
-                        "example":  "ID tidak valid atau data tidak ditemukan"
+                        "example": "Detail petani berhasil ditemukan"
+                      },
+                        "detailTani": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "integer",
+                              "example": 2
+                            },
+                            "NIK": {
+                              "type": "string",
+                              "example": "3514112401950003"
+                            },
+                            "NoWa": {
+                              "type": "string",
+                              "example": "085795343099"
+                            },
+                            "alamat": {
+                              "type": "string",
+                              "example": "Link Kuti 02 RT 01 RW 04 Pandaan"
+                            },
+                            "desa": {
+                              "type": "string",
+                              "example": "Kutorejo"
+                            },
+                            "nama": {
+                              "type": "string",
+                              "example": "MUHAMMAD NURIL YAQIN"
+                            },
+                            "kecamatan": {
+                              "type": "string",
+                              "example": "Pandaan"
+                            },
+                            "password": {
+                              "type": "string",
+                              "example": "123456789"
+                            },
+                            "foto": {
+                              "type": "string",
+                              "example": null
+                            }
+                          }
+                        }
                       }
                     }
                   }
                 }
-              }
               },
-              "500": {
+            "400": {
               "content": {
                 "application/json": {
                   "schema": {
@@ -2266,15 +2359,139 @@
                     "properties": {
                       "message": {
                         "type": "string",
-                        "example":  "Terjadi kesalahan pada server"
+                        "example": "ID tidak valid atau data tidak ditemukan"
                       }
                     }
                   }
                 }
               }
+            },
+            "500": {
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "message": {
+                        "type": "string",
+                        "example": "Terjadi kesalahan pada server"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }},
+        "put": {
+          "summary": "Memperbarui detail petani berdasarkan ID",
+          "security": [
+            {
+              "bearerToken": []
+            }
+          ],
+          "tags": ["Data Tani"],
+          "parameters": [
+            {
+              "in": "path",
+              "name": "id",
+              "required": true,
+              "schema": {
+                "type": "integer"
+              },
+              "description": "ID data petani yang akan diperbarui"
+            }
+          ],
+          "requestBody": {
+            "content": {
+              "multipart/form-data": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "NIK": {
+                      "type": "string",
+                      "example": "3514112401950003"
+                    },
+                    "NoWa": {
+                      "type": "string",
+                      "example": "085795343099"
+                    },
+                    "alamat": {
+                      "type": "string",
+                      "example": "Link Kuti 02 RT 01 RW 04 Pandaan"
+                    },
+                    "desa": {
+                      "type": "string",
+                      "example": "Kutorejo"
+                    },
+                    "nama": {
+                      "type": "string",
+                      "example": "MUHAMMAD NURIL YAQIN"
+                    },
+                    "kecamatan": {
+                      "type": "string",
+                      "example": "Pandaan"
+                    },
+                    "password": {
+                      "type": "string",
+                      "example": "123456789"
+                    },
+                    "foto": {
+                      "type": "string",
+                      "format": "binary"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "message": {
+                        "type": "string",
+                        "example": "Detail petani berhasil diperbarui"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "400": {
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "message": {
+                        "type": "string",
+                        "example": "ID tidak valid atau data tidak ditemukan"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "500": {
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "message": {
+                        "type": "string",
+                        "example": "Terjadi kesalahan pada server"
+                      }
+                    }
+                  }
+                }
               }
             }
           }
+        }
     },
     "/daftar-penyuluh/{id}": {
           "delete": {
@@ -2431,7 +2648,7 @@
         }
       }
     }
-  },
+},
   "components": {
     "schemas": {
       "User": {
@@ -2670,3 +2887,4 @@
     }
   }
 }
+

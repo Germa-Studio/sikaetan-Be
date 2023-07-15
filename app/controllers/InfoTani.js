@@ -271,7 +271,6 @@ const updateEventTani = async(req, res)=>{
       waktuAcara,
       tempat,
       peserta,
-      fotoKegiatan,
       createdBy,
       isi
     } = req.body
@@ -282,13 +281,43 @@ const updateEventTani = async(req, res)=>{
       }
     });
     if(!data) throw new ApiError(400, 'data tidak ditemukan.');
+    const { file, } = req;
+    if (file) {
+      const validFormat =
+        file.mimetype === 'image/png' ||
+        file.mimetype === 'image/jpg' ||
+        file.mimetype === 'image/jpeg' ||
+        file.mimetype === 'image/gif';
+      if (!validFormat) {
+        return res.status(400).json({
+          status: 'failed',
+          message: 'Wrong Image Format',
+        });
+      }
+      const split = file.originalname.split('.');
+      const ext = split[split.length - 1];
+
+      // upload file ke imagekit
+      const img = await imageKit.upload({
+        file: file.buffer,
+        fileName: `IMG-${Date.now()}.${ext}`,
+      });
+      await EventTani.update(  
+        { 
+          namaKegiatan,tanggalAcara,waktuAcara,tempat,peserta,fotoKegiatan:img.url,createdBy,isi
+        },
+        { where: { id: eventId } })
+      return res.status(200).json({
+        message: 'Event Tani Berhasil Di ubah',
+      });
+    }
     await EventTani.update(  
       { 
-        namaKegiatan,tanggalAcara,waktuAcara,tempat,peserta,fotoKegiatan,createdBy,isi
+        namaKegiatan,tanggalAcara,waktuAcara,tempat,peserta,createdBy,isi
       },
-      { where: { id: beritaId } })
+      { where: { id: eventId } })
     res.status(200).json({
-      message: 'event Tani Berhasil DI update',
+      message: 'Event Tani Berhasil DI update',
     });  
   } catch (error) {
     res.status(error.statusCode || 500).json({
