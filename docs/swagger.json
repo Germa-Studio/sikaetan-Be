@@ -11,7 +11,7 @@
       "description": "Development Server"
     },
     {
-      "url": "https://siketan-api.up.railway.app",
+      "url": "https://siketan-api.cyclic.app/",
       "description": "Staging Server"
     }
   ],
