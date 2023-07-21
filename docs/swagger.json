@@ -1277,24 +1277,29 @@
         ],
         "requestBody": {
           "content": {
-            "application/json": {
+            "multipart/form-data": {
               "schema": {
                 "type": "object",
                 "properties": {
                   "NIP": {
-                    "type": "string"
+                    "type": "string",
+                    "example":"3514112401950003"
                   },
                   "tanggalPresensi": {
                     "type": "string",
-                    "format": "date"
+                    "format": "date",
+                    "example":"2023-07-18"
                   },
-                  "jamKedatangan": {
+                  "judulKegiatan": {
                     "type": "string",
-                    "format": "time"
+                    "example":"penyuluhan membantai hama"
                   },
-                  "jamPulang": {
+                  "deskripsiKegiatan": {
                     "type": "string",
-                    "format": "time"
+                    "example":"memberikan edukasi bagaimana cara pengguanaan product pembantai hama"
+                  },
+                  "FotoKegiatan": {
+                    "type": "file"
                   }
                 }
               }
@@ -2644,6 +2649,680 @@
               }
             }
           }
+          }
+        }
+      }
+    },
+    "/tanaman-petani": {
+      "post": {
+        "tags": ["Data Tani"],
+        "summary": "Menambahkan Tanaman tani",
+        "security": [
+          {
+            "bearerToken": []
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "dataPersonId": {
+                    "type": "number",
+                    "example":"2"
+                  },
+                  "statusLahan": {
+                    "type": "string",
+                    "example":"milik sendiri"
+                  },
+                  "luasLahan": {
+                    "type": "string",
+                    "example":"200 M2"
+                  },
+                  "kategori": {
+                    "type": "string",
+                    "example":"Tanaman Pangan"
+                  },
+                    "jenis": {
+                      "type": "string",
+                      "example": "Contoh Jenis"
+                    },
+                    "janisPanen": {
+                      "type": "string",
+                      "example": "Contoh Jenis Panen"
+                    },
+                    "komoditas": {
+                      "type": "string",
+                      "example": "Contoh Komoditas"
+                    },
+                    "musimTanam": {
+                      "type": "integer",
+                      "example": 1
+                    },
+                    "tanggalTanam": {
+                      "type": "string",
+                      "example": "2023-07-18"
+                    },
+                    "perkiraanPanen": {
+                      "type": "string",
+                      "example": "2023-12-31"
+                    },
+                    "perkiraanHasilPanen": {
+                      "type": "integer",
+                      "example": 100
+                    },
+                    "realisasiHasilPanen": {
+                      "type": "integer",
+                      "example": 80
+                    }
+                },
+                "required": ["dataPersonId", "statusLahan", "luasLahan", "kategori", "jenis", "janisPanen", "komoditas", "musimTanam", "tanggalTanam", "perkiraanPanen", "perkiraanHasilPanen", "realisasiHasilPanen"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Berhasil menambahkan Tanaman Petani",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Berhasil Menambahkan Tanaman Petani"
+                    },
+                    "dataTanamanPetani": {
+                      "type": "object",
+                      "properties": {
+                        "dataPersonId": {
+                          "type": "number",
+                          "example":"2"
+                        },
+                        "statusLahan": {
+                          "type": "string",
+                          "example":"milik sendiri"
+                        },
+                        "luasLahan": {
+                          "type": "string",
+                          "example":"200 M2"
+                        },
+                        "kategori": {
+                          "type": "string",
+                          "example":"Tanaman Pangan"
+                        },
+                          "jenis": {
+                            "type": "string",
+                            "example": "Contoh Jenis"
+                          },
+                          "janisPanen": {
+                            "type": "string",
+                            "example": "Contoh Jenis Panen"
+                          },
+                          "komoditas": {
+                            "type": "string",
+                            "example": "Contoh Komoditas"
+                          },
+                          "musimTanam": {
+                            "type": "integer",
+                            "example": 2023
+                          },
+                          "tanggalTanam": {
+                            "type": "string",
+                            "example": "2023-07-18"
+                          },
+                          "perkiraanPanen": {
+                            "type": "string",
+                            "example": "2023-12-31"
+                          },
+                          "perkiraanHasilPanen": {
+                            "type": "integer",
+                            "example": 100
+                          },
+                          "realisasiHasilPanen": {
+                            "type": "integer",
+                            "example": 80
+                          }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "NIK tidak boleh kosong"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Internal Server Error"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tanaman-petani/{id}": {
+      "get": {
+        "tags": ["Data Tani"],
+        "summary": "Mencari Tanaman Petani Berdasarkan Id Petani",
+        "security": [
+          {
+            "bearerToken": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "ID Petani yang akan dicari tanaman Petaninya"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Berhasil mendapatkan Tanaman Petani",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Berhasil mendapatkan Tanaman Petani"
+                    },
+                    "dataTanamanPetani": {
+                      "type": "object",
+                      "properties": {
+                        "dataPersonId": {
+                          "type": "number",
+                          "example":"2"
+                        },
+                        "statusLahan": {
+                          "type": "string",
+                          "example":"milik sendiri"
+                        },
+                        "luasLahan": {
+                          "type": "string",
+                          "example":"200 M2"
+                        },
+                        "kategori": {
+                          "type": "string",
+                          "example":"Tanaman Pangan"
+                        },
+                          "jenis": {
+                            "type": "string",
+                            "example": "Contoh Jenis"
+                          },
+                          "janisPanen": {
+                            "type": "string",
+                            "example": "Contoh Jenis Panen"
+                          },
+                          "komoditas": {
+                            "type": "string",
+                            "example": "Contoh Komoditas"
+                          },
+                          "musimTanam": {
+                            "type": "integer",
+                            "example": 2023
+                          },
+                          "tanggalTanam": {
+                            "type": "string",
+                            "example": "2023-07-18"
+                          },
+                          "perkiraanPanen": {
+                            "type": "string",
+                            "example": "2023-12-31"
+                          },
+                          "perkiraanHasilPanen": {
+                            "type": "integer",
+                            "example": 100
+                          },
+                          "realisasiHasilPanen": {
+                            "type": "integer",
+                            "example": 80
+                          }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "field tidak boleh kosong"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Internal Server Error"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": ["Data Tani"],
+        "summary": "Merubah Tanaman petani berdasarkan id",
+        "security": [
+          {
+            "bearerToken": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "ID tanaman yang akan di ubah"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "dataPersonId": {
+                    "type": "number",
+                    "example":"2"
+                  },
+                  "statusLahan": {
+                    "type": "string",
+                    "example":"milik sendiri"
+                  },
+                  "luasLahan": {
+                    "type": "string",
+                    "example":"200 M2"
+                  },
+                  "kategori": {
+                    "type": "string",
+                    "example":"Tanaman Pangan"
+                  },
+                    "jenis": {
+                      "type": "string",
+                      "example": "Contoh Jenis"
+                    },
+                    "janisPanen": {
+                      "type": "string",
+                      "example": "Contoh Jenis Panen"
+                    },
+                    "komoditas": {
+                      "type": "string",
+                      "example": "Contoh Komoditas"
+                    },
+                    "musimTanam": {
+                      "type": "integer",
+                      "example": 1
+                    },
+                    "tanggalTanam": {
+                      "type": "string",
+                      "example": "2023-07-18"
+                    },
+                    "perkiraanPanen": {
+                      "type": "string",
+                      "example": "2023-12-31"
+                    },
+                    "perkiraanHasilPanen": {
+                      "type": "integer",
+                      "example": 100
+                    },
+                    "realisasiHasilPanen": {
+                      "type": "integer",
+                      "example": 80
+                    }
+                },
+                "required": ["dataPersonId", "statusLahan", "luasLahan", "kategori", "jenis", "janisPanen", "komoditas", "musimTanam", "tanggalTanam", "perkiraanPanen", "perkiraanHasilPanen", "realisasiHasilPanen"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Berhasil Mengubah Tanaman Petani",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Berhasil Mengubah Tanaman Petani"
+                    },
+                    "dataTanamanPetani": {
+                      "type": "object",
+                      "properties": {
+                        "dataPersonId": {
+                          "type": "number",
+                          "example":"2"
+                        },
+                        "statusLahan": {
+                          "type": "string",
+                          "example":"milik sendiri"
+                        },
+                        "luasLahan": {
+                          "type": "string",
+                          "example":"200 M2"
+                        },
+                        "kategori": {
+                          "type": "string",
+                          "example":"Tanaman Pangan"
+                        },
+                          "jenis": {
+                            "type": "string",
+                            "example": "Contoh Jenis"
+                          },
+                          "janisPanen": {
+                            "type": "string",
+                            "example": "Contoh Jenis Panen"
+                          },
+                          "komoditas": {
+                            "type": "string",
+                            "example": "Contoh Komoditas"
+                          },
+                          "musimTanam": {
+                            "type": "integer",
+                            "example": 2023
+                          },
+                          "tanggalTanam": {
+                            "type": "string",
+                            "example": "2023-07-18"
+                          },
+                          "perkiraanPanen": {
+                            "type": "string",
+                            "example": "2023-12-31"
+                          },
+                          "perkiraanHasilPanen": {
+                            "type": "integer",
+                            "example": 100
+                          },
+                          "realisasiHasilPanen": {
+                            "type": "integer",
+                            "example": 80
+                          }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "field tidak boleh kosong"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Internal Server Error"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+        "delete": {
+          "summary": "Menghapus tanaman petani berdasarkan ID",
+          "security": [
+            {
+              "bearerToken": []
+            }
+          ],
+          "tags":["Data Tani"],
+          "parameters": [
+            {
+              "in": "path",
+              "name": "id",
+              "required": true,
+              "schema": {
+                "type": "integer"
+              },
+              "description": "ID tanaman petani yang akan hapus"
+            }
+          ],
+          "responses": {
+            "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example":  "data tanaman petani berhasil dihapus"
+                    }
+                  }
+                }
+              }
+            }
+            },
+            "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example":  "ID tidak valid atau data tidak ditemukan"
+                    }
+                  }
+                }
+              }
+            }
+            },
+            "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example":  "Terjadi kesalahan pada server"
+                    }
+                  }
+                }
+              }
+            }
+            }
+          }
+        }
+    },
+    "/tanaman-petani/detail/{id}": {
+      "get": {
+        "tags": ["Data Tani"],
+        "summary": "Mencari Tanaman Petani Berdasarkan Id",
+        "security": [
+          {
+            "bearerToken": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "ID tanaman yang akan dicari"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Berhasil mendapatkan Tanaman Petani",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Berhasil mendapatkan Tanaman Petani"
+                    },
+                    "dataTanamanPetani": {
+                      "type": "object",
+                      "properties": {
+                        "dataPersonId": {
+                          "type": "number",
+                          "example":"2"
+                        },
+                        "statusLahan": {
+                          "type": "string",
+                          "example":"milik sendiri"
+                        },
+                        "luasLahan": {
+                          "type": "string",
+                          "example":"200 M2"
+                        },
+                        "kategori": {
+                          "type": "string",
+                          "example":"Tanaman Pangan"
+                        },
+                          "jenis": {
+                            "type": "string",
+                            "example": "Contoh Jenis"
+                          },
+                          "janisPanen": {
+                            "type": "string",
+                            "example": "Contoh Jenis Panen"
+                          },
+                          "komoditas": {
+                            "type": "string",
+                            "example": "Contoh Komoditas"
+                          },
+                          "musimTanam": {
+                            "type": "integer",
+                            "example": 2023
+                          },
+                          "tanggalTanam": {
+                            "type": "string",
+                            "example": "2023-07-18"
+                          },
+                          "perkiraanPanen": {
+                            "type": "string",
+                            "example": "2023-12-31"
+                          },
+                          "perkiraanHasilPanen": {
+                            "type": "integer",
+                            "example": 100
+                          },
+                          "realisasiHasilPanen": {
+                            "type": "integer",
+                            "example": 80
+                          }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "field tidak boleh kosong"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Internal Server Error"
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }

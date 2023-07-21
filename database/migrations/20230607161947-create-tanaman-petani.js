@@ -9,6 +9,9 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER
       },
+      dataPersonId:{
+        type: Sequelize.INTEGER
+      },
       statusLahan: {
         type: Sequelize.STRING
       },
@@ -21,6 +24,9 @@ module.exports = {
       jenis: {
         type: Sequelize.STRING
       },
+      janisPanen: {
+        type: Sequelize.STRING
+      },
       komoditas: {
         type: Sequelize.STRING
       },
@@ -28,10 +34,10 @@ module.exports = {
         type: Sequelize.INTEGER
       },
       tanggalTanam: {
-        type: Sequelize.DATE
+        type: Sequelize.STRING
       },
       perkiraanPanen: {
-        type: Sequelize.DATE
+        type: Sequelize.STRING
       },
       perkiraanHasilPanen: {
         type: Sequelize.INTEGER

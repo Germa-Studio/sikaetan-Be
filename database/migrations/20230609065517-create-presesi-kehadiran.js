@@ -9,13 +9,19 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER
       },
+      dataPersonId:{
+        type: Sequelize.INTEGER
+      },
       tanggalPresesi: {
         type: Sequelize.DATE
       },
-      jamKedatangan: {
+      judulKegiatan: {
         type: Sequelize.STRING
       },
-      jamPulang: {
+      deskripsiKegiatan: {
+        type: Sequelize.STRING
+      },
+      FotoKegiatan: {
         type: Sequelize.STRING
       },
       createdAt: {

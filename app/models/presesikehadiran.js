@@ -11,13 +11,15 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      this.hasOne(models.dataPerson, { foreignKey: 'presesiKehadiranId' });
+      this.belongsTo(models.dataPerson, { foreignKey: 'dataPersonId' });
     }
   }
   presesiKehadiran.init({
+    dataPersonId: DataTypes.INTEGER,
     tanggalPresesi: DataTypes.DATE,
-    jamKedatangan: DataTypes.STRING,
-    jamPulang: DataTypes.STRING
+    judulKegiatan: DataTypes.STRING,
+    deskripsiKegiatan: DataTypes.STRING,
+    FotoKegiatan: DataTypes.STRING,
   }, {
     sequelize,
     modelName: 'presesiKehadiran',

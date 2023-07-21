@@ -11,18 +11,21 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      this.hasOne(models.dataPerson, { foreignKey: 'tanamanPetaniId' });
+      this.hasMany(models.laporanTanam, { foreignKey: 'tanamanPetaniId' });
+      this.belongsTo(models.dataPerson, { foreignKey: 'dataPersonId' });
     }
   }
   tanamanPetani.init({
+    dataPersonId: DataTypes.INTEGER,
     statusLahan: DataTypes.STRING,
     luasLahan: DataTypes.STRING,
     kategori: DataTypes.STRING,
     jenis: DataTypes.STRING,
+    janisPanen: DataTypes.STRING,
     komoditas: DataTypes.STRING,
     musimTanam: DataTypes.INTEGER,
-    tanggalTanam: DataTypes.DATE,
-    perkiraanPanen: DataTypes.DATE,
+    tanggalTanam: DataTypes.STRING,
+    perkiraanPanen: DataTypes.STRING,
     perkiraanHasilPanen: DataTypes.INTEGER,
     realisasiHasilPanen: DataTypes.INTEGER
   }, {

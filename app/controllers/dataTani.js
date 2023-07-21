@@ -297,6 +297,153 @@ const updateTaniDetail = async(req, res)=>{
   }
 }
 
+const getTanamanPetani =  async(req, res)=>{
+  const { id } = req.params
+  try {
+    const data = await dataPerson.findOne({
+      include: [
+        {
+          model: kelompok,
+        },
+        {
+          model: tanamanPetani,
+        },
+      ],
+      where: {
+        role:"petani",
+        id
+      },
+    });
+    res.status(200).json({
+      message: 'Data laporan Tani Berhasil Diperoleh',
+      tani:data
+    });  
+  } catch (error) {
+    res.status(error.statusCode || 500).json({
+      message: error.message,
+    });
+  }
+}
+const tambahTanamanPetani = async(req, res)=>{
+  try {
+    const {
+      dataPersonId,
+      statusLahan,
+      luasLahan,
+      kategori,
+      jenis,
+      janisPanen,
+      komoditas,
+      musimTanam,
+      tanggalTanam,
+      perkiraanPanen,
+      perkiraanHasilPanen,
+      realisasiHasilPanen
+    } = req.body
+    if(!dataPersonId || !statusLahan || !luasLahan || !kategori || !jenis || !janisPanen || !komoditas || !musimTanam || !tanggalTanam || !perkiraanPanen || !perkiraanHasilPanen || !realisasiHasilPanen){
+      throw new ApiError(400, "Field harus Di isi")
+    }
+    const data = await dataPerson.findOne({
+      where: {
+        role:"petani",
+        id: dataPersonId
+      }
+    });
+    if(!data){
+      throw new ApiError(400, "data petani tidak sesuai")
+    }
+    const dataTanamanPetani = await tanamanPetani.create({realisasiHasilPanen, perkiraanHasilPanen, perkiraanPanen,tanggalTanam,musimTanam,komoditas, janisPanen, jenis, kategori, dataPersonId, statusLahan, luasLahan, })
+    res.status(200).json({
+      message: 'Berhasil Menambahkan Tanaman Petani',
+      dataTanamanPetani
+    });  
+  } catch (error) {
+    res.status(error.statusCode || 500).json({
+      message: error.message,
+    });
+  }
+}
+const ubahTanamanPetaniById = async(req, res)=>{
+  try {
+    const {id}= req.params
+    const {
+      statusLahan,
+      luasLahan,
+      kategori,
+      jenis,
+      janisPanen,
+      komoditas,
+      musimTanam,
+      tanggalTanam,
+      perkiraanPanen,
+      perkiraanHasilPanen,
+      realisasiHasilPanen
+    } = req.body
+    if(!statusLahan || !luasLahan || !kategori || !jenis || !janisPanen || !komoditas || !musimTanam || !tanggalTanam || !perkiraanPanen || !perkiraanHasilPanen || !realisasiHasilPanen){
+      throw new ApiError(400, "Field harus Di isi")
+    }
+    const data = await tanamanPetani.findOne({
+      where: {
+        id
+      }
+    });
+    if(!data){
+      throw new ApiError(400, "data petani tidak sesuai")
+    }
+    await tanamanPetani.update({realisasiHasilPanen, perkiraanHasilPanen, perkiraanPanen,tanggalTanam,musimTanam,komoditas, janisPanen, jenis, kategori, statusLahan, luasLahan},{
+      where:{id}
+    })
+    res.status(200).json({
+      message: 'Berhasil Merubah Tanaman Petani',
+    });  
+  } catch (error) {
+    res.status(error.statusCode || 500).json({
+      message: error.message,
+    });
+  }
+}
+const getTanamanPetaniById = async(req, res)=>{
+  const { id } = req.params
+  try {
+    const data = await tanamanPetani.findOne({
+      where: {
+        id,
+      },
+    });
+    res.status(200).json({
+      message: 'Data laporan Tani Berhasil Diperoleh',
+      tani:data
+    });  
+  } catch (error) {
+    res.status(error.statusCode || 500).json({
+      message: error.message,
+    });
+  }
+}
+const deleteTanamanPetaniById = async(req, res)=>{
+  const { id } = req.params
+  try {
+    const data = await tanamanPetani.findOne({
+      where: {
+        id
+      }
+    });
+    if(!data) throw new ApiError(400, 'data tidak ditemukan.');
+    await tanamanPetani.destroy({
+      where: {
+        id
+      }
+    });
+    res.status(200).json({
+      message: 'Tanaman Petani Berhasil Di Hapus',
+    });  
+  } catch (error) {
+    res.status(error.statusCode || 500).json({
+      message: `gagal menghapus data Tanaman petani`,
+    });
+  }
+}
+
 
 module.exports = {
   laporanPetani,
@@ -306,5 +453,10 @@ module.exports = {
   daftarTani,
   deleteDaftarTani,
   dataTaniDetail,
-  updateTaniDetail
+  updateTaniDetail,
+  getTanamanPetani,
+  tambahTanamanPetani,
+  getTanamanPetaniById,
+  ubahTanamanPetaniById,
+  deleteTanamanPetaniById
 }

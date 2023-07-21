@@ -9,6 +9,9 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER
       },
+      tanamanPetaniId:{
+        type: Sequelize.INTEGER
+      },
       tanggalLaporan: {
         type: Sequelize.DATE
       },

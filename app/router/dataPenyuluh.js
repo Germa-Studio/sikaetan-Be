@@ -13,7 +13,7 @@ const {
 } = require('../controllers/dataPenyuluh');
 
 router.post('/penyuluh/add', upload.single('foto') ,tambahDataPenyuluh);
-router.post('/presensi-kehadiran/add', tambahPresensiKehadiran);
+router.post('/presensi-kehadiran/add',upload.single('FotoKegiatan'), tambahPresensiKehadiran);
 router.post('/jurnal-kegiatan/add',upload.single('gambar'), tambahJurnalKegiatan);
 router.get('/presensi-kehadiran', presensiKehadiran);
 router.get('/jurnal-kegiatan', jurnalKegiatan);

@@ -60,6 +60,45 @@ const tambahDataPenyuluh = async(req, res)=>{
   }
 
 }
+const daftarPenyuluh = async(req, res)=>{
+  try {
+    const dataDaftarPenyuluh = await dataPerson.findAll({where:{role:"penyuluh"},include:[{model:dataPenyuluh}]});
+    res.status(200).json({
+      message: 'Semua Data Riwayat Chat',
+      dataDaftarPenyuluh
+    });  
+  } catch (error) {
+    res.status(error.statusCode || 500).json({
+      message: error.message,
+      O:"kkkkkkkkkkkkk"
+    });
+  }
+}
+const deleteDaftarPenyuluh = async(req, res)=>{
+  const { id } = req.params
+  try {
+    const data = await dataPerson.findOne({
+      where: {
+        id
+      }
+    });
+    if(!data) throw new ApiError(400, 'data tidak ditemukan.');
+    await dataPerson.destroy({
+      where: {
+        id
+      }
+    });
+    res.status(200).json({
+      message: 'Petani Berhasil Di Hapus',
+    });  
+  } catch (error) {
+    res.status(error.statusCode || 500).json({
+      message: `gagal menghapus data petani, ${error.message}`,
+    });
+  }
+}
+
+// presensi Kehadiran
 const presensiKehadiran = async(req, res)=>{
   try {
     const DataPresesiKehadiran = await dataPerson.findAll({include:[{model:presesiKehadiran, required:true}, {model:dataPenyuluh}]});
@@ -76,23 +115,44 @@ const presensiKehadiran = async(req, res)=>{
 const tambahPresensiKehadiran = async(req, res)=>{
   try {
    const {
-    NIP,
+    NIP="",
     tanggalPresesi,
-    jamKedatangan,
-    jamPulang
+    judulKegiatan,
+    deskripsiKegiatan,
     } = req.body
-    const tani = await dataPerson.findOne({ where: { NIP, }, });
-    if(!tani) throw new ApiError(400, "NIP Tidak Ditemukan")
-    const newPresesiKehadiran = await presesiKehadiran.create({tanggalPresesi, jamKedatangan, jamPulang })
-    await dataPerson.update({presesiKehadiranId:newPresesiKehadiran.id},{
-      where: {
-        NIP
+    const {file} = req
+    console.log(NIP, tanggalPresesi, judulKegiatan,deskripsiKegiatan)
+    const penyuluh = await dataPerson.findOne({ where: { NIP, }, });
+
+    if(!penyuluh) throw new ApiError(400, `Penyulih dengan NIP ${NIP} Tidak Ditemukan`)
+    if (file) {
+      const validFormat =
+        file.mimetype === 'image/png' ||
+        file.mimetype === 'image/jpg' ||
+        file.mimetype === 'image/jpeg' ||
+        file.mimetype === 'image/gif';
+      if (!validFormat) {
+        return res.status(400).json({
+          status: 'failed',
+          message: 'Wrong Image Format',
+        });
       }
-    })
-    const newData = await dataPerson.findOne({ where: { NIP, }, include:[{model:presesiKehadiran, required:true}, {model:dataPenyuluh}]});
+      const split = file.originalname.split('.');
+      const ext = split[split.length - 1];
+
+      // upload file ke imagekit
+      const img = await imageKit.upload({
+        file: file.buffer,
+        fileName: `IMG-${Date.now()}.${ext}`,
+      });
+      await presesiKehadiran.create({dataPersonId:penyuluh.id,tanggalPresesi, judulKegiatan, deskripsiKegiatan, FotoKegiatan: img.url })
+      return res.status(200).json({
+        message: 'Brhasil menambhakan Data Presensi Kehadiran',
+      });  
+    }
+    await presesiKehadiran.create({dataPersonId:penyuluh.id,tanggalPresesi, judulKegiatan, deskripsiKegiatan})
     res.status(200).json({
       message: 'Brhasil menambhakan Data Presensi Kehadiran',
-      newData
     });  
   } catch (error) {
     res.status(error.statusCode || 500).json({
@@ -101,6 +161,7 @@ const tambahPresensiKehadiran = async(req, res)=>{
   }
 }
 
+// Jurnal Kegiatan
 const jurnalKegiatan = async(req, res)=>{
   try {
     const newData = await dataPerson.findAll({include:[{model:jurnalHarian, required:true}, {model:dataPenyuluh}]});
@@ -168,7 +229,7 @@ const tambahJurnalKegiatan = async(req, res)=>{
   }
 }
 
-
+// riwayat chat
 const RiwayatChat = async(req, res)=>{
   try {
     const dataRiwayatChat = await dataPerson.findAll({include:[{model:riwayatChat, required:true}, {model:dataPenyuluh}]});
@@ -179,43 +240,6 @@ const RiwayatChat = async(req, res)=>{
   } catch (error) {
     res.status(error.statusCode || 500).json({
       message: error.message,
-    });
-  }
-}
-const daftarPenyuluh = async(req, res)=>{
-  try {
-    const dataDaftarPenyuluh = await dataPerson.findAll({where:{role:"penyuluh"},include:[{model:dataPenyuluh}]});
-    res.status(200).json({
-      message: 'Semua Data Riwayat Chat',
-      dataDaftarPenyuluh
-    });  
-  } catch (error) {
-    res.status(error.statusCode || 500).json({
-      message: error.message,
-      O:"kkkkkkkkkkkkk"
-    });
-  }
-}
-const deleteDaftarPenyuluh = async(req, res)=>{
-  const { id } = req.params
-  try {
-    const data = await dataPerson.findOne({
-      where: {
-        id
-      }
-    });
-    if(!data) throw new ApiError(400, 'data tidak ditemukan.');
-    await dataPerson.destroy({
-      where: {
-        id
-      }
-    });
-    res.status(200).json({
-      message: 'Petani Berhasil Di Hapus',
-    });  
-  } catch (error) {
-    res.status(error.statusCode || 500).json({
-      message: `gagal menghapus data petani, ${error.message}`,
     });
   }
 }

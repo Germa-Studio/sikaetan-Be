@@ -11,9 +11,7 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here tanamanPetani
-      this.belongsTo(models.tanamanPetani, { foreignKey: 'tanamanPetaniId' });
       this.belongsTo(models.kelompok, { foreignKey: 'kelompokId' });
-      this.belongsTo(models.laporanTanam, { foreignKey: 'laporanTanamId' });
       this.hasMany(models.dataPenyuluh, { foreignKey: 'dataPersonId' });
       this.hasMany(models.penjual, { foreignKey: 'dataPersonId'});
       this.hasOne(models.chatt, {  as: 'from',foreignKey: 'dari' });
@@ -22,7 +20,8 @@ module.exports = (sequelize, DataTypes) => {
       this.belongsTo(models.jurnalHarian, { foreignKey: 'jurnalKegiatanId' });
       this.belongsTo(models.riwayatChat, { foreignKey: 'riwayatChatId' });
       this.belongsTo(models.responseRating, { foreignKey: 'responseRatingId' });
-      this.belongsTo(models.presesiKehadiran, { foreignKey: 'presesiKehadiranId' });
+      this.hasMany(models.tanamanPetani, { foreignKey: 'dataPersonId' });
+      this.hasMany(models.presesiKehadiran, { foreignKey: 'dataPersonId' });
     }
   }
   dataPerson.init({

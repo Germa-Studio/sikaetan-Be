@@ -11,10 +11,11 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      this.hasOne(models.dataPerson, { foreignKey: 'laporanTanamId' });
+      this.belongsTo(models.tanamanPetani, { foreignKey: 'tanamanPetaniId' });
     }
   }
   laporanTanam.init({
+    tanamanPetaniId : DataTypes.INTEGER,
     tanggalLaporan: DataTypes.DATE,
     komdisiTanaman: DataTypes.STRING,
     deskripsi: DataTypes.TEXT,
