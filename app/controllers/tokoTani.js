@@ -7,6 +7,7 @@ const tambahDaftarPenjual = async(req, res)=>{
   try {
     const {
       NIK,
+      NIP,
       profesiPenjual,
       namaProducts,
       stok,
@@ -15,10 +16,19 @@ const tambahDaftarPenjual = async(req, res)=>{
       deskripsi,
       status
     }= req.body
-    const persons = await dataPerson.findOne({ where: { NIK, }, });
-    if(!persons) throw new ApiError(400, `data dengan nik ${NIK} tidak terdaftar`)
+    let id
+    if(profesiPenjual == "penyuluh"){
+      if(!NIP) throw new ApiError(400, "NIP tidak boleh kosong")
+      const persons = await dataPerson.findOne({ where: { NIP, role:"penyuluh" }, });
+      if(!persons) throw new ApiError(400, `data dengan NIP ${NIP} tidak terdaftar`)
+      id = persons.id
+    }else{
+      if(!NIK) throw new ApiError(400, "NIK tidak boleh kosong")
+      const persons = await dataPerson.findOne({ where: { NIK, role:"petani" }, });
+      if(!persons) throw new ApiError(400, `data dengan nik ${NIK} tidak terdaftar`)
+      id = persons.id
+    }
    const { file, } = req;
-    let urlImg = ''
     if (file) {
       const validFormat =
         file.mimetype === 'image/png' ||
@@ -39,11 +49,16 @@ const tambahDaftarPenjual = async(req, res)=>{
         file: file.buffer,
         fileName: `IMG-${Date.now()}.${ext}`,
       });
-      urlImg = img.url
+      const newPenjual = await penjual.create({profesiPenjual, namaProducts, stok, satuan, harga, deskripsi, fotoTanaman:img.url, status, dataPersonId:id })
+      const dataPenjual = await penjual.findOne({where:{id:newPenjual.id}, include:dataPerson})
+      res.status(200).json({
+        message: 'Berhasil Membuat Data Penjual',
+        dataPenjual
+      });
     }
-    const newPenjual = await penjual.create({profesiPenjual, namaProducts, stok, satuan, harga, deskripsi, fotoTanaman:urlImg, status, dataPersonId:persons.id })
+    const newPenjual = await penjual.create({profesiPenjual, namaProducts, stok, satuan, harga, deskripsi, status, dataPersonId:id })
     const dataPenjual = await penjual.findOne({where:{id:newPenjual.id}, include:dataPerson})
-    res.status(200).json({
+    return res.status(200).json({
       message: 'Berhasil Membuat Data Penjual',
       dataPenjual
     });

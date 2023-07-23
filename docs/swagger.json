@@ -1019,34 +1019,84 @@
                 "type": "object",
                 "properties": {
                   "NIK": {
-                    "type": "string"
+                    "type": "string",
+                    "example":"30198210"
+                  },
+                  "NIP": {
+                    "type": "string",
+                    "example":"30198210"
                   },
                   "profesiPenjual": {
-                    "type": "string"
+                    "type": "string",
+                    "enum": ["petani", "penyuluh"]
                   },
                   "namaProducts": {
-                    "type": "string"
+                    "type": "string",
+                    "example":"bawang merah"
                   },
                   "stok": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example":2
                   },
                   "satuan": {
-                    "type": "string"
+                    "type": "string",
+                    "example":"kg"
                   },
                   "harga": {
-                    "type": "string"
+                    "type": "string",
+                    "example":"Rp. 2000000"
                   },
                   "deskripsi": {
-                    "type": "string"
+                    "type": "string",
+                    "example":"semua bawang segar"
                   },
                   "status": {
-                    "type": "string"
+                    "type": "string",
+                    "example":"ready"
                   },
                   "fotoTanaman": {
                     "type": "file"
                   }
                 },
-                "required": ["NIK", "profesiPenjual", "namaProducts", "stok", "satuan", "harga", "status"]
+                "allOf": [
+                  {
+                    "if": {
+                      "properties": {
+                        "profesiPenjual": {
+                          "const": "petani"
+                        }
+                      }
+                    },
+                    "then": {
+                      "properties": {
+                        "NIK": {
+                          "type": "string",
+                          "minLength": 1
+                        }
+                      },
+                      "required": ["NIK"]
+                    }
+                  },
+                  {
+                    "if": {
+                      "properties": {
+                        "profesiPenjual": {
+                          "const": "penyuluh"
+                        }
+                      }
+                    },
+                    "then": {
+                      "properties": {
+                        "NIP": {
+                          "type": "string",
+                          "minLength": 1
+                        }
+                      },                      
+                      "required": ["NIP"]
+                    }
+                  }
+                ],
+                "required": ["profesiPenjual", "namaProducts", "stok", "satuan", "harga", "status"]
               },
               "encoding": {
                 "fotoTanaman": {
