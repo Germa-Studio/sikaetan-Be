@@ -45,9 +45,7 @@ const tambahDataPenyuluh = async(req, res)=>{
       urlImg = img.url
     }
     const newPerson = await dataPerson.create({NIP, NoWa, alamat, desa, nama, kecamatan, password, foto:urlImg, role:"penyuluh" })
-    for(i=1; i<desaBinaan.length; i++){
-      await dataPenyuluh.create({namaProduct, desaBinaan:desaBinaan[i],kecamatanBinaan, dataPersonId:newPerson.id })
-    }
+    await dataPenyuluh.create({namaProduct, desaBinaan:desaBinaan,kecamatanBinaan, dataPersonId:newPerson.id })
     const newDataPenyuluh = await dataPerson.findOne({where:{id:newPerson.id}, indlude:[{model:dataPenyuluh}]})
     res.status(200).json({
       message: 'berhasil menambahkan data Penyuluh',
