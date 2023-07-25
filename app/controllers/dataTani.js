@@ -75,14 +75,6 @@ const tambahDaftarTani = async(req, res)=>{
     gapoktan,
     penyuluh,
     namaKelompok,
-    statusLahan,
-    luasLahan,
-    kategori,
-    jenis,
-    komoditas,
-    musimTanam,
-    tanggalTanam,
-    perkiraanPanen
     } = req.body
 
     if(!NIK) throw new ApiError(400, "NIK tidak boleh kosong")
@@ -112,11 +104,11 @@ const tambahDaftarTani = async(req, res)=>{
         file: file.buffer,
         fileName: `IMG-${Date.now()}.${ext}`,
       });
-      urlImg = img.url
+      img.url
+      console.log({...req.body, img:img.url})
     }
     const dataKelompok = await kelompok.create({gapoktan, penyuluh, namaKelompok, desa})
-    const dataTanamanPetani = await tanamanPetani.create({statusLahan, luasLahan, kategori, jenis, komoditas, musimTanam, tanggalTanam, perkiraanPanen })
-    const daftarTani = await dataPerson.create({NIK, NoWa, role:"petani", alamat, desa, nama, kecamatan, password, tanamanPetaniId: dataTanamanPetani.id,kelompokId:dataKelompok.id, foto:urlImg })
+    const daftarTani = await dataPerson.create({NIK, NoWa, role:"petani", alamat, desa, nama, kecamatan, password, kelompokId:dataKelompok.id, foto:urlImg })
 
     res.status(200).json({
       message: 'Berhasil Menambahakan Daftar Tani',
@@ -326,6 +318,7 @@ const getTanamanPetani =  async(req, res)=>{
 }
 const tambahTanamanPetani = async(req, res)=>{
   try {
+    console.log(req.body)
     const {
       dataPersonId,
       statusLahan,
@@ -340,8 +333,10 @@ const tambahTanamanPetani = async(req, res)=>{
       perkiraanHasilPanen,
       realisasiHasilPanen
     } = req.body
-    if(!dataPersonId || !statusLahan || !luasLahan || !kategori || !jenis || !janisPanen || !komoditas || !musimTanam || !tanggalTanam || !perkiraanPanen || !perkiraanHasilPanen || !realisasiHasilPanen){
-      throw new ApiError(400, "Field harus Di isi")
+    for(const key in req.body){
+      if(!req.body[key]){
+        throw new ApiError(400, `${key} harus di isi`)
+      }
     }
     const data = await dataPerson.findOne({
       where: {

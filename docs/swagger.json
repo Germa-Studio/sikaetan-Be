@@ -2629,10 +2629,10 @@
         "parameters": [
           {
             "in": "path",
-            "name": "id",
+            "name": "kecamatan",
             "required": true,
             "schema": {
-              "type": "integer"
+              "type": "string"
             },
             "description": "kecamatan penyuluh yang akan dicari"
           }

@@ -122,13 +122,13 @@ const loginPetani = async (req, res) => {
     if(NIK && NIP){
       throw new ApiError(400, 'Login Sebagai Petani NIk Yang Di Isi Atau Login Sebagai Penyuluh NIP Yang D Isi.');
     }
-    let user;
     if (NIK) {
-      user = await dataPerson.findOne({ where: { NIK } });
+      const user = await dataPerson.findOne({ where: { NIK } });
+      if (!user) throw new ApiError(400, 'NIK tidak terdaftar.');
     } else if (NIP) {
-      user = await dataPerson.findOne({ where: { NIP } });
+      const user = await dataPerson.findOne({ where: { NIP } });
+      if (!user) throw new ApiError(400, 'NIP tidak terdaftar.');
     }
-    if (!user) throw new ApiError(400, 'NIK tidak terdaftar.');
     if (password != user.password) {
       throw new ApiError(400, 'Password salah.');
     }
