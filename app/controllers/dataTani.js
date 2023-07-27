@@ -325,16 +325,17 @@ const tambahTanamanPetani = async(req, res)=>{
       luasLahan,
       kategori,
       jenis,
-      janisPanen,
+      jenisPanen,
       komoditas,
       musimTanam,
       tanggalTanam,
       perkiraanPanen,
       perkiraanHasilPanen,
-      realisasiHasilPanen
+      realisasiHasilPanen,
+      realisasiLuasLahan
     } = req.body
     for(const key in req.body){
-      if(!req.body[key]){
+      if(!req.body[key] && key != 'jenis'){
         throw new ApiError(400, `${key} harus di isi`)
       }
     }
@@ -347,7 +348,7 @@ const tambahTanamanPetani = async(req, res)=>{
     if(!data){
       throw new ApiError(400, "data petani tidak sesuai")
     }
-    const dataTanamanPetani = await tanamanPetani.create({realisasiHasilPanen, perkiraanHasilPanen, perkiraanPanen,tanggalTanam,musimTanam,komoditas, janisPanen, jenis, kategori, dataPersonId, statusLahan, luasLahan, })
+    const dataTanamanPetani = await tanamanPetani.create({realisasiHasilPanen, perkiraanHasilPanen, perkiraanPanen,tanggalTanam,musimTanam,komoditas, jenisPanen, jenis, kategori, dataPersonId, statusLahan, luasLahan, realisasiLuasLahan })
     res.status(200).json({
       message: 'Berhasil Menambahkan Tanaman Petani',
       dataTanamanPetani
@@ -365,7 +366,7 @@ const ubahTanamanPetaniById = async(req, res)=>{
       statusLahan,
       luasLahan,
       kategori,
-      jenis,
+      jenis='-',
       janisPanen,
       komoditas,
       musimTanam,

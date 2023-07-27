@@ -1,7 +1,8 @@
 const { dataPerson, dataPenyuluh, presesiKehadiran, jurnalHarian, riwayatChat } = require('../models');
 const ApiError = require('../../utils/ApiError');
 const imageKit = require('../../midleware/imageKit');
-
+const dotenv = require('dotenv');
+dotenv.config();
 const tambahDataPenyuluh = async(req, res)=>{
   try {
    const {
