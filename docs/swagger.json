@@ -3959,6 +3959,78 @@
               }
             }
           }
+        },
+        "delete": {
+          "summary": "menghapus laporan Tanaman berdasarkan id",
+          "security": [
+            {
+              "bearerToken": []
+            }
+          ],
+          "tags": ["Laporan Tanam"],
+          "parameters": [
+            {
+              "in": "path",
+              "name": "id",
+              "required": true,
+              "schema": {
+                "type": "integer"
+              },
+              "description": "ID tanaman yang akan di hapus laporanya"
+            }
+          ],
+          "responses": {
+            "200": {
+            "description": "Data laporan Tanam berhasil dihapus",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "success"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Data laporan Tanam berhasil dihapus"
+                    }
+                    }
+                  }
+                }
+              }
+              },
+            "400": {
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "message": {
+                        "type": "string",
+                        "example": "ID tidak valid atau data tidak ditemukan"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "500": {
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "message": {
+                        "type": "string",
+                        "example": "Terjadi kesalahan pada server"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
         }
     },
     "/laporan-tanam/detail/{id}": {

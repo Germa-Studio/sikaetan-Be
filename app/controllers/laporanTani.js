@@ -137,10 +137,24 @@ const editLaporanTanam = async(req, res)=>{
     });
   }
 }
+const deleteLaporanTanam = async(req, res)=>{
+  const {id} = req.params
+  try {
+    await laporanTanam.destroy({where:{id}})
+    res.status(200).json({
+      message: 'Berhasil menghapus laporan tanam',
+    });  
+  } catch (error) {
+    res.status(error.statusCode || 500).json({
+      message: error.message,
+    });
+  }
+}
 
 module.exports = {
   tambahLaporanTanam,
   getAllLaporanTanam,
   getLaporanTanamById,
-  editLaporanTanam
+  editLaporanTanam,
+  deleteLaporanTanam
 }
