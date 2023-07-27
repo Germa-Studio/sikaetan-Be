@@ -51,7 +51,7 @@ const tambahDaftarPenjual = async(req, res)=>{
       });
       const newPenjual = await penjual.create({profesiPenjual, namaProducts, stok, satuan, harga, deskripsi, fotoTanaman:img.url, status, dataPersonId:id })
       const dataPenjual = await penjual.findOne({where:{id:newPenjual.id}, include:dataPerson})
-      res.status(200).json({
+      return res.status(200).json({
         message: 'Berhasil Membuat Data Penjual',
         dataPenjual
       });
@@ -63,6 +63,7 @@ const tambahDaftarPenjual = async(req, res)=>{
       dataPenjual
     });
   } catch (error) {
+    console.log(error)
     res.status(error.statusCode || 500).json({
       message: error.message,
     });
