@@ -116,6 +116,7 @@ const presensiKehadiranWeb = async(req, res)=>{
     const DataPresesiKehadiran = await presesiKehadiran.findAll({
       include:{
         model:dataPerson,
+        required:true,
         include:{
           model:dataPenyuluh
         }
@@ -163,14 +164,16 @@ const tambahPresensiKehadiran = async(req, res)=>{
         file: file.buffer,
         fileName: `IMG-${Date.now()}.${ext}`,
       });
-      await presesiKehadiran.create({dataPersonId:penyuluh.id,tanggalPresesi:tanggalPresensi, judulKegiatan, deskripsiKegiatan, FotoKegiatan: img.url })
+      const newData = await presesiKehadiran.create({dataPersonId:penyuluh.id,tanggalPresesi:tanggalPresensi, judulKegiatan, deskripsiKegiatan, FotoKegiatan: img.url })
       return res.status(200).json({
         message: 'Brhasil menambhakan Data Presensi Kehadiran',
+        newData
       });  
     }
-    await presesiKehadiran.create({dataPersonId:penyuluh.id,tanggalPresesi, judulKegiatan, deskripsiKegiatan})
+    const newData = await presesiKehadiran.create({dataPersonId:penyuluh.id,tanggalPresesi:tanggalPresensi, judulKegiatan, deskripsiKegiatan})
     res.status(200).json({
       message: 'Brhasil menambhakan Data Presensi Kehadiran',
+      newData
     });  
   } catch (error) {
     res.status(error.statusCode || 500).json({
