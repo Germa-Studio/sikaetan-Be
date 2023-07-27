@@ -125,27 +125,43 @@ const loginPetani = async (req, res) => {
     if (NIK) {
       const user = await dataPerson.findOne({ where: { NIK } });
       if (!user) throw new ApiError(400, 'NIK tidak terdaftar.');
+      if (password != user.password) {
+        throw new ApiError(400, 'Password salah.');
+      }
+      if(password == user.password){
+        const token = jwt.sign(
+          {
+            id: user.id,
+            NIK:user.NIK
+          },
+          process.env.SECRET_KEY
+        );
+        return res.status(200).json({
+          message: 'Login berhasil.',
+          token,
+          user
+        });
+      }
     } else if (NIP) {
       const user = await dataPerson.findOne({ where: { NIP } });
       if (!user) throw new ApiError(400, 'NIP tidak terdaftar.');
-    }
-    if (password != user.password) {
-      throw new ApiError(400, 'Password salah.');
-    }
-
-    if(password == user.password){
-      const token = jwt.sign(
-        {
-          id: user.id,
-          NIK:user.NIK
-        },
-        process.env.SECRET_KEY
-      );
-      res.status(200).json({
-        message: 'Login berhasil.',
-        token,
-        user
-      });
+      if (password != user.password) {
+        throw new ApiError(400, 'Password salah.');
+      }
+      if(password == user.password){
+        const token = jwt.sign(
+          {
+            id: user.id,
+            NIK:user.NIK
+          },
+          process.env.SECRET_KEY
+        );
+        return res.status(200).json({
+          message: 'Login berhasil.',
+          token,
+          user
+        });
+      }
     }
   } catch (error) {
     res.status(error.statusCode || 500).json({

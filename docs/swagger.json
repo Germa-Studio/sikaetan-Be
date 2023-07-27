@@ -3376,7 +3376,212 @@
           }
         }
       }
+    },
+    "/chart": {
+      "post": {
+        "summary": "Menambahkan Data Chart",
+        "tags": ["Chart"],
+        "security": [
+          {
+            "bearerToken": []
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "label": {
+                    "type": "string",
+                    "example": "Mangga"
+                  },
+                  "total": {
+                    "type": "integer",
+                    "example": 100
+                  },
+                  "tanggalPanen": {
+                    "type": "string",
+                    "format": "date",
+                    "example": "2023-07-26"
+                  },
+                  "jenis": {
+                    "type": "string",
+                    "enum": ["Buah-Buahan", "Sayuran"],
+                    "example": "Buah-Buahan"
+                  },
+                  "jenisPanen": {
+                    "type": "string",
+                    "enum": ["Tahunan", "Bulanan"],
+                    "example": "Tahunan"
+                  }
+                },
+                "required": ["label", "total", "tanggalPanen", "jenis", "jenisPanen"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Data chart berhasil ditambahkan",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "success"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Data Berhasil Ditambahkan"
+                    },
+                    "dataChart": {
+                      "type": "object",
+                      "properties": {
+                        "label": {
+                          "type": "string",
+                          "example": "Padi"
+                        },
+                        "total": {
+                          "type": "integer",
+                          "example": 100
+                        },
+                        "tanggalPanen": {
+                          "type": "string",
+                          "format": "date",
+                          "example": "2023-07-26"
+                        },
+                        "jenis": {
+                          "type": "string",
+                          "enum": ["Buah-Buahan", "Sayuran"],
+                          "example": "Buah-Buahan"
+                        },
+                        "jenisPanen": {
+                          "type": "string",
+                          "enum": ["Tahunan", "Bulanan"],
+                          "example": "Tahunan"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Permintaan tidak valid",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Jenis Panen Tidak Boleh Kosong"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error server",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Terjadi kesalahan pada server"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "summary": "Mendapatkan Data Chart",
+        "tags": ["Chart"],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "jenisPanen",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": ["Tahunan", "Bulanan"]
+            },
+            "description": "Jenis panen (Tahunan atau Bulanan)"
+          },
+          {
+            "in": "query",
+            "name": "jenis",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": ["Buah-Buahan", "Sayuran"]
+            },
+            "description": "Jenis komoditas panen (Buah-Buahan atau Sayuran)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Respon sukses dengan data chart",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "label": {
+                        "type": "string",
+                        "example": "Padi"
+                      },
+                      "total": {
+                        "type": "integer",
+                        "example": 100
+                      },
+                      "count": {
+                        "type": "integer",
+                        "example": 5
+                      },
+                      "tanggalPanen": {
+                        "type": "string",
+                        "format": "date",
+                        "example": "2023-07-26"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error server",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Terjadi kesalahan pada server"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
     }
+
 },
   "components": {
     "schemas": {

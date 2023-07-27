@@ -24,7 +24,7 @@ module.exports = {
       jenis: {
         type: Sequelize.STRING
       },
-      janisPanen: {
+      jenisPanen: {
         type: Sequelize.STRING
       },
       komoditas: {
@@ -44,6 +44,9 @@ module.exports = {
       },
       realisasiHasilPanen: {
         type: Sequelize.INTEGER
+      },
+      realisasiLuasLahan: {
+        type: Sequelize.STRING
       },
       createdAt: {
         allowNull: false,

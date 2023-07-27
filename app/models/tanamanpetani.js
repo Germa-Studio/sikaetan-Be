@@ -21,13 +21,14 @@ module.exports = (sequelize, DataTypes) => {
     luasLahan: DataTypes.STRING,
     kategori: DataTypes.STRING,
     jenis: DataTypes.STRING,
-    janisPanen: DataTypes.STRING,
+    jenisPanen: DataTypes.STRING,
     komoditas: DataTypes.STRING,
     musimTanam: DataTypes.INTEGER,
     tanggalTanam: DataTypes.STRING,
     perkiraanPanen: DataTypes.STRING,
     perkiraanHasilPanen: DataTypes.INTEGER,
-    realisasiHasilPanen: DataTypes.INTEGER
+    realisasiHasilPanen: DataTypes.INTEGER,
+    realisasiLuasLahan: DataTypes.STRING
   }, {
     sequelize,
     modelName: 'tanamanPetani',
