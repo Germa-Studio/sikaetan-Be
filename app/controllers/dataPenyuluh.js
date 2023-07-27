@@ -111,16 +111,35 @@ const presensiKehadiran = async(req, res)=>{
     });
   }
 }
+const presensiKehadiranWeb = async(req, res)=>{
+  try {
+    const DataPresesiKehadiran = await presesiKehadiran.findAll({
+      include:{
+        model:dataPerson,
+        include:{
+          model:dataPenyuluh
+        }
+      }
+      });
+    res.status(200).json({
+      message: 'Semua Data Presensi Kehadiran',
+      DataPresesiKehadiran
+    });  
+  } catch (error) {
+    res.status(error.statusCode || 500).json({
+      message: error.message,
+    });
+  }
+}
 const tambahPresensiKehadiran = async(req, res)=>{
   try {
    const {
     NIP="",
-    tanggalPresesi,
+    tanggalPresensi,
     judulKegiatan,
     deskripsiKegiatan,
     } = req.body
     const {file} = req
-    console.log(NIP, tanggalPresesi, judulKegiatan,deskripsiKegiatan)
     const penyuluh = await dataPerson.findOne({ where: { NIP, }, });
 
     if(!penyuluh) throw new ApiError(400, `Penyulih dengan NIP ${NIP} Tidak Ditemukan`)
@@ -144,7 +163,7 @@ const tambahPresensiKehadiran = async(req, res)=>{
         file: file.buffer,
         fileName: `IMG-${Date.now()}.${ext}`,
       });
-      await presesiKehadiran.create({dataPersonId:penyuluh.id,tanggalPresesi, judulKegiatan, deskripsiKegiatan, FotoKegiatan: img.url })
+      await presesiKehadiran.create({dataPersonId:penyuluh.id,tanggalPresesi:tanggalPresensi, judulKegiatan, deskripsiKegiatan, FotoKegiatan: img.url })
       return res.status(200).json({
         message: 'Brhasil menambhakan Data Presensi Kehadiran',
       });  
@@ -252,5 +271,6 @@ module.exports = {
   tambahJurnalKegiatan,
   tambahPresensiKehadiran,
   daftarPenyuluh,
-  deleteDaftarPenyuluh
+  deleteDaftarPenyuluh,
+  presensiKehadiranWeb
 }

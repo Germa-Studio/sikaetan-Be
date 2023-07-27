@@ -1523,6 +1523,36 @@
         }
       }
     },
+    "/presensi-kehadiran/web": {
+      "get": {
+        "tags": ["Data Penyuluh"],
+        "summary": "Semua Data Presensi Kehadiran",
+        "security": [
+          {
+            "bearerToken": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string"
+                },
+                "DataPresesiKehadiran": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
     "/jurnal-kegiatan": {
       "get": {
         "tags": ["Data Penyuluh"],
@@ -3580,8 +3610,457 @@
           }
         }
       }
+    },
+    "/laporan-tanam": {
+      "post": {
+        "summary": "Menambahkan Data Laporan Tanam",
+        "tags": ["Laporan Tanam"],
+        "security": [
+          {
+            "bearerToken": []
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "tanamanPetaniId": {
+                    "type": "integer",
+                    "example": 100
+                  },
+                  "tanggalLaporan": {
+                    "type": "string",
+                    "format": "date",
+                    "example": "2023-07-26"
+                  },
+                  "komdisiTanaman": {
+                    "type": "string",
+                    "example": "Baik Dan Segar"
+                  },
+                  "deskripsi": {
+                    "type": "string",
+                    "example": "Tanaman Ini Berasal Dari Arab saurdi Lorem ipsum, dolor sit amet consectetur adipisicing elit. Nihil nostrum incidunt suscipit distinctio nobis architecto tempore quaerat dolores nulla itaque!"
+                  },
+                  "fotoTanaman": {
+                    "type": "string",
+                    "format":"binary"
+                  }
+                },
+                "required": ["tanamanPetaniId", "tanggalLaporan", "komdisiTanaman", "deskripsi"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Data laporan tanam berhasil ditambahkan",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "success"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Data Berhasil Ditambahkan"
+                    },
+                    "newLaporanTanam": {
+                      "type": "object",
+                      "properties":{
+                        "tanamanPetaniId": {
+                          "type": "integer",
+                          "example": 100
+                        },
+                        "tanggalLaporan": {
+                          "type": "string",
+                          "format": "date",
+                          "example": "2023-07-26"
+                        },
+                        "komdisiTanaman": {
+                          "type": "string",
+                          "example": "Baik Dan Segar"
+                        },
+                        "deskripsi": {
+                          "type": "string",
+                          "example": "Tanaman Ini Berasal Dari Arab saurdi Lorem ipsum, dolor sit amet consectetur adipisicing elit. Nihil nostrum incidunt suscipit distinctio nobis architecto tempore quaerat dolores nulla itaque!"
+                        },
+                        "fotoTanaman": {
+                          "type": "string",
+                          "eample":"http://omagekit"
+                        }
+                      }}
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Permintaan tidak valid",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Jenis Panen Tidak Boleh Kosong"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error server",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Terjadi kesalahan pada server"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+    },
+    "/laporan-tanam/{id}": {
+      "put": {
+        "summary": "Merubah laporan chart berdasarkan id",
+        "tags": ["Laporan Tanam"],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "ID laporan yang akan di ubah"
+          }
+        ],
+        "security": [
+          {
+            "bearerToken": []
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "tanggalLaporan": {
+                    "type": "string",
+                    "format": "date",
+                    "example": "2023-07-26"
+                  },
+                  "komdisiTanaman": {
+                    "type": "string",
+                    "example": "Baik Dan Segar"
+                  },
+                  "deskripsi": {
+                    "type": "string",
+                    "example": "Tanaman Ini Berasal Dari Arab saurdi Lorem ipsum, dolor sit amet consectetur adipisicing elit. Nihil nostrum incidunt suscipit distinctio nobis architecto tempore quaerat dolores nulla itaque!"
+                  },
+                  "fotoTanaman": {
+                    "type": "string",
+                    "format":"binary"
+                  }
+                },
+                "required": ["tanggalLaporan", "komdisiTanaman", "deskripsi"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Data laporan Tanam berhasil ditambahkan",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "success"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Data laporan Tanam berhasil ditambahkan"
+                    },
+                    "newLaporanTanam": {
+                      "type": "object",
+                      "properties":{
+                        "tanamanPetaniId": {
+                          "type": "integer",
+                          "example": 100
+                        },
+                        "tanggalLaporan": {
+                          "type": "string",
+                          "format": "date",
+                          "example": "2023-07-26"
+                        },
+                        "komdisiTanaman": {
+                          "type": "string",
+                          "example": "Baik Dan Segar"
+                        },
+                        "deskripsi": {
+                          "type": "string",
+                          "example": "Tanaman Ini Berasal Dari Arab saurdi Lorem ipsum, dolor sit amet consectetur adipisicing elit. Nihil nostrum incidunt suscipit distinctio nobis architecto tempore quaerat dolores nulla itaque!"
+                        },
+                        "fotoTanaman": {
+                          "type": "string",
+                          "eample":"http://omagekit"
+                        }
+                      }}
+                    }
+                  }
+                }
+              }
+            },
+          "400": {
+            "description": "Permintaan tidak valid",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Jenis Panen Tidak Boleh Kosong"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error server",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Terjadi kesalahan pada server"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+        "get": {
+          "summary": "Mendapatkan semua laporan berdasarkan id tanaman",
+          "security": [
+            {
+              "bearerToken": []
+            }
+          ],
+          "tags": ["Laporan Tanam"],
+          "parameters": [
+            {
+              "in": "path",
+              "name": "id",
+              "required": true,
+              "schema": {
+                "type": "integer"
+              },
+              "description": "ID tanaman yang akan di cari laporanya"
+            }
+          ],
+          "responses": {
+            "200": {
+            "description": "Data laporan Tanam berhasil didapatkan",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "success"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Data laporan Tanam berhasil didapatkan"
+                    },
+                    "newLaporanTanam": {
+                      "type": "object",
+                      "properties":{
+                        "tanamanPetaniId": {
+                          "type": "integer",
+                          "example": 100
+                        },
+                        "tanggalLaporan": {
+                          "type": "string",
+                          "format": "date",
+                          "example": "2023-07-26"
+                        },
+                        "komdisiTanaman": {
+                          "type": "string",
+                          "example": "Baik Dan Segar"
+                        },
+                        "deskripsi": {
+                          "type": "string",
+                          "example": "Tanaman Ini Berasal Dari Arab saurdi Lorem ipsum, dolor sit amet consectetur adipisicing elit. Nihil nostrum incidunt suscipit distinctio nobis architecto tempore quaerat dolores nulla itaque!"
+                        },
+                        "fotoTanaman": {
+                          "type": "string",
+                          "eample":"http://omagekit"
+                        }}
+                      }
+                    }
+                  }
+                }
+              }
+              },
+            "400": {
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "message": {
+                        "type": "string",
+                        "example": "ID tidak valid atau data tidak ditemukan"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "500": {
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "message": {
+                        "type": "string",
+                        "example": "Terjadi kesalahan pada server"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+    },
+    "/laporan-tanam/detail/{id}": {
+        "get": {
+          "summary": "Mendapatkan laporan tanam berdasarkan id",
+          "security": [
+            {
+              "bearerToken": []
+            }
+          ],
+          "tags": ["Laporan Tanam"],
+          "parameters": [
+            {
+              "in": "path",
+              "name": "id",
+              "required": true,
+              "schema": {
+                "type": "integer"
+              },
+              "description": "ID laporan tanam"
+            }
+          ],
+          "responses": {
+            "200": {
+            "description": "Data laporan Tanam berhasil didapatkan",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "success"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Data laporan Tanam berhasil didapatkan"
+                    },
+                    "newLaporanTanam": {
+                      "type": "object",
+                      "properties": {
+                          "tanamanPetaniId": {
+                            "type": "integer",
+                            "example": 100
+                          },
+                          "tanggalLaporan": {
+                            "type": "string",
+                            "format": "date",
+                            "example": "2023-07-26"
+                          },
+                          "komdisiTanaman": {
+                            "type": "string",
+                            "example": "Baik Dan Segar"
+                          },
+                          "deskripsi": {
+                            "type": "string",
+                            "example": "Tanaman Ini Berasal Dari Arab saurdi Lorem ipsum, dolor sit amet consectetur adipisicing elit. Nihil nostrum incidunt suscipit distinctio nobis architecto tempore quaerat dolores nulla itaque!"
+                          },
+                          "fotoTanaman": {
+                            "type": "string",
+                            "eample":"http://omagekit"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+              },
+            "400": {
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "message": {
+                        "type": "string",
+                        "example": "ID tidak valid atau data tidak ditemukan"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "500": {
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "message": {
+                        "type": "string",
+                        "example": "Terjadi kesalahan pada server"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
     }
-
 },
   "components": {
     "schemas": {

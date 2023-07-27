@@ -375,8 +375,10 @@ const ubahTanamanPetaniById = async(req, res)=>{
       perkiraanHasilPanen,
       realisasiHasilPanen
     } = req.body
-    if(!statusLahan || !luasLahan || !kategori || !jenis || !janisPanen || !komoditas || !musimTanam || !tanggalTanam || !perkiraanPanen || !perkiraanHasilPanen || !realisasiHasilPanen){
-      throw new ApiError(400, "Field harus Di isi")
+    for(const key in req.body){
+      if(!req.body[key] && key != 'jenis'){
+        throw new ApiError(400, `${key} harus di isi`)
+      }
     }
     const data = await tanamanPetani.findOne({
       where: {
