@@ -1,23 +1,24 @@
-const express = require('express');
-const cors = require('cors');
-const morgan = require('morgan');
-const router = require('./app/router');
+const express = require('express')
+const config = require('./config/app')
+const router = require('./app/router')
+const bodyParser = require('body-parser')
+const cors = require('cors')
+const app = express()
 const http = require('http')
-const { Server } = require('socket.io')
 
-const app = express();
+app.use(bodyParser.urlencoded({ extended: true }))
+app.use(bodyParser.json())
+app.use(cors())
+app.use(router)
+app.use(express.static(__dirname + '/public'))
+app.use(express.static(__dirname + '/uploads'))
 
-app.use(morgan('common'));
-app.use(
-  express.urlencoded({
-    extended: true,
-  })
-);
-app.use(cors("*"));
-app.use(express.json());
-app.use(router);
+const port = config.appPort
 
 const server = http.createServer(app)
-const Io = new Server(server)
+const SocketServer = require('./socket')
+SocketServer(server)
 
-module.exports = { server, Io};
+server.listen(port, () => {
+    console.log(`Server listening on port ${port}`);
+})

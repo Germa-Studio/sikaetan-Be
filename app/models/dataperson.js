@@ -22,6 +22,8 @@ module.exports = (sequelize, DataTypes) => {
       this.belongsTo(models.responseRating, { foreignKey: 'responseRatingId' });
       this.hasMany(models.tanamanPetani, { foreignKey: 'dataPersonId' });
       this.hasMany(models.presesiKehadiran, { foreignKey: 'dataPersonId' });
+      this.belongsToMany(models.Chat, { through: 'ChatUser', foreignKey: 'userId' })
+      this.hasMany(models.ChatUser, { foreignKey: 'userId' })
     }
   }
   dataPerson.init({

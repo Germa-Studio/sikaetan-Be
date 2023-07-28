@@ -10,7 +10,7 @@ const {
 
 router.post('/chat/add', auth, tambahChat);
 router.post('/rating/add', auth, tambahRating);
-router.get('/chat', auth, chat);
+router.get('/chats', auth, chat);
 router.get('/rating', auth, rating);
 
 module.exports = router;
