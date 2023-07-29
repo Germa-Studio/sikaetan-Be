@@ -13,6 +13,10 @@
     {
       "url": "https://siketan-api.cyclic.app/",
       "description": "Staging Server"
+    },
+    {
+      "url": "http://app-api.siketan.id/",
+      "description": "production Server"
     }
   ],
   "paths": {
