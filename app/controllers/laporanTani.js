@@ -150,11 +150,68 @@ const deleteLaporanTanam = async(req, res)=>{
     });
   }
 }
+const tambahLaporanAkhir = async(req, res)=>{
+  try {
+    const {
+      tanamanPetaniId ,
+      tanggalLaporan,
+      komdisiTanaman,
+      deskripsi,
+      realisasiHasilPanen,
+      realisasiLuasLahan
+    } = req.body
+    if(!tanamanPetaniId) throw new ApiError(400, "Id Tanaman Petani Tidak Boleh Kosong")
+    if(!tanggalLaporan) throw new ApiError(400, "Tanggal Laporan Tidak Boleh Kosong")
+    if(!komdisiTanaman) throw new ApiError(400, "Kondisi Tanaman Tidak Boleh Kosong")
+    if(!deskripsi) throw new ApiError(400, "Deskripsi Tanaman Tidak Boleh Kosong")
+    if(!realisasiHasilPanen) throw new ApiError(400, "Realisasi Hasil Panen Tidak Boleh Kosong")
+    if(!realisasiLuasLahan) throw new ApiError(400, "Realisasi Luas Lahan Tidak Boleh Kosong")
+    const { file, } = req;
+    if (file) {
+      const validFormat =
+        file.mimetype === 'image/png' ||
+        file.mimetype === 'image/jpg' ||
+        file.mimetype === 'image/jpeg' ||
+        file.mimetype === 'image/gif';
+      if (!validFormat) {
+        return res.status(400).json({
+          status: 'failed',
+          message: 'Wrong Image Format',
+        });
+      }
+      const split = file.originalname.split('.');
+      const ext = split[split.length - 1];
+
+      // upload file ke imagekit
+      const img = await imageKit.upload({
+        file: file.buffer,
+        fileName: `IMG-${Date.now()}.${ext}`,
+      });
+      const newLaporanTanam = await laporanTanam.create({ tanamanPetaniId,tanggalLaporan, komdisiTanaman, deskripsi, fotoTanaman:img.url })
+      await tanamanPetani.update({ realisasiHasilPanen, realisasiLuasLahan}, {where:{id:tanamanPetaniId}})
+      return res.status(200).json({
+      message: 'Berhasil Menambahakan laporan tanam',
+      newLaporanTanam
+    });  
+    }
+    const newLaporanTanam = await laporanTanam.create({ tanamanPetaniId,tanggalLaporan, komdisiTanaman, deskripsi})
+    await tanamanPetani.update({ realisasiHasilPanen, realisasiLuasLahan}, {where:{id:tanamanPetaniId}})
+    res.status(200).json({
+      message: 'Berhasil Menambahakan laporan tanam',
+      newLaporanTanam
+    });  
+  } catch (error) {
+    res.status(error.statusCode || 500).json({
+      message: error.message,
+    });
+  }
+}
 
 module.exports = {
   tambahLaporanTanam,
   getAllLaporanTanam,
   getLaporanTanamById,
   editLaporanTanam,
-  deleteLaporanTanam
+  deleteLaporanTanam,
+  tambahLaporanAkhir
 }

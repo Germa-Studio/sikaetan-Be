@@ -331,8 +331,6 @@ const tambahTanamanPetani = async(req, res)=>{
       tanggalTanam,
       perkiraanPanen,
       perkiraanHasilPanen,
-      realisasiHasilPanen,
-      realisasiLuasLahan
     } = req.body
     for(const key in req.body){
       if(!req.body[key] && key != 'jenis'){
@@ -348,7 +346,7 @@ const tambahTanamanPetani = async(req, res)=>{
     if(!data){
       throw new ApiError(400, "data petani tidak sesuai")
     }
-    const dataTanamanPetani = await tanamanPetani.create({realisasiHasilPanen, perkiraanHasilPanen, perkiraanPanen,tanggalTanam,musimTanam,komoditas, jenisPanen, jenis, kategori, dataPersonId, statusLahan, luasLahan, realisasiLuasLahan })
+    const dataTanamanPetani = await tanamanPetani.create({perkiraanHasilPanen, perkiraanPanen,tanggalTanam,musimTanam,komoditas, jenisPanen, jenis, kategori, dataPersonId, statusLahan, luasLahan })
     res.status(200).json({
       message: 'Berhasil Menambahkan Tanaman Petani',
       dataTanamanPetani
