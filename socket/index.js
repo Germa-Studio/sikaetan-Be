@@ -11,8 +11,6 @@ const SocketServer = (server) => {
   io.on('connection', (socket) => {
 
     socket.on('join', async (user) => {
-      console.log(users)
-      // console.log(userSockets)
       let sockets = []
 
       if (users.has(user.id)) {

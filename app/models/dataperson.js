@@ -15,15 +15,14 @@ module.exports = (sequelize, DataTypes) => {
       this.hasOne(models.dataPenyuluh, { foreignKey: 'dataPersonId' });
       this.hasMany(models.penjual, { foreignKey: 'dataPersonId'});
       this.hasOne(models.chatt, {  as: 'from',foreignKey: 'dari' });
-      this.hasOne(models.chatt, {  as: 'to',foreignKey: 'tujuan' });
       this.belongsTo(models.ratting, { foreignKey: 'rattingId' });
       this.belongsTo(models.jurnalHarian, { foreignKey: 'jurnalKegiatanId' });
       this.belongsTo(models.riwayatChat, { foreignKey: 'riwayatChatId' });
       this.belongsTo(models.responseRating, { foreignKey: 'responseRatingId' });
       this.hasMany(models.tanamanPetani, { foreignKey: 'dataPersonId' });
       this.hasMany(models.presesiKehadiran, { foreignKey: 'dataPersonId' });
-      this.belongsToMany(models.Chat, { through: 'ChatUser', foreignKey: 'userId' })
-      this.hasMany(models.ChatUser, { foreignKey: 'userId' })
+      this.belongsToMany(models.chat, { through: 'chatDataPerson', foreignKey: 'dataPersonId' })
+      this.hasMany(models.chatDataPerson, { foreignKey: 'dataPersonId' })
     }
   }
   dataPerson.init({

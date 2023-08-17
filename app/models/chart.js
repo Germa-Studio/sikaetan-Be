@@ -11,14 +11,13 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      this.belongsTo(models.dataChart, { foreignKey: 'dataChartId' });
     }
   }
   chart.init({
-    label: DataTypes.STRING,
-    total: DataTypes.INTEGER,
-    tanggalPanen: DataTypes.DATE,
-    jenis: DataTypes.ENUM('Buah-Buahan', 'Sayuran'),
-    jenisPanen: DataTypes.ENUM('Tahunan', 'Bulanan')
+    judul: DataTypes.STRING,
+    type: DataTypes.STRING,
+    dataChartId: DataTypes.INTEGER
   }, {
     sequelize,
     modelName: 'chart',
