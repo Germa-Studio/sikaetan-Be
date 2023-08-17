@@ -268,7 +268,6 @@ const updateTaniDetail = async(req, res)=>{
       });
       return res.status(200).json({
           message: 'Petani Berhasil Di update',
-          detailTani: data
         });
     }
     await dataPerson.update({
@@ -280,7 +279,6 @@ const updateTaniDetail = async(req, res)=>{
     });
     res.status(200).json({
       message: 'Petani Berhasil Di update',
-      detailTani: data
     });  
   } catch (error) {
     res.status(error.statusCode || 500).json({
