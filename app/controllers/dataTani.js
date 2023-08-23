@@ -331,7 +331,7 @@ const tambahTanamanPetani = async(req, res)=>{
       perkiraanHasilPanen,
     } = req.body
     for(const key in req.body){
-      if(!req.body[key] && key != 'jenis'){
+      if(!req.body[key] && key != 'jenis' && key != 'jenisPanen'){
         throw new ApiError(400, `${key} harus di isi`)
       }
     }

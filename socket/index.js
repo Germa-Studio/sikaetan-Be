@@ -1,6 +1,7 @@
 const socketIo = require('socket.io')
+const { Op } = require('sequelize');
 const { sequelize } = require('../app/models')
-const { Message } = require('../app/models')
+const { Message, dataPerson, chat, chatDataPerson } = require('../app/models')
 
 const users = new Map()
 const userSockets = new Map()
@@ -9,8 +10,9 @@ const SocketServer = (server) => {
   const io = socketIo(server)
 
   io.on('connection', (socket) => {
-
+    console.log("connected")
     socket.on('join', async (user) => {
+      console.log("connected join")
       let sockets = []
 
       if (users.has(user.id)) {
@@ -32,8 +34,7 @@ const SocketServer = (server) => {
       // console.log(chatters)
 
       // notify his friends that user is now online
-      for (let i = 0; i < chatters.length; i++) {
-        if (users.has(chatters[i])) {
+        if (users.has(chatters)) {
           const chatter = users.get(chatters[i])
           chatter.sockets.forEach(socket => {
             try {
@@ -42,7 +43,6 @@ const SocketServer = (server) => {
           })
           onlineFriends.push(chatter.id)
         }
-      }
 
       // send to user sockets which of his friends are online
       sockets.forEach(socket => {
@@ -53,187 +53,34 @@ const SocketServer = (server) => {
       })
     })
 
-    socket.on('message', async (message) => {
-      let sockets = []
-
-      if (users.has(message.fromUser.id)) {
-        sockets = users.get(message.fromUser.id).sockets
-      }
-
-      message.toUserId.forEach(id => {
-        if (users.has(id)) {
-          sockets = [...sockets, ...users.get(id).sockets]
-        }
-      }) 
-      console.log(message)
-      try {
-        const msg = {
-          type: message.type,
-          fromUserId: message.fromUser.id,
-          chatId: message.chatId,
-          message: message.message
-        }
-
-        const savedMessage = await Message.create(msg)
-
-        message.User = message.fromUser
-        message.fromUserId = message.fromUser.id
-        message.id = savedMessage.id
-        message.message = savedMessage.message
-        delete message.fromUser
-
-        sockets.forEach(socket => {
-          io.to(socket).emit('received', message)
-        })
-
-      } catch (e) { }
-
-    })
-
-    socket.on('disconnect', async () => {
-      if (userSockets.has(socket.id)) {
-        const user = users.get(userSockets.get(socket.id))
-        if (user.sockets.length > 1) {
-          user.sockets = user.sockets.filter(sock => {
-            if (sock !== socket.id) return true
-            userSockets.delete(sock)
-            return false
-          })
-          users.set(user.id, user)
-        } else {
-          const chatters = await getChatters(user.id)
-          for (let i = 0; i < chatters.length; i++) {
-            if (users.has(chatters[i])) {
-              users.get(chatters[i]).sockets.forEach(socket => {
-                try {
-                  io.to(socket).emit('offline', user)
-                } catch (e) { }
-              })
-            }
-          }
-
-          userSockets.delete(socket.id)
-          users.delete(user.id)
-        }
-      }
-    })
-
-    socket.on('add-friend', (chats) => {
-
-      try {
-
-        let online = 'offline'
-        if (users.has(chats[1].Users[0].id)) {
-          online = 'online'
-          chats[0].Users[0].status = 'online'
-          users.get(chats[1].Users[0].id).sockets.forEach(socket => {
-            io.to(socket).emit('new-chat', chats[0])
-          })
-        }
-
-        if (users.has(chats[0].Users[0].id)) {
-          chats[1].Users[0].status = online
-          users.get(chats[0].Users[0].id).sockets.forEach(socket => {
-            io.to(socket).emit('new-chat', chats[1])
-          })
-        }
-
-      } catch (e) { }
-
-    })
-
-    socket.on('add-user-to-group', ({ chat, newChatter }) => {
-
-      if (users.has(newChatter.id)) {
-        newChatter.status = 'online'
-      }
-
-      // old users
-      chat.Users.forEach((user, index) => {
-        if (users.has(user.id)) {
-          chat.Users[index].status = 'online'
-          users.get(user.id).sockets.forEach(socket => {
-            try {
-              io.to(socket).emit('added-user-to-group', { chat, chatters: [newChatter] })
-            } catch (e) { }
-          })
-        }
-      })
-
-      // send to new chatter
-      if (users.has(newChatter.id)) {
-        users.get(newChatter.id).sockets.forEach(socket => {
-          try {
-            io.to(socket).emit('added-user-to-group', { chat, chatters: chat.Users })
-          } catch (e) { }
-        })
-      }
-    })
-
-    socket.on('leave-current-chat', (data) => {
-
-      const { chatId, userId, currentUserId, notifyUsers } = data
-
-      notifyUsers.forEach(id => {
-        if (users.has(id)) {
-          users.get(id).sockets.forEach(socket => {
-            try {
-              io.to(socket).emit('remove-user-from-chat', { chatId, userId, currentUserId })
-            } catch (e) { }
-          })
-        }
-      })
-    })
-
-    socket.on('typing', (message) => {
-      message.toUserId.forEach(id => {
-        if (users.has(id)) {
-          users.get(id).sockets.forEach(socket => {
-            console.log(socket)
-            io.to(socket).emit('typing', message)
-          })
-        }
-      })
-    })
-
-    socket.on('delete-chat', (data) => {
-      const { chatId, notifyUsers } = data
-
-      notifyUsers.forEach(id => {
-        if (users.has(id)) {
-          users.get(id).sockets.forEach(socket => {
-            try {
-              io.to(socket).emit('delete-chat', parseInt(chatId))
-            } catch (e) { }
-          })
-        }
-      })
-    })
-
   })
 }
 
-const getChatters = async (userId) => {
+const getChatters = async (userId=1) => {
   try {
-    const [results, metadata] = await sequelize.query(`
-      select "cu"."userId" from "ChatUsers" as cu
-      inner join (
-          select "c"."id" from "Chats" as c
-          where exists (
-              select "u"."id" from "Users" as u
-              inner join "ChatUsers" on u.id = "ChatUsers"."userId"
-              where u.id = ${parseInt(userId)} and c.id = "ChatUsers"."chatId"
-          )
-      ) as cjoin on cjoin.id = "cu"."chatId"
-      where "cu"."userId" != ${parseInt(userId)}
-  `)
-
-
-    return results.length > 0 ? results.map(el => el.userId) : []
+  const result = await chatDataPerson.findAll({
+    include: [
+      {
+        model: chat,
+        where: {
+          '$chatDataPerson.id$': userId
+        },
+        required: true 
+      }
+    ],
+    where: {
+      '$chatDataPerson.userId$': {
+        [Op.not]: userId
+      }
+    },
+    attributes: ['dataPersonId']
+  });
+  console.log(result)
+    // return result.length > 0 ? result.map(el => el.userId) : []
   } catch (error) {
     console.log(error)
     return []
   }
 }
-
+getChatters
 module.exports = SocketServer
