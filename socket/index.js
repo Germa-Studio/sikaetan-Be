@@ -27,14 +27,12 @@ const SocketServer = (server) => {
         userSockets.set(socket.id, user.id)
       }
       const chatters = await getChatters(user.chatId, user.id) 
-      console.log(chatters)
-      console.log(chatters.dataPersonId)
         if(users.has(chatters)) {
             console.log("masuk")
-            io.to(socket).emit('online', 'online')
+            io.to(socket.id).emit('online', 'online')
         }else{
             console.log("masuk")
-            io.to(socket).emit('online', 'offline')
+            io.to(socket.id).emit('online', 'offline')
         }
     })
 
