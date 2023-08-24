@@ -26,33 +26,13 @@ const SocketServer = (server) => {
         sockets.push(socket.id)
         userSockets.set(socket.id, user.id)
       }
-
-      // {
-      //   id,
-      //   chatId,
-      // }
-      const chatters = await getChatters(user.chatId, user.id) //query 
-
-      // console.log(chatters)
-
-      // notify his friends that user is now online
+      const chatters = await getChatters(user.chatId, user.id) 
+      console.log(chatters)
         if(users.has(chatters)) {
-          const chatter = users.get(chatters)
-          chatter.sockets.forEach(socket => {
-            try {
-              io.to(socket).emit('online', user)
-            } catch (error) { }
-          })
-          onlineFriends.push(chatter.id)
+            io.to(socket).emit('online', 'online')
+        }else{
+            io.to(socket).emit('online', 'offline')
         }
-
-      // send to user sockets which of his friends are online
-      sockets.forEach(socket => {
-        try {
-          io.to(socket).emit('friends', onlineFriends)
-          // console.log(user)
-        } catch (error) { }
-      })
     })
 
   })
@@ -69,7 +49,6 @@ const getChatters = async (chatId, userId) => {
     },
     attributes: ['dataPersonId']
   });
-  console.log(result)
   return result
   } catch (error) {
     console.log(error)
