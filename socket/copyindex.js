@@ -217,36 +217,20 @@ const SocketServer = (server) => {
 
 const getChatters = async (userId) => {
   try {
-  //   const [results, metadata] = await sequelize.query(`
-  //     select "cu"."dataPersonId" from "chatDataPeople" as cu
-  //     inner join (
-  //         select "c"."id" from "chats" as c
-  //         where exists (
-  //             select "u"."id" from "dataPeople" as u
-  //             inner join "chatDataPeople" on u.id = "chatDataPeople"."dataPersonId"
-  //             where u.id = ${parseInt(userId)} and c.id = "chatDataPeople"."chatId"
-  //         )
-  //     ) as cjoin on cjoin.id = "cu"."chatId"
-  //     where "cu"."userId" != ${parseInt(userId)}
-  // `)
+    const [results, metadata] = await sequelize.query(`
+      select "cu"."dataPersonId" from "chatDataPeople" as cu
+      inner join (
+          select "c"."id" from "chats" as c
+          where exists (
+              select "u"."id" from "dataPeople" as u
+              inner join "chatDataPeople" on u.id = "chatDataPeople"."dataPersonId"
+              where u.id = ${parseInt(userId)} and c.id = "chatDataPeople"."chatId"
+          )
+      ) as cjoin on cjoin.id = "cu"."chatId"
+      where "cu"."userId" != ${parseInt(userId)}
+  `)
 
-  const result = await chatDataPerson.findAll({
-    include: [
-      {
-        model: chat,
-        where: {
-          '$chatDataPerson.id$': userId
-        },
-        required: true 
-      }
-    ],
-    where: {
-      '$chatDataPerson.userId$': {
-        [Op.not]: userId
-      }
-    },
-    attributes: ['dataPersonId']
-  });
+
   console.log(result)
     return result.length > 0 ? result.map(el => el.userId) : []
   } catch (error) {

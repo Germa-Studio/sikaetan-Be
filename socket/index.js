@@ -27,15 +27,17 @@ const SocketServer = (server) => {
         userSockets.set(socket.id, user.id)
       }
 
-      const onlineFriends = [] //ids
-
-      const chatters = await getChatters(user.id) //query 
+      // {
+      //   id,
+      //   chatId,
+      // }
+      const chatters = await getChatters(user.chatId, user.id) //query 
 
       // console.log(chatters)
 
       // notify his friends that user is now online
-        if (users.has(chatters)) {
-          const chatter = users.get(chatters[i])
+        if(users.has(chatters)) {
+          const chatter = users.get(chatters)
           chatter.sockets.forEach(socket => {
             try {
               io.to(socket).emit('online', user)
@@ -56,31 +58,22 @@ const SocketServer = (server) => {
   })
 }
 
-const getChatters = async (userId=1) => {
+const getChatters = async (chatId, userId) => {
   try {
-  const result = await chatDataPerson.findAll({
-    include: [
-      {
-        model: chat,
-        where: {
-          '$chatDataPerson.id$': userId
-        },
-        required: true 
-      }
-    ],
+  const result = await chatDataPerson.findOne({
     where: {
-      '$chatDataPerson.userId$': {
+      chatId,
+      dataPersonId: {
         [Op.not]: userId
       }
     },
     attributes: ['dataPersonId']
   });
   console.log(result)
-    // return result.length > 0 ? result.map(el => el.userId) : []
+  return result
   } catch (error) {
     console.log(error)
-    return []
+    return {}
   }
 }
-getChatters
 module.exports = SocketServer

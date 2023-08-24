@@ -4,7 +4,7 @@ const {
   getContactPetani,
   getMessagePetani 
 } = require('../controllers/chatt')
-const { auth } = require('../../midleware/auth')
+const auth  = require('../../midleware/auth')
 
 router.get('/chat/messages/penyuluh', auth, getContactPenyuluh)
 router.get('/chat/petani', auth, getContactPetani)

@@ -14,6 +14,7 @@ const select = require('./select');
 const allUsers = require('./allUsers');
 const chart = require('./chart');
 const laporanTanam = require('./laporanTanam');
+const chatt = require('./chatt')
 
 router.use('/api-docs', swaggerUI.serve);
 router.get('/api-docs', swaggerUI.setup(swaggerDocument));
@@ -34,6 +35,7 @@ router.use('/', dataPenyuluh);
 router.use('/', select);
 router.use('/', allUsers);
 router.use('/', chart);
+router.use('/', chatt);
 router.use('/', laporanTanam);
 
 module.exports = router;
