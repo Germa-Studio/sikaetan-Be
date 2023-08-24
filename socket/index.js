@@ -28,9 +28,12 @@ const SocketServer = (server) => {
       }
       const chatters = await getChatters(user.chatId, user.id) 
       console.log(chatters)
+      console.log(chatters.dataPersonId)
         if(users.has(chatters)) {
+            console.log("masuk")
             io.to(socket).emit('online', 'online')
         }else{
+            console.log("masuk")
             io.to(socket).emit('online', 'offline')
         }
     })
@@ -49,7 +52,7 @@ const getChatters = async (chatId, userId) => {
     },
     attributes: ['dataPersonId']
   });
-  return result
+  return result.dataPersonId
   } catch (error) {
     console.log(error)
     return {}
