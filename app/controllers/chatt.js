@@ -8,7 +8,7 @@ const getContactPenyuluh = async(req, res)=>{
   try {
     const penyuluh = await dataPerson.findOne({
       include: 
-            [{
+            [{ 
               model: dataPenyuluh,
               where: {
                 desaBinaan: {
@@ -19,9 +19,8 @@ const getContactPenyuluh = async(req, res)=>{
     })
     if(!penyuluh) throw new ApiError(400, `penyuluh dengan desa binaan ${desa} tidak ditemukan`)
     const checkAvailChat = await chatDataPerson.findOne({where:{dataPersonId:userId}})
-    let chatt 
     if(!checkAvailChat){
-      chatt = await chat.create({ type: 'personal' }, { transaction: t })
+      const chatt = await chat.create({ type: 'personal' }, { transaction: t })
       await chatDataPerson.bulkCreate([
         {
           chatId: chatt.id,
@@ -42,13 +41,15 @@ const getContactPenyuluh = async(req, res)=>{
         message:[]
       });  
     }
-    const messages = await message.findAll({where:{chatId:chatt.id}})
+    const chattss = await chatDataPerson.findOne({where:{dataPersonId:penyuluh.id}})
+    const messages = await message.findAll({where:{chatId:chattss.chatId}})
       res.status(200).json({
         user:{
           nama:penyuluh.nama,
           foto:penyuluh.foto
         },
-        messages
+        chatId:chattss.chatId,
+        messages,
       });  
   } catch (error) {
     await t.rollback()
