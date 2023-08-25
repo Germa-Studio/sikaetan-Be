@@ -39,7 +39,7 @@ const getContactPenyuluh = async(req, res)=>{
         },
         chatId:chatt.id,
         message:[]
-      });  
+      });
     }
     const chattss = await chatDataPerson.findOne({where:{dataPersonId:penyuluh.id}})
     const messages = await message.findAll({where:{chatId:chattss.chatId}})
@@ -62,6 +62,11 @@ const getContactPetani = async(req,res)=>{
   const {id} = req.params
   try {
     const findDesaBinaanPenyuluh = await dataPenyuluh.findOne({where:{dataPersonId:id},attributes:['dataPersonId','desaBinaan']})
+    if(!findDesaBinaanPenyuluh){
+      return res.status(200).json({
+        petani:[]
+      });  
+    }
     const desaBinaanPenyuluh = findDesaBinaanPenyuluh.desaBinaan.split(",")
     const petani =  await dataPerson.findAll({where:{
       role:'petani',
@@ -85,9 +90,9 @@ const getMessagePetani = async(req,res)=>{
   const t = await sequelize.transaction()
   try {
     const findIdChatDataPerson = await chatDataPerson.findOne({where:{dataPersonId:partnerId}})
-    let chatt
+    const petani = await dataPerson.findOne({where:{id:partnerId},attributes:['id','nama','foto','desa','role']})
     if(!findIdChatDataPerson){
-      chatt = await chat.create({ type: 'personal' }, { transaction: t })
+      const chatt = await chat.create({ type: 'personal' }, { transaction: t })
       await chatDataPerson.bulkCreate([
         {
           chatId: chatt.id,
@@ -99,16 +104,23 @@ const getMessagePetani = async(req,res)=>{
         }
       ], { transaction: t })
       await t.commit()
-    }
-    const petani = await dataPerson.findOne({where:{id:partnerId},attributes:['id','nama','foto','desa','role']})
-    const messages = await message.findAll({where:{chatId:chatt.id}})
-      res.status(200).json({
+      return res.status(200).json({
         user:{
           nama:petani.nama,
           foto:petani.foto
         },
-        messages
+        messages: []
       });  
+    }
+
+    const messages = await message.findAll({where:{chatId:findIdChatDataPerson.chatId}})
+    res.status(200).json({
+      user:{
+        nama:petani.nama,
+        foto:petani.foto
+      },
+      messages
+    });  
   } catch (error) {
     await t.rollback()
     res.status(error.statusCode || 500).json({

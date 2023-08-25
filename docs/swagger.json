@@ -4136,6 +4136,226 @@
             }
           }
         }
+    },
+    "/chat/messages/penyuluh":{
+        "get": {
+          "summary": "ini untuk user petani yang mencari chatt dengan penyuluh",
+          "security": [
+            {
+              "bearerToken": []
+            }
+          ],
+          "tags": ["Chatt"],
+          "parameters": [
+            {
+              "in": "query",
+              "name": "desa",
+              "required": true,
+              "schema": {
+                "type": "string"
+              },
+              "example":"Dero",
+              "description": "kirimin desa user yang sedang login untuk mendapatkan desa binaan penyuluh"
+            },
+            {
+              "in": "query",
+              "name": "userId",
+              "required": true,
+              "schema": {
+                "type": "integer"
+              },
+              "example":124,
+              "description": "kirimin desa user yang sedang login untuk mendapatkan desa binaan penyuluh"
+            }
+          ],
+          "responses": {
+            "200": {
+            "description": "chhat id dan message akan di kirimkan",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {}
+                  }
+                }
+              }
+              },
+            "400": {
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "message": {
+                        "type": "string",
+                        "example": "ID tidak valid atau data tidak ditemukan"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "500": {
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "message": {
+                        "type": "string",
+                        "example": "Terjadi kesalahan pada server"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }   
+    },
+    "/chat/petani/{id}":{
+        "get": {
+          "summary": "mencari semua petani yang masuk ke wilayah binaannya",
+          "security": [
+            {
+              "bearerToken": []
+            }
+          ],
+          "tags": ["Chatt"],
+          "parameters": [
+            {
+              "in": "path",
+              "name": "id",
+              "required": true,
+              "schema": {
+                "type": "integer"
+              },
+              "example":130,
+              "description": "kirimin id penyuluh yang sedang ligin"
+            }
+          ],
+          "responses": {
+            "200": {
+            "description": "list petani yang masuk ke wilayah binaannya",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+  
+                    }
+                  }
+                }
+              }
+              },
+            "400": {
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "message": {
+                        "type": "string",
+                        "example": "ID tidak valid atau data tidak ditemukan"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "500": {
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "message": {
+                        "type": "string",
+                        "example": "Terjadi kesalahan pada server"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        } 
+    },
+    "/chat/msesages/petani":{
+        "get": {
+          "summary": "ini untuk user petani yang mencari chatt dengan penyuluh",
+          "security": [
+            {
+              "bearerToken": []
+            }
+          ],
+          "tags": ["Chatt"],
+          "parameters": [
+            {
+              "in": "query",
+              "name": "userId",
+              "required": true,
+              "schema": {
+                "type": "integer"
+              },
+              "example":130,
+              "description": "kirimin Id penyuluh yang sedang login"
+            },
+            {
+              "in": "query",
+              "name": "partnerId",
+              "required": true,
+              "schema": {
+                "type": "integer"
+              },
+              "example":124,
+              "description": "kirimin Id petani yang di klik list petaninya"
+            }
+          ],
+          "responses": {
+            "200": {
+            "description": "chhat id dan message akan di kirimkan",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {}
+                  }
+                }
+              }
+              },
+            "400": {
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "message": {
+                        "type": "string",
+                        "example": "ID tidak valid atau data tidak ditemukan"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "500": {
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "message": {
+                        "type": "string",
+                        "example": "Terjadi kesalahan pada server"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        } 
     }
 },
   "components": {
