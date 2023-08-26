@@ -6,7 +6,7 @@ const cekNik = async(req, res)=>{
       const {nik=""}= req.body
       const user = await dataPerson.findOne({ where: { nik, }, });
       if(!user) throw new ApiError(400, `data dengan nik ${nik} tidak ditemukan`)
-        const users = await dataPerson.findOne({ where: { nik, }, include:[{model:tanamanPetani}, {model:laporanTanam}, {model:kelompok}]});
+        const users = await dataPerson.findOne({ where: { nik, }, include:[{model:tanamanPetani}, {model:kelompok}]});
         res.status(200).json({
             message: `data dengan nik ${nik} ditemukan`,
             users

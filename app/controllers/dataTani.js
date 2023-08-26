@@ -218,6 +218,11 @@ const dataTaniDetail = async(req, res)=>{
   const { id } = req.params
   try {
     const data = await dataPerson.findOne({
+      include:[
+        {
+          model: kelompok
+        }
+      ],
       where: {
         id
       }
@@ -234,7 +239,7 @@ const dataTaniDetail = async(req, res)=>{
 }
 const updateTaniDetail = async(req, res)=>{
   const { id } = req.params
-  const {NIK, NoWa, alamat, desa, nama, kecamatan, password } = req.body
+  const {NIK, NoWa, alamat, desa, nama, kecamatan, password, namaKelompok, penyuluh, gapoktan } = req.body
 
   try {
     const data = await dataPerson.findOne({
@@ -243,6 +248,11 @@ const updateTaniDetail = async(req, res)=>{
       }
     });
     if(!data) throw new ApiError(400, 'data tidak ditemukan.');
+    const cekKelompok = await kelompok.findOne({
+      where: {
+        id:data.kelompokId
+      }
+    });
     const { file, } = req;
     if (file) {
       const validFormat =
@@ -264,27 +274,53 @@ const updateTaniDetail = async(req, res)=>{
         file: file.buffer,
         fileName: `IMG-${Date.now()}.${ext}`,
       });
-      await dataPerson.update({
-        NIK, NoWa, alamat, desa, nama, kecamatan, password, foto: img.url
-      },{
-        where: {
-          id
-        }
-      });
+      if(cekKelompok){
+        await kelompok.update({
+            namaKelompok, penyuluh, gapoktan
+          },
+          { where: {
+            id:data.kelompokId
+          }
+        });
+      }else{
+        const kelompoks = await kelompok.create({
+            namaKelompok, penyuluh, gapoktan
+        });
+        await dataPerson.update({
+          NIK, NoWa, alamat, desa, nama, kecamatan, password, foto: img.url, kelompokId: kelompoks.id
+        },{
+          where: {
+            id
+          }
+        });
+      }
       return res.status(200).json({
           message: 'Petani Berhasil Di update',
         });
     }
-    await dataPerson.update({
-      NIK, NoWa, alamat, desa, nama, kecamatan, password
-    },{
-      where: {
-        id
+      if(cekKelompok){
+        await kelompok.update({
+            namaKelompok, penyuluh, gapoktan
+          },
+          { where: {
+            id:data.kelompokId
+          }
+        });
+      }else{
+        const kelompoks = await kelompok.create({
+            namaKelompok, penyuluh, gapoktan
+        });
+        await dataPerson.update({
+          NIK, NoWa, alamat, desa, nama, kecamatan, password, kelompokId: kelompoks.id
+        },{
+          where: {
+            id
+          }
+        });
+        res.status(200).json({
+          message: 'Petani Berhasil Di update',
+        });  
       }
-    });
-    res.status(200).json({
-      message: 'Petani Berhasil Di update',
-    });  
   } catch (error) {
     res.status(error.statusCode || 500).json({
       message: `gagal update data petani`,
