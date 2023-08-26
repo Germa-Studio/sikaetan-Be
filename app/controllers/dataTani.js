@@ -172,6 +172,11 @@ const tambahLaporanTani = async(req, res)=>{
 const daftarTani = async(req, res)=>{
   try {
     const data = await dataPerson.findAll({
+      include:[
+        {
+          model: kelompok
+        }
+      ],
       where: {
         role:"petani"
       },
