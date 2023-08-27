@@ -4283,7 +4283,7 @@
     },
     "/chat/msesages/petani":{
         "get": {
-          "summary": "ini untuk user petani yang mencari chatt dengan penyuluh",
+          "summary": "penyuluh ketika mengclick salah satu daftar petani",
           "security": [
             {
               "bearerToken": []
@@ -4308,7 +4308,7 @@
               "schema": {
                 "type": "integer"
               },
-              "example":124,
+              "example":132,
               "description": "kirimin Id petani yang di klik list petaninya"
             }
           ],

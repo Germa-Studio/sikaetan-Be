@@ -119,6 +119,7 @@ const getMessagePetani = async(req,res)=>{
         nama:petani.nama,
         foto:petani.foto
       },
+      chatId:findIdChatDataPerson.chatId,
       messages
     });  
   } catch (error) {
