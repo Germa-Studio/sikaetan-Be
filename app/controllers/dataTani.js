@@ -275,7 +275,8 @@ const updateTaniDetail = async(req, res)=>{
         }
       });
     }
-    const { file, } = req;
+    const { file } = req;
+    console.log(file)
     if (file) {
       const validFormat =
         file.mimetype === 'image/png' ||

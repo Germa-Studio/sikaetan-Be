@@ -30,7 +30,7 @@ router.put('/tanaman-petani/:id', auth, ubahTanamanPetaniById);
 router.delete('/tanaman-petani/:id', auth, deleteTanamanPetaniById);
 router.delete('/daftar-tani/:id', auth, deleteDaftarTani);
 router.get('/daftar-tani/:id', auth, dataTaniDetail);
-router.put('/daftar-tani/:id', auth, upload.single('fotoBaru') ,updateTaniDetail);
+router.put('/daftar-tani/:id', auth, upload.single('foto') ,updateTaniDetail);
 
 module.exports = router;
 
