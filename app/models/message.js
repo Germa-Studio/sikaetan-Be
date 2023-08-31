@@ -1,6 +1,6 @@
 'use strict';
 const {
-  Model
+  Model, STRING
 } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
   class message extends Model {
@@ -18,7 +18,8 @@ module.exports = (sequelize, DataTypes) => {
     attachmentId: DataTypes.INTEGER,
     pesan: DataTypes.TEXT,
     chatId: DataTypes.INTEGER,
-    fromId: DataTypes.INTEGER
+    fromId: DataTypes.INTEGER,
+    waktu: DataTypes.STRING
   }, {
     sequelize,
     modelName: 'message',

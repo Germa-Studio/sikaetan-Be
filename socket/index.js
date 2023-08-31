@@ -1,7 +1,6 @@
 const socketIo = require('socket.io')
 const { Op } = require('sequelize');
-const { sequelize } = require('../app/models')
-const { Message, dataPerson, chat, chatDataPerson } = require('../app/models')
+const { Message, dataPerson, chat, chatDataPerson, sequelize, attachment } = require('../app/models')
 
 const users = new Map()
 const userSockets = new Map()
@@ -47,19 +46,30 @@ const SocketServer = (server) => {
           sockets = [...sockets, ...users.get(id).sockets]
         }
       }) 
+      const t = await sequelize.transaction()
       try {
         const msg = {
           type: message.type,
-          fromUserId: message.fromUserId,
+          fromId: message.fromId,
           chatId: message.chatId,
           message: message.message
         }
-        const savedMessage = await Message.create(msg)
+        const savedMessage = await Message.create(msg, { transaction: t })
         if(savedMessage){
-          sockets.forEach(socket => {
-            io.to(socket).emit('received', message)
-          })
+        const messages = await message.findAll({where:{id:savedMessage.id},
+          include: {
+            model: attachment,
+            attributes: ['link'] 
+          }
+        })
+        if(message){
+           await t.commit()
+           sockets.forEach(socket => {
+             io.to(socket).emit('received', messages)
+           })
+        }
         }else{
+          await t.rollback()
           const a =  users.get(message.fromUserId).sockets
             io.to(a).emit('received', {message:"gagal mengirim pesan"})
         }

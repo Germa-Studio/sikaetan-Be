@@ -1,4 +1,4 @@
-const { dataPerson, dataPenyuluh, chatDataPerson, chat, message, sequelize } = require('../models');
+const { dataPerson, dataPenyuluh, chatDataPerson, chat, message, sequelize, attachment } = require('../models');
 const ApiError = require('../../utils/ApiError');
 const { Op } = require('sequelize');
 
@@ -42,7 +42,12 @@ const getContactPenyuluh = async(req, res)=>{
       });
     }
     const chattss = await chatDataPerson.findOne({where:{dataPersonId:penyuluh.id}})
-    const messages = await message.findAll({where:{chatId:chattss.chatId}})
+    const messages = await message.findAll({where:{chatId:chattss.chatId},
+      include: {
+        model: attachment,
+        attributes: ['link'] 
+      }
+    })
       res.status(200).json({
         user:{
           nama:penyuluh.nama,
@@ -109,11 +114,16 @@ const getMessagePetani = async(req,res)=>{
           nama:petani.nama,
           foto:petani.foto
         },
+        chatId:chatt.id,
         messages: []
       });  
     }
 
-    const messages = await message.findAll({where:{chatId:findIdChatDataPerson.chatId}})
+    const messages = await message.findAll({where:{chatId:findIdChatDataPerson.chatId},      
+      include: {
+        model: attachment,
+        attributes: ['link'] 
+      }})
     res.status(200).json({
       user:{
         nama:petani.nama,
