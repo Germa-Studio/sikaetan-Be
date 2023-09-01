@@ -296,8 +296,6 @@ const updatePenyuluh = async(req, res)=>{
     let urlImg
     if(!NIP) throw new ApiError(400, "NIP tidak boleh kosong")
     if(!nama) throw new ApiError(400, "nama tidak boleh kosong")
-    const tani = await dataPerson.findOne({ where: { NIP, }, });
-    if(tani) throw new ApiError(400, "NIP sudah digunakan")
     if (file) {
       const validFormat =
         file.mimetype === 'image/png' ||
@@ -327,13 +325,13 @@ const updatePenyuluh = async(req, res)=>{
           id
         }
       })
-    await dataPenyuluh.update({namaProduct, desaBinaan:desaBinaan,kecamatanBinaan, dataPersonId:newPerson.id },
+    await dataPenyuluh.update({namaProduct, desaBinaan:desaBinaan,kecamatanBinaan, dataPersonId:id },
       {
         where: {
-          id
+          dataPersonId: id
         }
       })
-    const newDataPenyuluh = await dataPerson.findOne({where:{id:newPerson.id}, indlude:[{model:dataPenyuluh}]})
+    const newDataPenyuluh = await dataPerson.findOne({where:{id:id}, indlude:[{model:dataPenyuluh}]})
     res.status(200).json({
       message: 'berhasil merubah data Penyuluh',
       newDataPenyuluh
