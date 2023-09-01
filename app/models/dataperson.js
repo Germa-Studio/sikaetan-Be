@@ -43,7 +43,8 @@ module.exports = (sequelize, DataTypes) => {
     presesiKehadiranId: DataTypes.INTEGER,
     jurnalKegiatanId: DataTypes.INTEGER,
     riwayatChatId: DataTypes.INTEGER,
-    responseRatingId: DataTypes.INTEGER
+    responseRatingId: DataTypes.INTEGER,
+    verify: DataTypes.BOOLEAN
   }, {
     sequelize,
     modelName: 'dataPerson',

@@ -128,6 +128,9 @@ const loginPetani = async (req, res) => {
       if (password != user.password) {
         throw new ApiError(400, 'Password salah.');
       }
+      if(!user.verify){
+        throw new ApiError(400, "Akun belum diverifikasi oleh admin, mohon menunggu")
+      }
       if(password == user.password){
         const token = jwt.sign(
           {
@@ -152,7 +155,7 @@ const loginPetani = async (req, res) => {
         const token = jwt.sign(
           {
             id: user.id,
-            NIK:user.NIK
+            NIK:user.NIP
           },
           process.env.SECRET_KEY
         );
@@ -229,7 +232,39 @@ const registerPetani = async (req, res) => {
     });
   }
 };
-
+const getUserNotVerify = async (req, res) => {
+  try {
+    const user = await dataPerson.findAll({ where: {verify: false}, });
+    if(!user) throw new ApiError(400, "user tidak ditemukan")
+    return res.status(200).json({
+      message: 'user belum di verifikasi',
+      user,
+    });
+  } catch (error) {
+    res.status(error.statusCode || 500).json({
+      message: error.message,
+    });
+  }
+};
+const verifikasi = async (req, res) => {
+  const {id} = req.params
+  try {
+    const user = await dataPerson.findOne({ where: { id, }, });
+    if(!user) throw new ApiError(400, "user tidak ditemukan")
+    await dataPerson.update({varify: true},{
+      where: {
+        id
+      }
+    });
+    return res.status(200).json({
+      message: 'User berhasil diverifikasi',
+    });
+  } catch (error) {
+    res.status(error.statusCode || 500).json({
+      message: error.message,
+    });
+  }
+};
   
 
-module.exports = { login, register, loginPetani, registerPetani, };
+module.exports = { login, register, loginPetani, registerPetani, getUserNotVerify, verifikasi };
