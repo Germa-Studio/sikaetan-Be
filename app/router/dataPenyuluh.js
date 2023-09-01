@@ -10,7 +10,9 @@ const {
   tambahPresensiKehadiran,
   daftarPenyuluh,
   deleteDaftarPenyuluh,
-  presensiKehadiranWeb
+  presensiKehadiranWeb,
+  daftarPenyuluhById,
+  updatePenyuluh
 } = require('../controllers/dataPenyuluh');
 
 router.post('/penyuluh/add', upload.single('foto') ,tambahDataPenyuluh);
@@ -21,6 +23,8 @@ router.get('/presensi-kehadiran/web', presensiKehadiranWeb);
 router.get('/jurnal-kegiatan', jurnalKegiatan);
 router.get('/riwayat-chat', RiwayatChat);
 router.get('/daftar-penyuluh', auth, daftarPenyuluh);
+router.get('/daftar-penyuluh/:id', auth, daftarPenyuluhById);
+router.put('/daftar-penyuluh/:id', auth, upload.single('foto') ,updatePenyuluh);
 router.delete('/daftar-penyuluh/:id', auth, deleteDaftarPenyuluh);
 
 module.exports = router;

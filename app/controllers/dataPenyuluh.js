@@ -263,6 +263,87 @@ const RiwayatChat = async(req, res)=>{
     });
   }
 }
+const daftarPenyuluhById = async(req, res)=>{
+  const {id} = req.params
+  try {
+    const dataDaftarPenyuluh = await dataPerson.findOne({where:{id:id,role:"penyuluh"},include:[{model:dataPenyuluh}]});
+    res.status(200).json({
+      message: 'Semua Data penyuluh',
+      dataDaftarPenyuluh
+    });  
+  } catch (error) {
+    res.status(error.statusCode || 500).json({
+      message: error.message,
+    });
+  }
+}
+const updatePenyuluh = async(req, res)=>{
+  const {id} = req.params
+  try {
+   const {
+    NIP,
+    NoWa,
+    alamat,
+    desa,
+    nama,
+    kecamatan,
+    password,
+    namaProduct,
+    kecamatanBinaan,
+    desaBinaan
+    } = req.body
+    const { file, } = req;
+    let urlImg
+    if(!NIP) throw new ApiError(400, "NIP tidak boleh kosong")
+    if(!nama) throw new ApiError(400, "nama tidak boleh kosong")
+    const tani = await dataPerson.findOne({ where: { NIP, }, });
+    if(tani) throw new ApiError(400, "NIP sudah digunakan")
+    if (file) {
+      const validFormat =
+        file.mimetype === 'image/png' ||
+        file.mimetype === 'image/jpg' ||
+        file.mimetype === 'image/jpeg' ||
+        file.mimetype === 'image/gif';
+      if (!validFormat) {
+        return res.status(400).json({
+          status: 'failed',
+          message: 'Wrong Image Format',
+        });
+      }
+      const split = file.originalname.split('.');
+      const ext = split[split.length - 1];
+
+      // upload file ke imagekit
+      const img = await imageKit.upload({
+        file: file.buffer,
+        fileName: `IMG-${Date.now()}.${ext}`,
+      });
+      urlImg = img.url
+    }
+    const newPerson = await dataPerson.update(
+      {NIP, NoWa, alamat, desa, nama, kecamatan, password, foto:urlImg},
+      {
+        where: {
+          id
+        }
+      })
+    await dataPenyuluh.update({namaProduct, desaBinaan:desaBinaan,kecamatanBinaan, dataPersonId:newPerson.id },
+      {
+        where: {
+          id
+        }
+      })
+    const newDataPenyuluh = await dataPerson.findOne({where:{id:newPerson.id}, indlude:[{model:dataPenyuluh}]})
+    res.status(200).json({
+      message: 'berhasil merubah data Penyuluh',
+      newDataPenyuluh
+    });  
+  } catch (error) {
+    res.status(error.statusCode || 500).json({
+      message: error.message,
+    });
+  }
+}
 
 
 module.exports = {
@@ -274,5 +355,7 @@ module.exports = {
   tambahPresensiKehadiran,
   daftarPenyuluh,
   deleteDaftarPenyuluh,
-  presensiKehadiranWeb
+  presensiKehadiranWeb,
+  daftarPenyuluhById,
+  updatePenyuluh
 }
