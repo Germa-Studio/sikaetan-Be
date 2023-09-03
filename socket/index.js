@@ -64,6 +64,7 @@ const SocketServer = (server) => {
           fromId: message.fromId,
           chatId: message.chatId,
           message: message.message,
+          waktu: message.waktu,
           attachmentId: attachmentId
         }
         const savedMessage = await Message.create(msg, { transaction: t })
@@ -88,6 +89,7 @@ const SocketServer = (server) => {
     
   })
 }
+
 const getChatters = async (chatId, userId) => {
   try {
   const result = await chatDataPerson.findOne({
