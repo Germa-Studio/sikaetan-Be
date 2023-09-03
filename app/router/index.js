@@ -2,7 +2,7 @@ const { Router, } = require('express');
 const swaggerUI = require('swagger-ui-express');
 const swaggerDocument = require('../../docs/swagger.json');
 const router = Router();
-const cekNik = require("../controllers/cekNik")
+const {cekNik, cekNiP} = require("../controllers/cekNik")
 const akun = require('./akun');
 const auth = require('../../midleware/auth');
 const dataTani = require('./dataTani');
@@ -25,6 +25,7 @@ router.get('/', (req, res) => {
   });
 });
 router.post('/cek-nik', auth, cekNik);
+router.post('/cek-nip', auth, cekNiP);
 
 router.use('/auth', akun);
 router.use('/', dataTani);
