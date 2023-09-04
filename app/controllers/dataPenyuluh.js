@@ -62,6 +62,7 @@ const tambahDataPenyuluh = async(req, res)=>{
 const daftarPenyuluh = async(req, res)=>{
   try {
     const dataDaftarPenyuluh = await dataPerson.findAll({where:{role:"penyuluh"},include:[{model:dataPenyuluh}]});
+    console.log(dataDaftarPenyuluh.length)
     res.status(200).json({
       message: 'Semua Data Riwayat Chat',
       dataDaftarPenyuluh
@@ -318,7 +319,7 @@ const updatePenyuluh = async(req, res)=>{
       });
       urlImg = img.url
     }
-    const newPerson = await dataPerson.update(
+    await dataPerson.update(
       {NIP, NoWa, alamat, desa, nama, kecamatan, password, foto:urlImg},
       {
         where: {

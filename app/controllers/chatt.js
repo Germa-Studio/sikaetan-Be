@@ -37,6 +37,7 @@ const getContactPenyuluh = async(req, res)=>{
           nama:penyuluh.nama,
           foto:penyuluh.foto
         },
+        partnerId:penyuluh.id,
         chatId:chatt.id,
         message:[]
       });
