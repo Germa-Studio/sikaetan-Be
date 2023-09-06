@@ -3,7 +3,6 @@ const ApiError = require('../../utils/ApiError');
 
 const cekNik = async(req, res)=>{
     try {
-      console.log("sssssssss")
       const {NIK=""}= req.body
       const user = await dataPerson.findOne({ where: { NIK, }, });
       if(!user) throw new ApiError(400, `data dengan NIK ${NIK} tidak ditemukan`)

@@ -14,7 +14,6 @@ const penyuluh = await dataPerson.findAll({
     '$dataPenyuluh.kecamatanBinaan$': kecamatan
   }
 });
-    // console.log(penyuluh)
     res.status(200).json({
       message: 'Berhasil Mendapatkan Data Info Tani',
       penyuluh

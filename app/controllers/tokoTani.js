@@ -63,7 +63,6 @@ const tambahDaftarPenjual = async(req, res)=>{
       dataPenjual
     });
   } catch (error) {
-    console.log(error)
     res.status(error.statusCode || 500).json({
       message: error.message,
     });

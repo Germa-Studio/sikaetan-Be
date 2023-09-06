@@ -62,7 +62,6 @@ const tambahDataPenyuluh = async(req, res)=>{
 const daftarPenyuluh = async(req, res)=>{
   try {
     const dataDaftarPenyuluh = await dataPerson.findAll({where:{role:"penyuluh"},include:[{model:dataPenyuluh}]});
-    console.log(dataDaftarPenyuluh.length)
     res.status(200).json({
       message: 'Semua Data Riwayat Chat',
       dataDaftarPenyuluh

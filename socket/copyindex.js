@@ -10,9 +10,7 @@ const SocketServer = (server) => {
   const io = socketIo(server)
 
   io.on('connection', (socket) => {
-    console.log("connected")
     socket.on('join', async (user) => {
-      console.log("connected join")
       let sockets = []
 
       if (users.has(user.id)) {

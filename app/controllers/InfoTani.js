@@ -257,7 +257,6 @@ const updateInfoTani = async(req, res)=>{
       message: 'Berita Tani Berhasil DI ubah tanpa image',
     });
   } catch (error) {
-        console.log(error)
     res.status(error.statusCode || 500).json({
       message: `gagal menghapus data, ${error.message}`,
     });
