@@ -62,7 +62,7 @@ const SocketServer = (server) => {
         const msg = {
           fromId: message.fromId,
           chatId: message.chatId,
-          message: message.message,
+          pesan: message.message,
           waktu: message.waktu,
           attachmentId: attachmentId
         }
