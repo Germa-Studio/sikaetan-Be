@@ -46,25 +46,13 @@ const SocketServer = (server) => {
         sockets = [...sockets, ...users.get(message.toUserId).sockets]
       }
       const t = await sequelize.transaction()
-      let attachmentId;
       try {
-        if(message.gambar){
-          const file = message.gambar;
-          const split = file.originalname.split('.');
-          const ext = split[split.length - 1];
-          const img = await imageKit.upload({
-            file: file.buffer,
-            fileName: `IMG-${Date.now()}.${ext}`,
-          });
-          const attachment = await attachment.create({type:"gambar", link:img.url}, { transaction: t })
-          attachmentId = attachment.id
-        }
         const msg = {
           fromId: message.fromId,
           chatId: message.chatId,
           pesan: message.message,
           waktu: message.waktu,
-          attachmentId: attachmentId
+          attachment: message.attachment
         }
         const savedMessage = await messagesss.create(msg, { transaction: t })
         console.log(savedMessage.id, "<<<<< berhasil menambahkan message")
