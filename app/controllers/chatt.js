@@ -43,11 +43,7 @@ const getContactPenyuluh = async(req, res)=>{
       });
     }
     const chattss = await chatDataPerson.findOne({where:{dataPersonId:penyuluh.id}})
-    const messages = await message.findAll({where:{chatId:chattss.chatId},
-      include: {
-        model: attachment,
-        attributes: ['link'] 
-      }
+    const messages = await message.findAll({where:{chatId:chattss.chatId}
     })
       res.status(200).json({
         user:{
@@ -121,11 +117,7 @@ const getMessagePetani = async(req,res)=>{
       });  
     }
 
-    const messages = await message.findAll({where:{chatId:findIdChatDataPerson.chatId},      
-      include: {
-        model: attachment,
-        attributes: ['link'] 
-      }})
+    const messages = await message.findAll({where:{chatId:findIdChatDataPerson.chatId}})
     res.status(200).json({
       user:{
         nama:petani.nama,

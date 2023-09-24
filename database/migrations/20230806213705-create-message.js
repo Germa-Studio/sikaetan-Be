@@ -15,6 +15,9 @@ module.exports = {
       pesan: {
         type: Sequelize.TEXT
       },
+      waktu: {
+        type: Sequelize.STRING
+      },
       chatId: {
         type: Sequelize.INTEGER
       },
