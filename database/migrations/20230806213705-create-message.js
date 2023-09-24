@@ -9,8 +9,8 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      attachmentId: {
-        type: Sequelize.INTEGER
+      attachment: {
+        type: Sequelize.TEXT
       },
       pesan: {
         type: Sequelize.TEXT

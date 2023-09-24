@@ -11,11 +11,11 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      this.belongsTo(models.attachment, { foreignKey: 'attachmentId' });
+      // this.belongsTo(models.attachment, { foreignKey: 'attachmentId' });
     }
   }
   message.init({
-    attachmentId: DataTypes.INTEGER,
+    attachment: DataTypes.TEXT,
     pesan: DataTypes.TEXT,
     chatId: DataTypes.INTEGER,
     fromId: DataTypes.INTEGER,
