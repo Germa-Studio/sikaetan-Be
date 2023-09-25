@@ -29,7 +29,7 @@ const getChart = async(req, res)=>{
   try {
     const startDate = new Date();
     const endDate = new Date();
-    endDate.setFullYear(endDate.getFullYear() - 5); 
+    endDate.setFullYear(endDate.getFullYear() - 5);
     const datachart = await chart.findAll({
       attributes: [
         'label',

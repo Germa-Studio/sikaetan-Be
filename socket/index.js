@@ -56,12 +56,7 @@ const SocketServer = (server) => {
         }
         const savedMessage = await messagesss.create(msg, { transaction: t })
         console.log(savedMessage.id, "<<<<< berhasil menambahkan message")
-        const messages = await messagesss.findOne({where:{id:savedMessage.id},          
-          include: {
-            model: attachment,
-            attributes: ['link'] 
-          },
-          transaction: t})
+        const messages = await messagesss.findOne({where:{id:savedMessage.id}, transaction: t})
         console.log(messages, "<<<<<messages")
         if(messages){
            await t.commit()
