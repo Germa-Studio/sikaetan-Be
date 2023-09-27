@@ -47,12 +47,36 @@ const SocketServer = (server) => {
       }
       const t = await sequelize.transaction()
       try {
+       let urlImg
+        if (message.image) {
+          const {image} = message 
+          const validFormat =
+            image.mimetype === 'image/png' ||
+            image.mimetype === 'image/jpg' ||
+            image.mimetype === 'image/jpeg' ||
+            image.mimetype === 'image/gif';
+          if (!validFormat) {
+            res.status(400).json({
+              status: 'failed',
+              message: 'Wrong Image Format',
+            });
+          }
+          const split = image.originalname.split('.');
+          const ext = split[split.length - 1];
+
+          // upload file ke imagekit
+          const img = await imageKit.upload({
+            file: file.buffer,
+            fileName: `IMG-${Date.now()}.${ext}`,
+          });
+          urlImg = img.url
+        }
         const msg = {
           fromId: message.fromId,
           chatId: message.chatId,
           pesan: message.message,
           waktu: message.waktu,
-          attachment: message.attachment
+          attachment: urlImg
         }
         const savedMessage = await messagesss.create(msg, { transaction: t })
         console.log(savedMessage.id, "<<<<< berhasil menambahkan message")
