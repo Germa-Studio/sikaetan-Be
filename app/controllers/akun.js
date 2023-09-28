@@ -251,11 +251,12 @@ const verifikasi = async (req, res) => {
   try {
     const user = await dataPerson.findOne({ where: { id, }, });
     if(!user) throw new ApiError(400, "user tidak ditemukan")
-    await dataPerson.update({varify: true},{
+    await dataPerson.update({verify: true},{
       where: {
         id
       }
     });
+    const users = await dataPerson.findOne({ where: { id, }, });
     return res.status(200).json({
       message: 'User berhasil diverifikasi',
     });
