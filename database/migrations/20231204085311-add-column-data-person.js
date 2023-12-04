@@ -9,10 +9,10 @@ module.exports = {
      * Example:
      * await queryInterface.createTable('users', { id: Sequelize.INTEGER });
      */
-    // await queryInterface.renameColumn('tanamanPetanis', 'janisPanen', 'jenisPanen');
-    // await queryInterface.addColumn("tanamanPetanis", "realisasiLuasLahan", {
-    //   type: Sequelize.STRING,
-    // });
+    await queryInterface.addColumn("dataPeople", "verify", {
+      type: Sequelize.BOOLEAN,
+      after: "responseRatingId",
+    });
   },
 
   async down(queryInterface, Sequelize) {
@@ -22,11 +22,6 @@ module.exports = {
      * Example:
      * await queryInterface.dropTable('users');
      */
-    // await queryInterface.renameColumn(
-    //   "tanamanPetanis",
-    //   "jenisPanen",
-    //   "janisPanen"
-    // );
-    // await queryInterface.removeColumn("tanamanPetanis", "realisasiLuasLahan");
+    await queryInterface.removeColumn("dataPeople", "verify");
   },
 };
