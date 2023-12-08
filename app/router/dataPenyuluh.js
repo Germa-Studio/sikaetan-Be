@@ -15,13 +15,13 @@ const {
   updatePenyuluh
 } = require('../controllers/dataPenyuluh');
 
-router.post('/penyuluh/add', upload.single('foto') ,tambahDataPenyuluh);
-router.post('/presensi-kehadiran/add',upload.single('FotoKegiatan'), tambahPresensiKehadiran);
-router.post('/jurnal-kegiatan/add',upload.single('gambar'), tambahJurnalKegiatan);
-router.get('/presensi-kehadiran', presensiKehadiran);
-router.get('/presensi-kehadiran/web', presensiKehadiranWeb);
-router.get('/jurnal-kegiatan', jurnalKegiatan);
-router.get('/riwayat-chat', RiwayatChat);
+router.post('/penyuluh/add', auth, upload.single('foto') ,tambahDataPenyuluh);
+router.post('/presensi-kehadiran/add', auth, upload.single('FotoKegiatan'), tambahPresensiKehadiran);
+router.post('/jurnal-kegiatan/add', auth, upload.single('gambar'), tambahJurnalKegiatan);
+router.get('/presensi-kehadiran', auth, presensiKehadiran);
+router.get('/presensi-kehadiran/web', auth, presensiKehadiranWeb);
+router.get('/jurnal-kegiatan', auth, jurnalKegiatan);
+router.get('/riwayat-chat', auth, RiwayatChat);
 router.get('/daftar-penyuluh', auth, daftarPenyuluh);
 router.get('/daftar-penyuluh/:id', auth, daftarPenyuluhById);
 router.put('/daftar-penyuluh/:id', auth, upload.single('foto') ,updatePenyuluh);
