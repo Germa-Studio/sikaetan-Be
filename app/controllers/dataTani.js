@@ -68,73 +68,82 @@ const laporanPenyuluh = async (req, res) => {
   }
 };
 const tambahDaftarTani = async (req, res) => {
+  const {peran} = req.user;
   try {
-    const {
-      NIK,
-      NoWa,
-      alamat,
-      desa,
-      nama,
-      kecamatan,
-      password,
-      gapoktan,
-      penyuluh,
-      namaKelompok,
-    } = req.body;
-
-    if (!NIK) throw new ApiError(400, "NIK tidak boleh kosong");
-    if (!nama) throw new ApiError(400, "nama tidak boleh kosong");
-    if (!penyuluh) throw new ApiError(400, "penyuluh tidak boleh kosong");
-    const tani = await dataPerson.findOne({ where: { NIK } });
-    if (tani) throw new ApiError(400, "NIK sudah digunakan");
-    const { file } = req;
-    let urlImg;
-    if (file) {
-      const validFormat =
-        file.mimetype === "image/png" ||
-        file.mimetype === "image/jpg" ||
-        file.mimetype === "image/jpeg" ||
-        file.mimetype === "image/gif";
-      if (!validFormat) {
-        return res.status(400).json({
-          status: "failed",
-          message: "Wrong Image Format",
+    if (
+      peran !== 'OPERATOR ADMIN' &&
+      peran !== 'OPERATOR SUPER ADMIN' &&
+      peran !== 'PENYULUH'
+    ){
+      throw new ApiError(400, 'Anda tidak memiliki akses.');
+    }else{
+      const {
+        NIK,
+        NoWa,
+        alamat,
+        desa,
+        nama,
+        kecamatan,
+        password,
+        gapoktan,
+        penyuluh,
+        namaKelompok,
+      } = req.body;
+  
+      if (!NIK) throw new ApiError(400, "NIK tidak boleh kosong");
+      if (!nama) throw new ApiError(400, "nama tidak boleh kosong");
+      if (!penyuluh) throw new ApiError(400, "penyuluh tidak boleh kosong");
+      const tani = await dataPerson.findOne({ where: { NIK } });
+      if (tani) throw new ApiError(400, "NIK sudah digunakan");
+      const { file } = req;
+      let urlImg;
+      if (file) {
+        const validFormat =
+          file.mimetype === "image/png" ||
+          file.mimetype === "image/jpg" ||
+          file.mimetype === "image/jpeg" ||
+          file.mimetype === "image/gif";
+        if (!validFormat) {
+          return res.status(400).json({
+            status: "failed",
+            message: "Wrong Image Format",
+          });
+        }
+        const split = file.originalname.split(".");
+        const ext = split[split.length - 1];
+  
+        // upload file ke imagekit
+        const img = await imageKit.upload({
+          file: file.buffer,
+          fileName: `IMG-${Date.now()}.${ext}`,
         });
+        img.url;
+        console.log({ ...req.body, img: img.url });
       }
-      const split = file.originalname.split(".");
-      const ext = split[split.length - 1];
-
-      // upload file ke imagekit
-      const img = await imageKit.upload({
-        file: file.buffer,
-        fileName: `IMG-${Date.now()}.${ext}`,
+      const dataKelompok = await kelompok.create({
+        gapoktan,
+        penyuluh,
+        namaKelompok,
+        desa,
       });
-      img.url;
-      console.log({ ...req.body, img: img.url });
+      const daftarTani = await dataPerson.create({
+        NIK,
+        NoWa,
+        role: "petani",
+        alamat,
+        desa,
+        nama,
+        kecamatan,
+        password,
+        kelompokId: dataKelompok.id,
+        foto: urlImg,
+      });
+  
+      res.status(200).json({
+        message: "Berhasil Menambahakan Daftar Tani",
+        daftarTani,
+      });
     }
-    const dataKelompok = await kelompok.create({
-      gapoktan,
-      penyuluh,
-      namaKelompok,
-      desa,
-    });
-    const daftarTani = await dataPerson.create({
-      NIK,
-      NoWa,
-      role: "petani",
-      alamat,
-      desa,
-      nama,
-      kecamatan,
-      password,
-      kelompokId: dataKelompok.id,
-      foto: urlImg,
-    });
-
-    res.status(200).json({
-      message: "Berhasil Menambahakan Daftar Tani",
-      daftarTani,
-    });
   } catch (error) {
     res.status(error.statusCode || 500).json({
       message: error.message,
@@ -195,20 +204,25 @@ const tambahLaporanTani = async (req, res) => {
 };
 const daftarTani = async (req, res) => {
   try {
-    const data = await dataPerson.findAll({
-      include: [
-        {
-          model: kelompok,
+    const {userInfo} = req.user
+    if (userInfo !== null){
+      const data = await dataPerson.findAll({
+        include: [
+          {
+            model: kelompok,
+          },
+        ],
+        where: {
+          role: "petani",
         },
-      ],
-      where: {
-        role: "petani",
-      },
-    });
-    res.status(200).json({
-      message: "Data laporan Tani Berhasil Diperoleh",
-      tani: data,
-    });
+      });
+      res.status(200).json({
+        message: "Data laporan Tani Berhasil Diperoleh",
+        tani: data,
+      });
+    } else{
+      throw new ApiError(400, 'Anda tidak memiliki akses.');
+    }
   } catch (error) {
     res.status(error.statusCode || 500).json({
       message: error.message,
@@ -217,21 +231,28 @@ const daftarTani = async (req, res) => {
 };
 const deleteDaftarTani = async (req, res) => {
   const { id } = req.params;
+  const {peran} = req.user;
   try {
-    const data = await dataPerson.findOne({
-      where: {
-        id,
-      },
-    });
-    if (!data) throw new ApiError(400, "data tidak ditemukan.");
-    await dataPerson.destroy({
-      where: {
-        id,
-      },
-    });
-    res.status(200).json({
-      message: "Petani Berhasil Di Hapus",
-    });
+    if (
+      peran !== 'OPERATOR SUPER ADMIN'
+    ){
+      throw new ApiError(400, 'Anda tidak memiliki akses.');
+    }else{
+      const data = await dataPerson.findOne({
+        where: {
+          id,
+        },
+      });
+      if (!data) throw new ApiError(400, "data tidak ditemukan.");
+      await dataPerson.destroy({
+        where: {
+          id,
+        },
+      });
+      res.status(200).json({
+        message: "Petani Berhasil Di Hapus",
+      });
+    }
   } catch (error) {
     res.status(error.statusCode || 500).json({
       message: `gagal menghapus data petani, ${error.message}`,
@@ -262,6 +283,7 @@ const dataTaniDetail = async (req, res) => {
   }
 };
 const updateTaniDetail = async (req, res) => {
+  const {peran} = req.user;
   const { id } = req.params;
   const {
     NIK,
@@ -277,71 +299,100 @@ const updateTaniDetail = async (req, res) => {
   } = req.body;
 
   try {
-    const data = await dataPerson.findOne({
-      where: {
-        id,
-      },
-    });
-    if (!data) throw new ApiError(400, "data tidak ditemukan.");
-    const cekKelompok = await kelompok.findOne({
-      where: {
-        id: data.kelompokId,
-      },
-    });
-    let idKelompok = data.kelompokId;
-    if (cekKelompok) {
-      await kelompok.update(
-        {
+    if (
+      peran !== 'OPERATOR ADMIN' &&
+      peran !== 'OPERATOR SUPER ADMIN' &&
+      peran !== 'PENYULUH'
+    ){
+      throw new ApiError(400, 'Anda tidak memiliki akses.');
+    }else{
+      const data = await dataPerson.findOne({
+        where: {
+          id,
+        },
+      });
+      if (!data) throw new ApiError(400, "data tidak ditemukan.");
+      const cekKelompok = await kelompok.findOne({
+        where: {
+          id: data.kelompokId,
+        },
+      });
+      let idKelompok = data.kelompokId;
+      if (cekKelompok) {
+        await kelompok.update(
+          {
+            namaKelompok,
+            penyuluh,
+            gapoktan,
+          },
+          {
+            where: {
+              id: data.kelompokId,
+            },
+          }
+        );
+      } else {
+        const kelompoks = await kelompok.create({
           namaKelompok,
           penyuluh,
           gapoktan,
-        },
-        {
-          where: {
-            id: data.kelompokId,
+        });
+        idKelompok = kelompoks.id;
+        await dataPerson.update(
+          {
+            kelompokId: kelompoks.id,
           },
+          {
+            where: {
+              id,
+            },
+          }
+        );
+      }
+      const { file } = req;
+      console.log(file);
+      if (file) {
+        const validFormat =
+          file.mimetype === "image/png" ||
+          file.mimetype === "image/jpg" ||
+          file.mimetype === "image/jpeg" ||
+          file.mimetype === "image/gif";
+        if (!validFormat) {
+          return res.status(400).json({
+            status: "failed",
+            message: "Wrong Image Format",
+          });
         }
-      );
-    } else {
-      const kelompoks = await kelompok.create({
-        namaKelompok,
-        penyuluh,
-        gapoktan,
-      });
-      idKelompok = kelompoks.id;
-      await dataPerson.update(
-        {
-          kelompokId: kelompoks.id,
-        },
-        {
-          where: {
-            id,
+        const split = file.originalname.split(".");
+        const ext = split[split.length - 1];
+
+        // upload file ke imagekit
+        const img = await imageKit.upload({
+          file: file.buffer,
+          fileName: `IMG-${Date.now()}.${ext}`,
+        });
+        await dataPerson.update(
+          {
+            NIK,
+            NoWa,
+            alamat,
+            desa,
+            nama,
+            kecamatan,
+            password,
+            foto: img.url,
+            kelompokId: idKelompok,
           },
-        }
-      );
-    }
-    const { file } = req;
-    console.log(file);
-    if (file) {
-      const validFormat =
-        file.mimetype === "image/png" ||
-        file.mimetype === "image/jpg" ||
-        file.mimetype === "image/jpeg" ||
-        file.mimetype === "image/gif";
-      if (!validFormat) {
-        return res.status(400).json({
-          status: "failed",
-          message: "Wrong Image Format",
+          {
+            where: {
+              id,
+            },
+          }
+        );
+        return res.status(200).json({
+          message: "Petani Berhasil Di update",
         });
       }
-      const split = file.originalname.split(".");
-      const ext = split[split.length - 1];
-
-      // upload file ke imagekit
-      const img = await imageKit.upload({
-        file: file.buffer,
-        fileName: `IMG-${Date.now()}.${ext}`,
-      });
       await dataPerson.update(
         {
           NIK,
@@ -351,7 +402,6 @@ const updateTaniDetail = async (req, res) => {
           nama,
           kecamatan,
           password,
-          foto: img.url,
           kelompokId: idKelompok,
         },
         {
@@ -363,27 +413,7 @@ const updateTaniDetail = async (req, res) => {
       return res.status(200).json({
         message: "Petani Berhasil Di update",
       });
-    }
-    await dataPerson.update(
-      {
-        NIK,
-        NoWa,
-        alamat,
-        desa,
-        nama,
-        kecamatan,
-        password,
-        kelompokId: idKelompok,
-      },
-      {
-        where: {
-          id,
-        },
-      }
-    );
-    return res.status(200).json({
-      message: "Petani Berhasil Di update",
-    });
+  }
   } catch (error) {
     res.status(error.statusCode || 500).json({
       message: `gagal update data petani`,
