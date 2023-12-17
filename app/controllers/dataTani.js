@@ -68,15 +68,15 @@ const laporanPenyuluh = async (req, res) => {
   }
 };
 const tambahDaftarTani = async (req, res) => {
-  const {peran} = req.user;
+  const { peran } = req.user;
   try {
     if (
-      peran !== 'OPERATOR ADMIN' &&
-      peran !== 'OPERATOR SUPER ADMIN' &&
-      peran !== 'PENYULUH'
-    ){
-      throw new ApiError(400, 'Anda tidak memiliki akses.');
-    }else{
+      peran !== "OPERATOR ADMIN" &&
+      peran !== "OPERATOR SUPER ADMIN" &&
+      peran !== "PENYULUH"
+    ) {
+      throw new ApiError(400, "Anda tidak memiliki akses.");
+    } else {
       const {
         NIK,
         NoWa,
@@ -89,7 +89,7 @@ const tambahDaftarTani = async (req, res) => {
         penyuluh,
         namaKelompok,
       } = req.body;
-  
+
       if (!NIK) throw new ApiError(400, "NIK tidak boleh kosong");
       if (!nama) throw new ApiError(400, "nama tidak boleh kosong");
       if (!penyuluh) throw new ApiError(400, "penyuluh tidak boleh kosong");
@@ -111,7 +111,7 @@ const tambahDaftarTani = async (req, res) => {
         }
         const split = file.originalname.split(".");
         const ext = split[split.length - 1];
-  
+
         // upload file ke imagekit
         const img = await imageKit.upload({
           file: file.buffer,
@@ -138,7 +138,7 @@ const tambahDaftarTani = async (req, res) => {
         kelompokId: dataKelompok.id,
         foto: urlImg,
       });
-  
+
       res.status(200).json({
         message: "Berhasil Menambahakan Daftar Tani",
         daftarTani,
@@ -204,8 +204,8 @@ const tambahLaporanTani = async (req, res) => {
 };
 const daftarTani = async (req, res) => {
   try {
-    const {userInfo} = req.user
-    if (userInfo !== null){
+    const { userInfo } = req.user;
+    if (userInfo !== null) {
       const data = await dataPerson.findAll({
         include: [
           {
@@ -220,8 +220,8 @@ const daftarTani = async (req, res) => {
         message: "Data laporan Tani Berhasil Diperoleh",
         tani: data,
       });
-    } else{
-      throw new ApiError(400, 'Anda tidak memiliki akses.');
+    } else {
+      throw new ApiError(400, "Anda tidak memiliki akses.");
     }
   } catch (error) {
     res.status(error.statusCode || 500).json({
@@ -231,13 +231,11 @@ const daftarTani = async (req, res) => {
 };
 const deleteDaftarTani = async (req, res) => {
   const { id } = req.params;
-  const {peran} = req.user;
+  const { peran } = req.user;
   try {
-    if (
-      peran !== 'OPERATOR SUPER ADMIN'
-    ){
-      throw new ApiError(400, 'Anda tidak memiliki akses.');
-    }else{
+    if (peran !== "OPERATOR SUPER ADMIN") {
+      throw new ApiError(400, "Anda tidak memiliki akses.");
+    } else {
       const data = await dataPerson.findOne({
         where: {
           id,
@@ -283,7 +281,7 @@ const dataTaniDetail = async (req, res) => {
   }
 };
 const updateTaniDetail = async (req, res) => {
-  const {peran} = req.user;
+  const { peran } = req.user;
   const { id } = req.params;
   const {
     NIK,
@@ -300,12 +298,12 @@ const updateTaniDetail = async (req, res) => {
 
   try {
     if (
-      peran !== 'OPERATOR ADMIN' &&
-      peran !== 'OPERATOR SUPER ADMIN' &&
-      peran !== 'PENYULUH'
-    ){
-      throw new ApiError(400, 'Anda tidak memiliki akses.');
-    }else{
+      peran !== "OPERATOR ADMIN" &&
+      peran !== "OPERATOR SUPER ADMIN" &&
+      peran !== "PENYULUH"
+    ) {
+      throw new ApiError(400, "Anda tidak memiliki akses.");
+    } else {
       const data = await dataPerson.findOne({
         where: {
           id,
@@ -413,7 +411,7 @@ const updateTaniDetail = async (req, res) => {
       return res.status(200).json({
         message: "Petani Berhasil Di update",
       });
-  }
+    }
   } catch (error) {
     res.status(error.statusCode || 500).json({
       message: `gagal update data petani`,
@@ -421,7 +419,7 @@ const updateTaniDetail = async (req, res) => {
   }
 };
 
-const getTanamanPetani = async (req, res) => {
+const getLaporanPetani = async (req, res) => {
   const { id } = req.params;
   try {
     const data = await dataPerson.findOne({
@@ -448,6 +446,7 @@ const getTanamanPetani = async (req, res) => {
     });
   }
 };
+
 const tambahTanamanPetani = async (req, res) => {
   try {
     console.log(req.body);
@@ -557,6 +556,32 @@ const ubahTanamanPetaniById = async (req, res) => {
     });
   }
 };
+
+const getTanamanPetani = async (req, res) => {
+  try {
+    const data = await tanamanPetani.findAll({
+      include: [
+        {
+          model: dataPerson,
+          include: [
+            {
+              model: kelompok,
+            },
+          ],
+        },
+      ],
+    });
+    res.status(200).json({
+      message: "Berhasil mendapatkan data tanaman petani",
+      data,
+    });
+  } catch (error) {
+    res.status(error.statusCode || 500).json({
+      message: error.message,
+    });
+  }
+};
+
 const getTanamanPetaniById = async (req, res) => {
   const { id } = req.params;
   try {
@@ -608,6 +633,7 @@ module.exports = {
   deleteDaftarTani,
   dataTaniDetail,
   updateTaniDetail,
+  getLaporanPetani,
   getTanamanPetani,
   tambahTanamanPetani,
   getTanamanPetaniById,
