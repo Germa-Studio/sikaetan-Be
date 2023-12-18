@@ -3,6 +3,7 @@ const {
   tanamanPetani,
   kelompok,
   laporanTanam,
+  dataPetani,
 } = require("../models");
 const { Op } = require("sequelize");
 const ApiError = require("../../utils/ApiError");
@@ -71,9 +72,9 @@ const tambahDaftarTani = async (req, res) => {
   const { peran } = req.user;
   try {
     if (
-      peran !== "OPERATOR ADMIN" &&
-      peran !== "OPERATOR SUPER ADMIN" &&
-      peran !== "PENYULUH"
+      peran !== "admin" &&
+      peran !== "super admin" &&
+      peran !== "penyuluh"
     ) {
       throw new ApiError(400, "Anda tidak memiliki akses.");
     } else {
@@ -93,7 +94,7 @@ const tambahDaftarTani = async (req, res) => {
       if (!NIK) throw new ApiError(400, "NIK tidak boleh kosong");
       if (!nama) throw new ApiError(400, "nama tidak boleh kosong");
       if (!penyuluh) throw new ApiError(400, "penyuluh tidak boleh kosong");
-      const tani = await dataPerson.findOne({ where: { NIK } });
+      const tani = await dataPetani.findOne({ where: { NIK } });
       if (tani) throw new ApiError(400, "NIK sudah digunakan");
       const { file } = req;
       let urlImg;
@@ -126,7 +127,7 @@ const tambahDaftarTani = async (req, res) => {
         namaKelompok,
         desa,
       });
-      const daftarTani = await dataPerson.create({
+      const daftarTani = await dataPetani.create({
         NIK,
         NoWa,
         role: "petani",
@@ -138,6 +139,18 @@ const tambahDaftarTani = async (req, res) => {
         kelompokId: dataKelompok.id,
         foto: urlImg,
       });
+      const daftarPetani = await dataPetani.create({
+        NIK
+        , nkk
+        , foto
+        , nama
+        , alamat
+        , desa
+        , kecamatan
+        , password
+        , email
+        , noTelp
+      })
 
       res.status(200).json({
         message: "Berhasil Menambahakan Daftar Tani",
@@ -206,15 +219,15 @@ const daftarTani = async (req, res) => {
   try {
     const { userInfo } = req.user;
     if (userInfo !== null) {
-      const data = await dataPerson.findAll({
-        include: [
-          {
-            model: kelompok,
-          },
-        ],
-        where: {
-          role: "petani",
-        },
+      const data = await dataPetani.findAll({
+        // include: [
+        //   {
+        //     model: kelompok,
+        //   },
+        // ],
+        // where: {
+        //   role: "petani",
+        // },
       });
       res.status(200).json({
         message: "Data laporan Tani Berhasil Diperoleh",
@@ -236,13 +249,13 @@ const deleteDaftarTani = async (req, res) => {
     if (peran !== "OPERATOR SUPER ADMIN") {
       throw new ApiError(400, "Anda tidak memiliki akses.");
     } else {
-      const data = await dataPerson.findOne({
+      const data = await dataPetani.findOne({
         where: {
           id,
         },
       });
       if (!data) throw new ApiError(400, "data tidak ditemukan.");
-      await dataPerson.destroy({
+      await dataPetani.destroy({
         where: {
           id,
         },
@@ -260,7 +273,7 @@ const deleteDaftarTani = async (req, res) => {
 const dataTaniDetail = async (req, res) => {
   const { id } = req.params;
   try {
-    const data = await dataPerson.findOne({
+    const data = await dataPetani.findOne({
       include: [
         {
           model: kelompok,
@@ -298,13 +311,13 @@ const updateTaniDetail = async (req, res) => {
 
   try {
     if (
-      peran !== "OPERATOR ADMIN" &&
-      peran !== "OPERATOR SUPER ADMIN" &&
-      peran !== "PENYULUH"
+      peran !== "admin" &&
+      peran !== "super admin" &&
+      peran !== "penyuluh"
     ) {
       throw new ApiError(400, "Anda tidak memiliki akses.");
     } else {
-      const data = await dataPerson.findOne({
+      const data = await dataPetani.findOne({
         where: {
           id,
         },
@@ -336,7 +349,7 @@ const updateTaniDetail = async (req, res) => {
           gapoktan,
         });
         idKelompok = kelompoks.id;
-        await dataPerson.update(
+        await dataPetani.update(
           {
             kelompokId: kelompoks.id,
           },

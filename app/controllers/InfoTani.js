@@ -38,8 +38,8 @@ const tambahInfoTani = async(req, res)=>{
   // 
   try {
     if (
-      peran !== 'OPERATOR ADMIN' &&
-      peran !== 'OPERATOR SUPER ADMIN' &&
+      peran !== "admin" &&
+      peran !== "super admin" &&
       peran !== 'PENYULUH'
     ){
       throw new ApiError(400, 'Anda tidak memiliki akses.');
@@ -126,8 +126,8 @@ const tambahEventTani = async (req, res) => {
     // console.log(peran);
 
     if (
-      peran !== 'OPERATOR ADMIN' &&
-      peran !== 'OPERATOR SUPER ADMIN' &&
+      peran !== "admin" &&
+      peran !== "super admin" &&
       peran !== 'PENYULUH'
     ) {
       throw new ApiError(400, 'Anda tidak memiliki akses.');
@@ -257,8 +257,8 @@ const updateInfoTani = async(req, res)=>{
     // console.log(peran);
 
     if (
-      peran !== 'OPERATOR ADMIN' &&
-      peran !== 'OPERATOR SUPER ADMIN' &&
+      peran !== "admin" &&
+      peran !== "super admin" &&
       peran !== 'PENYULUH'
     ){
       throw new ApiError(400, 'Anda tidak memiliki akses.');
@@ -330,8 +330,8 @@ const updateEventTani = async(req, res)=>{
     // console.log(peran);
 
     if (
-      peran !== 'OPERATOR ADMIN' &&
-      peran !== 'OPERATOR SUPER ADMIN' &&
+      peran !== "admin" &&
+      peran !== "super admin" &&
       peran !== 'PENYULUH'
     ){
       throw new ApiError(400, 'Anda tidak memiliki akses.');

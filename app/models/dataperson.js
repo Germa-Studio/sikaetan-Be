@@ -12,17 +12,17 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       // define association here tanamanPetani
       this.belongsTo(models.kelompok, { foreignKey: 'kelompokId' });
-      this.hasOne(models.dataPenyuluh, { foreignKey: 'dataPersonId' });
-      this.hasMany(models.penjual, { foreignKey: 'dataPersonId'});
+      // this.hasOne(models.dataPenyuluh, { foreignKey: 'id' });
+      this.hasMany(models.penjual, { foreignKey: 'id'});
       this.hasOne(models.chatt, {  as: 'from',foreignKey: 'dari' });
       this.belongsTo(models.ratting, { foreignKey: 'rattingId' });
       this.belongsTo(models.jurnalHarian, { foreignKey: 'jurnalKegiatanId' });
       this.belongsTo(models.riwayatChat, { foreignKey: 'riwayatChatId' });
       this.belongsTo(models.responseRating, { foreignKey: 'responseRatingId' });
-      this.hasMany(models.tanamanPetani, { foreignKey: 'dataPersonId' });
-      this.hasMany(models.presesiKehadiran, { foreignKey: 'dataPersonId' });
-      this.belongsToMany(models.chat, { through: 'chatDataPerson', foreignKey: 'dataPersonId' })
-      this.hasMany(models.chatDataPerson, { foreignKey: 'dataPersonId' })
+      this.hasMany(models.tanamanPetani, { foreignKey: 'id' });
+      this.hasMany(models.presesiKehadiran, { foreignKey: 'id' });
+      this.belongsToMany(models.chat, { through: 'chatDataPerson', foreignKey: 'id' })
+      this.hasMany(models.chatDataPerson, { foreignKey: 'id' })
     }
   }
   dataPerson.init({
