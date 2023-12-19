@@ -1,20 +1,22 @@
-const { dataPerson, dataPenyuluh, presesiKehadiran, jurnalHarian, riwayatChat } = require('../models');
+const { dataPerson, dataPenyuluh, presesiKehadiran, jurnalHarian, riwayatChat, tbl_akun } = require('../models');
 const ApiError = require('../../utils/ApiError');
 const imageKit = require('../../midleware/imageKit');
 const dotenv = require('dotenv');
+const bcrypt = require("bcrypt");
 dotenv.config();
 const tambahDataPenyuluh = async(req, res)=>{
   const {nama, peran} = req.user || {};
   console.log(peran)
   try {
     if (
-      peran !== 'OPERATOR ADMIN' &&
-      peran !== 'OPERATOR SUPER ADMIN'
+      peran !== "admin" &&
+      peran !== "super admin"
     ){
       throw new ApiError(400, 'Anda tidak memiliki akses.');
     }else{
       const {
         NIP,
+        email,
         NoWa,
         alamat,
         desa,
@@ -23,13 +25,15 @@ const tambahDataPenyuluh = async(req, res)=>{
         password,
         namaProduct,
         kecamatanBinaan,
-        desaBinaan
+        desaBinaan,
+        pekerjaan = "",
         } = req.body
+        const hashedPassword = bcrypt.hashSync(password, 10);
         const { file, } = req;
         let urlImg
         if(!NIP) throw new ApiError(400, "NIP tidak boleh kosong")
         if(!nama) throw new ApiError(400, "nama tidak boleh kosong")
-        const tani = await dataPerson.findOne({ where: { NIP, }, });
+        const tani = await dataPenyuluh.findOne({ where: { nik:NIP, }, });
         if(tani) throw new ApiError(400, "NIP sudah digunakan")
         if (file) {
           const validFormat =
@@ -47,18 +51,50 @@ const tambahDataPenyuluh = async(req, res)=>{
           const ext = split[split.length - 1];
     
           // upload file ke imagekit
-          const img = await imageKit.upload({
-            file: file.buffer,
-            fileName: `IMG-${Date.now()}.${ext}`,
-          });
-          urlImg = img.url
+          try {
+            const img = await imageKit.upload({
+              file: file.buffer,
+              fileName: `IMG-${Date.now()}.${ext}`,
+            });
+            urlImg = img.url;
+          } catch (uploadError) {
+            console.error('Error uploading image:', uploadError.message);
+            // Handle the error, and possibly return an error response to the client.
+            return res.status(500).json({
+              status: 'failed',
+              message: 'Error uploading image.',
+            });
+          }          
         }
-        const newPerson = await dataPerson.create({NIP, NoWa, alamat, desa, nama, kecamatan, password, foto:urlImg, role:"penyuluh" })
-        await dataPenyuluh.create({namaProduct, desaBinaan:desaBinaan,kecamatanBinaan, dataPersonId:newPerson.id })
-        const newDataPenyuluh = await dataPerson.findOne({where:{id:newPerson.id}, indlude:[{model:dataPenyuluh}]})
+        const newAccount = await tbl_akun.create({
+          email,
+          password: hashedPassword,
+          no_wa: NoWa,
+          nama,
+          pekerjaan,
+          peran:"penyuluh",
+          foto:urlImg,
+        });
+        // const newPerson = await dataPerson.create({NIP, NoWa, alamat, desa, nama, kecamatan, password, foto:urlImg, role:"penyuluh" })
+        const newPenyuluh = await dataPenyuluh.create({
+          nik: NIP,
+          nama: nama,
+          foto:urlImg,
+          alamat,
+          email,
+          noTelp: NoWa,
+          kecamatan,
+          desa,
+          password: hashedPassword,
+          namaProduct, 
+          desaBinaan:desaBinaan,
+          kecamatanBinaan
+        });
+        // const newDataPenyuluh = await dataPerson.findOne({where:{id:newPerson.id}, indlude:[{model:dataPenyuluh}]})
         res.status(200).json({
           message: 'berhasil menambahkan data Penyuluh',
-          newDataPenyuluh
+          newPenyuluh,
+          newAccount
         });  
     }
   } catch (error) {
@@ -70,16 +106,16 @@ const tambahDataPenyuluh = async(req, res)=>{
 }
 const daftarPenyuluh = async(req, res)=>{
   const {nama, peran} = req.user|| {};
-  console.log(peran)
+  // console.log(peran)
   try {
     if (
-      peran !== 'OPERATOR ADMIN' &&
-      peran !== 'OPERATOR SUPER ADMIN' &&
-      peran !== 'PENYULUH'
+      peran !== "admin" &&
+      peran !== "super admin" &&
+      peran !== 'penyuluh'
     ){
       throw new ApiError(400, 'Anda tidak memiliki akses.');
     }else{
-      const dataDaftarPenyuluh = await dataPerson.findAll({where:{role:"penyuluh"},include:[{model:dataPenyuluh}]});
+      const dataDaftarPenyuluh = await dataPenyuluh.findAll();
       res.status(200).json({
         message: 'Semua Data Penyuluh',
         dataDaftarPenyuluh
@@ -96,14 +132,14 @@ const deleteDaftarPenyuluh = async(req, res)=>{
   const {nama, peran} = req.user || {};
   try {
     if (
-      peran !== 'OPERATOR ADMIN' &&
-      peran !== 'OPERATOR SUPER ADMIN'
+      peran !== "admin" &&
+      peran !== "super admin"
     ){
       throw new ApiError(400, 'Anda tidak memiliki akses.');
     }else{
-      const data = await dataPerson.findOne({
+      const data = await dataPenyuluh.findOne({
         where: {
-          id
+          id:id
         }
       });
       if(!data) throw new ApiError(400, 'data tidak ditemukan.');
@@ -128,8 +164,8 @@ const presensiKehadiran = async(req, res)=>{
   const {nama, peran} = req.user|| {};
   try {
     if (
-      peran !== 'OPERATOR ADMIN' &&
-      peran !== 'OPERATOR SUPER ADMIN' &&
+      peran !== "admin" &&
+      peran !== "super admin" &&
       peran !== 'PENYULUH'
     ){
       throw new ApiError(400, 'Anda tidak memiliki akses.');
@@ -150,8 +186,8 @@ const presensiKehadiranWeb = async(req, res)=>{
   const {peran} = req.user || {};
   try {
     if (
-      peran !== 'OPERATOR ADMIN' &&
-      peran !== 'OPERATOR SUPER ADMIN' &&
+      peran !== "admin" &&
+      peran !== "super admin" &&
       peran !== 'PENYULUH'
     ){
       throw new ApiError(400, 'Anda tidak memiliki akses.');
@@ -180,9 +216,9 @@ const tambahPresensiKehadiran = async(req, res)=>{
   const {nama, peran} = req.user || {};
   try {
     if (
-      peran !== 'OPERATOR ADMIN' &&
-      peran !== 'OPERATOR SUPER ADMIN' &&
-      peran !== 'PENYULUH'
+      peran !== "admin" &&
+      peran !== "super admin" &&
+      peran !== 'penyuluh'
     ){
       throw new ApiError(400, 'Anda tidak memiliki akses.');
     }else{
@@ -216,13 +252,13 @@ const tambahPresensiKehadiran = async(req, res)=>{
           file: file.buffer,
           fileName: `IMG-${Date.now()}.${ext}`,
         });
-        const newData = await presesiKehadiran.create({dataPersonId:penyuluh.id,tanggalPresesi:tanggalPresensi, judulKegiatan, deskripsiKegiatan, FotoKegiatan: img.url })
+        const newData = await presesiKehadiran.create({id:penyuluh.id,tanggalPresesi:tanggalPresensi, judulKegiatan, deskripsiKegiatan, FotoKegiatan: img.url })
         return res.status(200).json({
           message: 'Brhasil menambhakan Data Presensi Kehadiran',
           newData
         });  
       }
-      const newData = await presesiKehadiran.create({dataPersonId:penyuluh.id,tanggalPresesi:tanggalPresensi, judulKegiatan, deskripsiKegiatan})
+      const newData = await presesiKehadiran.create({id:penyuluh.id,tanggalPresesi:tanggalPresensi, judulKegiatan, deskripsiKegiatan})
       res.status(200).json({
         message: 'Brhasil menambhakan Data Presensi Kehadiran',
         newData
@@ -241,8 +277,8 @@ const jurnalKegiatan = async(req, res)=>{
   const {peran} = req.user || {};
   try {
     if (
-      peran !== 'OPERATOR ADMIN' &&
-      peran !== 'OPERATOR SUPER ADMIN' &&
+      peran !== "admin" &&
+      peran !== "super admin" &&
       peran !== 'PENYULUH'
     ){
       throw new ApiError(400, 'Anda tidak memiliki akses.');
@@ -263,8 +299,8 @@ const tambahJurnalKegiatan = async(req, res)=>{
   const {peran} = req.user || {};
   try {
     if (
-      peran !== 'OPERATOR ADMIN' &&
-      peran !== 'OPERATOR SUPER ADMIN' &&
+      peran !== "admin" &&
+      peran !== "super admin" &&
       peran !== 'PENYULUH'
     ){
       throw new ApiError(400, 'Anda tidak memiliki akses.');
@@ -327,9 +363,9 @@ const RiwayatChat = async(req, res)=>{
   const {peran} = req.user || {};
   try {
     if (
-      peran !== 'OPERATOR ADMIN' &&
-      peran !== 'OPERATOR SUPER ADMIN' &&
-      peran !== 'PENYULUH'
+      peran !== "admin" &&
+      peran !== "super admin" &&
+      peran !== 'penyuluh'
     ){
       throw new ApiError(400, 'Anda tidak memiliki akses.');
     }else{
@@ -350,8 +386,8 @@ const daftarPenyuluhById = async(req, res)=>{
   const {nama, peran} = req.user || {};
   try {
     if (
-      peran !== 'OPERATOR ADMIN' &&
-      peran !== 'OPERATOR SUPER ADMIN' &&
+      peran !== "admin" &&
+      peran !== "super admin" &&
       peran !== 'PENYULUH'
     ){
       throw new ApiError(400, 'Anda tidak memiliki akses.');
@@ -373,14 +409,15 @@ const updatePenyuluh = async(req, res)=>{
   const {nama, peran} = req.user || {};
   try {
     if (
-      peran !== 'OPERATOR ADMIN' &&
-      peran !== 'OPERATOR SUPER ADMIN' &&
-      peran !== 'PENYULUH'
+      peran !== "admin" &&
+      peran !== "super admin" &&
+      peran !== 'penyuluh'
     ){
       throw new ApiError(400, 'Anda tidak memiliki akses.');
     }else{
       const {
-        NIP,
+        nik,
+        email,
         NoWa,
         alamat,
         desa,
@@ -389,11 +426,12 @@ const updatePenyuluh = async(req, res)=>{
         password,
         namaProduct,
         kecamatanBinaan,
-        desaBinaan
+        desaBinaan,
+        pekerjaan = "",
         } = req.body
         const { file, } = req;
         let urlImg
-        if(!NIP) throw new ApiError(400, "NIP tidak boleh kosong")
+        if(!nik) throw new ApiError(400, "NIP tidak boleh kosong")
         if(!nama) throw new ApiError(400, "nama tidak boleh kosong")
         if (file) {
           const validFormat =
@@ -417,20 +455,24 @@ const updatePenyuluh = async(req, res)=>{
           });
           urlImg = img.url
         }
-        await dataPerson.update(
-          {NIP, NoWa, alamat, desa, nama, kecamatan, password, foto:urlImg},
+        const newDataPenyuluh = await dataPenyuluh.update(
+          {nik,
+            email,
+            NoWa,
+            alamat,
+            desa,
+            nama,
+            kecamatan,
+            password,
+            namaProduct,
+            kecamatanBinaan,
+            desaBinaan,
+            pekerjaan :"",},
           {
             where: {
-              id
+              id:id
             }
           })
-        await dataPenyuluh.update({namaProduct, desaBinaan:desaBinaan,kecamatanBinaan, dataPersonId:id },
-          {
-            where: {
-              dataPersonId: id
-            }
-          })
-        const newDataPenyuluh = await dataPerson.findOne({where:{id:id}, indlude:[{model:dataPenyuluh}]})
         res.status(200).json({
           message: 'berhasil merubah data Penyuluh',
           newDataPenyuluh

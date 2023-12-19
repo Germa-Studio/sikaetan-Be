@@ -2,7 +2,7 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('dataPenyuluhs', {
+    await queryInterface.createTable('dataPetanis', {
       id: {
         allowNull: false,
         autoIncrement: true,
@@ -12,37 +12,31 @@ module.exports = {
       nik: {
         type: Sequelize.STRING
       },
+      nkk: {
+        type: Sequelize.STRING
+      },
       nama: {
         type: Sequelize.STRING
       },
       foto: {
         type: Sequelize.TEXT
-      },
+      }, 
       alamat: {
         type: Sequelize.TEXT
       },
-      email: {
-        type: Sequelize.STRING
-      },
-      noTelp: {
-        type: Sequelize.STRING
-      },
-      password: {
-        type: Sequelize.STRING
-      },
-      namaProduct: {
+      desa: {
         type: Sequelize.STRING
       },
       kecamatan: {
         type: Sequelize.STRING
       },
-      desa: {
+      password: {
         type: Sequelize.STRING
       },
-      desaBinaan: {
+      email: {
         type: Sequelize.STRING
       },
-      kecamatanBinaan: {
+      noTelp: {
         type: Sequelize.STRING
       },
       createdAt: {
@@ -56,6 +50,6 @@ module.exports = {
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('dataPenyuluhs');
+    await queryInterface.dropTable('dataPetanis');
   }
 };

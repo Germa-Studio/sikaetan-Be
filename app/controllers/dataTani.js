@@ -3,10 +3,15 @@ const {
   tanamanPetani,
   kelompok,
   laporanTanam,
+  dataPenyuluh,
+  dataPetani,
+  tbl_akun,
 } = require("../models");
-const { Op } = require("sequelize");
+const { Op, NOW } = require("sequelize");
 const ApiError = require("../../utils/ApiError");
 const imageKit = require("../../midleware/imageKit");
+//import bycrypt
+const bcrypt = require("bcrypt");
 
 const laporanPetani = async (req, res) => {
   try {
@@ -68,18 +73,20 @@ const laporanPenyuluh = async (req, res) => {
   }
 };
 const tambahDaftarTani = async (req, res) => {
-  const {peran} = req.user;
+  const { peran } = req.user;
   try {
     if (
-      peran !== 'OPERATOR ADMIN' &&
-      peran !== 'OPERATOR SUPER ADMIN' &&
-      peran !== 'PENYULUH'
-    ){
-      throw new ApiError(400, 'Anda tidak memiliki akses.');
-    }else{
+      peran !== "admin" &&
+      peran !== "super admin" &&
+      peran !== "penyuluh"
+    ) {
+      throw new ApiError(400, "Anda tidak memiliki akses.");
+    } else {
       const {
         NIK,
+        nokk,
         NoWa,
+        email,
         alamat,
         desa,
         nama,
@@ -89,13 +96,24 @@ const tambahDaftarTani = async (req, res) => {
         penyuluh,
         namaKelompok,
       } = req.body;
-  
+
       if (!NIK) throw new ApiError(400, "NIK tidak boleh kosong");
       if (!nama) throw new ApiError(400, "nama tidak boleh kosong");
       if (!penyuluh) throw new ApiError(400, "penyuluh tidak boleh kosong");
-      const tani = await dataPerson.findOne({ where: { NIK } });
+      const tani = await dataPetani.findOne({ where: { nik:NIK } });
       if (tani) throw new ApiError(400, "NIK sudah digunakan");
       const { file } = req;
+      const penyuluhData = await dataPenyuluh.findOne({ where: { nama: penyuluh } });
+      const hashedPassword = bcrypt.hashSync(password, 10);
+      
+      const kelompokData = await kelompok.findOne({
+        where: { 
+          gapoktan:gapoktan, 
+          namaKelompok:namaKelompok, 
+          desa:desa
+        }
+      })
+      console.log(kelompokData)
       let urlImg;
       if (file) {
         const validFormat =
@@ -111,37 +129,44 @@ const tambahDaftarTani = async (req, res) => {
         }
         const split = file.originalname.split(".");
         const ext = split[split.length - 1];
-  
+
         // upload file ke imagekit
         const img = await imageKit.upload({
           file: file.buffer,
           fileName: `IMG-${Date.now()}.${ext}`,
         });
         img.url;
+        urlImg = img.url;
         console.log({ ...req.body, img: img.url });
       }
-      const dataKelompok = await kelompok.create({
-        gapoktan,
-        penyuluh,
-        namaKelompok,
-        desa,
-      });
-      const daftarTani = await dataPerson.create({
-        NIK,
-        NoWa,
-        role: "petani",
-        alamat,
-        desa,
+      const newAccount = await tbl_akun.create({
+        email,
+        password: hashedPassword,
+        no_wa: NoWa,
         nama,
-        kecamatan,
-        password,
-        kelompokId: dataKelompok.id,
-        foto: urlImg,
+        pekerjaan:'',
+        peran:"petani",
+        foto:urlImg,
       });
-  
+      const daftarPetani = await dataPetani.create({
+        nik: NIK
+        , nkk: nokk
+        , foto:urlImg
+        , nama
+        , alamat
+        , desa
+        , kecamatan
+        , password: hashedPassword
+        , email
+        , noTelp:NoWa
+        , fk_penyuluhId: penyuluhData.id
+        , fk_kelompokId: kelompokData.id
+      })
+
       res.status(200).json({
         message: "Berhasil Menambahakan Daftar Tani",
-        daftarTani,
+        daftarPetani,
+        newAccount,
       });
     }
   } catch (error) {
@@ -204,24 +229,27 @@ const tambahLaporanTani = async (req, res) => {
 };
 const daftarTani = async (req, res) => {
   try {
-    const {userInfo} = req.user
-    if (userInfo !== null){
-      const data = await dataPerson.findAll({
+    const { userInfo } = req.user;
+    if (userInfo !== null) {
+      const data = await dataPetani.findAll({
         include: [
           {
             model: kelompok,
           },
+          {
+            model: dataPenyuluh,
+          }
         ],
-        where: {
-          role: "petani",
-        },
+        // where: {
+        //   role: "petani",
+        // },
       });
       res.status(200).json({
         message: "Data laporan Tani Berhasil Diperoleh",
         tani: data,
       });
-    } else{
-      throw new ApiError(400, 'Anda tidak memiliki akses.');
+    } else {
+      throw new ApiError(400, "Anda tidak memiliki akses.");
     }
   } catch (error) {
     res.status(error.statusCode || 500).json({
@@ -231,20 +259,18 @@ const daftarTani = async (req, res) => {
 };
 const deleteDaftarTani = async (req, res) => {
   const { id } = req.params;
-  const {peran} = req.user;
+  const { peran } = req.user;
   try {
-    if (
-      peran !== 'OPERATOR SUPER ADMIN'
-    ){
-      throw new ApiError(400, 'Anda tidak memiliki akses.');
-    }else{
-      const data = await dataPerson.findOne({
+    if (peran !== "OPERATOR SUPER ADMIN") {
+      throw new ApiError(400, "Anda tidak memiliki akses.");
+    } else {
+      const data = await dataPetani.findOne({
         where: {
           id,
         },
       });
       if (!data) throw new ApiError(400, "data tidak ditemukan.");
-      await dataPerson.destroy({
+      await dataPetani.destroy({
         where: {
           id,
         },
@@ -262,12 +288,7 @@ const deleteDaftarTani = async (req, res) => {
 const dataTaniDetail = async (req, res) => {
   const { id } = req.params;
   try {
-    const data = await dataPerson.findOne({
-      include: [
-        {
-          model: kelompok,
-        },
-      ],
+    const data = await dataPetani.findOne({
       where: {
         id,
       },
@@ -283,7 +304,7 @@ const dataTaniDetail = async (req, res) => {
   }
 };
 const updateTaniDetail = async (req, res) => {
-  const {peran} = req.user;
+  const { peran } = req.user;
   const { id } = req.params;
   const {
     NIK,
@@ -300,13 +321,13 @@ const updateTaniDetail = async (req, res) => {
 
   try {
     if (
-      peran !== 'OPERATOR ADMIN' &&
-      peran !== 'OPERATOR SUPER ADMIN' &&
-      peran !== 'PENYULUH'
-    ){
-      throw new ApiError(400, 'Anda tidak memiliki akses.');
-    }else{
-      const data = await dataPerson.findOne({
+      peran !== "admin" &&
+      peran !== "super admin" &&
+      peran !== "penyuluh"
+    ) {
+      throw new ApiError(400, "Anda tidak memiliki akses.");
+    } else {
+      const data = await dataPetani.findOne({
         where: {
           id,
         },
@@ -338,7 +359,7 @@ const updateTaniDetail = async (req, res) => {
           gapoktan,
         });
         idKelompok = kelompoks.id;
-        await dataPerson.update(
+        await dataPetani.update(
           {
             kelompokId: kelompoks.id,
           },
@@ -413,7 +434,7 @@ const updateTaniDetail = async (req, res) => {
       return res.status(200).json({
         message: "Petani Berhasil Di update",
       });
-  }
+    }
   } catch (error) {
     res.status(error.statusCode || 500).json({
       message: `gagal update data petani`,
@@ -421,7 +442,7 @@ const updateTaniDetail = async (req, res) => {
   }
 };
 
-const getTanamanPetani = async (req, res) => {
+const getLaporanPetani = async (req, res) => {
   const { id } = req.params;
   try {
     const data = await dataPerson.findOne({
@@ -448,6 +469,7 @@ const getTanamanPetani = async (req, res) => {
     });
   }
 };
+
 const tambahTanamanPetani = async (req, res) => {
   try {
     console.log(req.body);
@@ -557,6 +579,32 @@ const ubahTanamanPetaniById = async (req, res) => {
     });
   }
 };
+
+const getTanamanPetani = async (req, res) => {
+  try {
+    const data = await tanamanPetani.findAll({
+      include: [
+        {
+          model: dataPerson,
+          include: [
+            {
+              model: kelompok,
+            },
+          ],
+        },
+      ],
+    });
+    res.status(200).json({
+      message: "Berhasil mendapatkan data tanaman petani",
+      data,
+    });
+  } catch (error) {
+    res.status(error.statusCode || 500).json({
+      message: error.message,
+    });
+  }
+};
+
 const getTanamanPetaniById = async (req, res) => {
   const { id } = req.params;
   try {
@@ -608,6 +656,7 @@ module.exports = {
   deleteDaftarTani,
   dataTaniDetail,
   updateTaniDetail,
+  getLaporanPetani,
   getTanamanPetani,
   tambahTanamanPetani,
   getTanamanPetaniById,
