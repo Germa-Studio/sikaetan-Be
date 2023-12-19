@@ -88,7 +88,6 @@ const tambahDaftarTani = async (req, res) => {
         NoWa,
         email,
         alamat,
-        foto,
         desa,
         nama,
         kecamatan,
@@ -114,6 +113,7 @@ const tambahDaftarTani = async (req, res) => {
           desa:desa
         }
       })
+      console.log(kelompokData)
       let urlImg;
       if (file) {
         const validFormat =
@@ -136,6 +136,7 @@ const tambahDaftarTani = async (req, res) => {
           fileName: `IMG-${Date.now()}.${ext}`,
         });
         img.url;
+        urlImg = img.url;
         console.log({ ...req.body, img: img.url });
       }
       const newAccount = await tbl_akun.create({
@@ -159,7 +160,7 @@ const tambahDaftarTani = async (req, res) => {
         , email
         , noTelp:NoWa
         , fk_penyuluhId: penyuluhData.id
-        , kelompokId: kelompokData.id
+        , fk_kelompokId: kelompokData.id
       })
 
       res.status(200).json({
@@ -231,11 +232,14 @@ const daftarTani = async (req, res) => {
     const { userInfo } = req.user;
     if (userInfo !== null) {
       const data = await dataPetani.findAll({
-        // include: [
-        //   {
-        //     model: kelompok,
-        //   },
-        // ],
+        include: [
+          {
+            model: kelompok,
+          },
+          {
+            model: dataPenyuluh,
+          }
+        ],
         // where: {
         //   role: "petani",
         // },
