@@ -26,7 +26,8 @@ module.exports = (sequelize, DataTypes) => {
     kecamatan: DataTypes.STRING,
     desa: DataTypes.STRING,
     desaBinaan: DataTypes.STRING,
-    kecamatanBinaan: DataTypes.STRING
+    kecamatanBinaan: DataTypes.STRING,
+    accountID: DataTypes.NUMBER,
   }, {
     sequelize,
     modelName: 'dataPenyuluh',

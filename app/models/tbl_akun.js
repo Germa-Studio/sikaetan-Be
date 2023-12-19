@@ -20,7 +20,8 @@ module.exports = (sequelize, DataTypes) => {
     password: DataTypes.STRING,
     pekerjaan: DataTypes.STRING,
     peran: DataTypes.STRING,
-    foto: DataTypes.STRING
+    foto: DataTypes.STRING,
+    accountID: DataTypes.NUMBER
   }, {
     sequelize,
     modelName: 'tbl_akun',

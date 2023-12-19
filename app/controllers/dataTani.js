@@ -41,6 +41,7 @@ const laporanPetani = async (req, res) => {
     });
   }
 };
+
 const laporanPenyuluh = async (req, res) => {
   try {
     const data = await dataPerson.findAll({
@@ -72,6 +73,7 @@ const laporanPenyuluh = async (req, res) => {
     });
   }
 };
+
 const tambahDaftarTani = async (req, res) => {
   const { peran } = req.user;
   try {
@@ -97,15 +99,23 @@ const tambahDaftarTani = async (req, res) => {
         namaKelompok,
       } = req.body;
 
-      if (!NIK) throw new ApiError(400, "NIK tidak boleh kosong");
-      if (!nama) throw new ApiError(400, "nama tidak boleh kosong");
-      if (!penyuluh) throw new ApiError(400, "penyuluh tidak boleh kosong");
+      if (!NIK){
+        throw new ApiError(400, "NIK tidak boleh kosong");
+      } 
+      if (!nama){
+        throw new ApiError(400, "nama tidak boleh kosong");
+      } 
+      if (!penyuluh){
+        throw new ApiError(400, "penyuluh tidak boleh kosong");
+      } 
       const tani = await dataPetani.findOne({ where: { nik:NIK } });
-      if (tani) throw new ApiError(400, "NIK sudah digunakan");
+      if (tani){
+        throw new ApiError(400, "NIK sudah digunakan");
+      } 
       const { file } = req;
-      const penyuluhData = await dataPenyuluh.findOne({ where: { nama: penyuluh } });
+      const penyuluhData = await dataPenyuluh.findOne({ where: { id: penyuluh } });
       const hashedPassword = bcrypt.hashSync(password, 10);
-      
+      const accountID = Math.floor(100000 + Math.random() * 900000);
       const kelompokData = await kelompok.findOne({
         where: { 
           gapoktan:gapoktan, 
@@ -113,7 +123,7 @@ const tambahDaftarTani = async (req, res) => {
           desa:desa
         }
       })
-      console.log(kelompokData)
+      // console.log(kelompokData)
       let urlImg;
       if (file) {
         const validFormat =
@@ -147,6 +157,7 @@ const tambahDaftarTani = async (req, res) => {
         pekerjaan:'',
         peran:"petani",
         foto:urlImg,
+        accountID: accountID,
       });
       const daftarPetani = await dataPetani.create({
         nik: NIK
@@ -158,7 +169,8 @@ const tambahDaftarTani = async (req, res) => {
         , kecamatan
         , password: hashedPassword
         , email
-        , noTelp:NoWa
+        , noTelp: NoWa
+        , accountID: accountID
         , fk_penyuluhId: penyuluhData.id
         , fk_kelompokId: kelompokData.id
       })
@@ -175,6 +187,7 @@ const tambahDaftarTani = async (req, res) => {
     });
   }
 };
+
 const tambahLaporanTani = async (req, res) => {
   try {
     const { NIK, tanggalLaporan, komdisiTanaman, deskripsi } = req.body;
@@ -227,6 +240,7 @@ const tambahLaporanTani = async (req, res) => {
     });
   }
 };
+
 const daftarTani = async (req, res) => {
   try {
     const { userInfo } = req.user;
@@ -240,9 +254,6 @@ const daftarTani = async (req, res) => {
             model: dataPenyuluh,
           }
         ],
-        // where: {
-        //   role: "petani",
-        // },
       });
       res.status(200).json({
         message: "Data laporan Tani Berhasil Diperoleh",
@@ -257,11 +268,12 @@ const daftarTani = async (req, res) => {
     });
   }
 };
+
 const deleteDaftarTani = async (req, res) => {
   const { id } = req.params;
   const { peran } = req.user;
   try {
-    if (peran !== "OPERATOR SUPER ADMIN") {
+    if (peran !== "super admin") {
       throw new ApiError(400, "Anda tidak memiliki akses.");
     } else {
       const data = await dataPetani.findOne({
@@ -275,6 +287,11 @@ const deleteDaftarTani = async (req, res) => {
           id,
         },
       });
+      await tbl_akun.destroy({
+        where:{
+          accountID:data.accountID
+        }
+      })
       res.status(200).json({
         message: "Petani Berhasil Di Hapus",
       });
@@ -285,13 +302,22 @@ const deleteDaftarTani = async (req, res) => {
     });
   }
 };
+
 const dataTaniDetail = async (req, res) => {
   const { id } = req.params;
   try {
     const data = await dataPetani.findOne({
       where: {
-        id,
+        id:id,
       },
+      include: [
+        {
+          model: kelompok,
+        },
+        {
+          model: dataPenyuluh,
+        }
+      ],
     });
     res.status(200).json({
       message: "Petani Berhasil Di Peroleh",
@@ -303,11 +329,14 @@ const dataTaniDetail = async (req, res) => {
     });
   }
 };
+
 const updateTaniDetail = async (req, res) => {
   const { peran } = req.user;
   const { id } = req.params;
   const {
     NIK,
+    nokk,
+    email,
     NoWa,
     alamat,
     desa,
@@ -317,6 +346,7 @@ const updateTaniDetail = async (req, res) => {
     namaKelompok,
     penyuluh,
     gapoktan,
+    foto,
   } = req.body;
 
   try {
@@ -333,43 +363,19 @@ const updateTaniDetail = async (req, res) => {
         },
       });
       if (!data) throw new ApiError(400, "data tidak ditemukan.");
-      const cekKelompok = await kelompok.findOne({
+      const kelompokData = await kelompok.findOne({
+        where: { 
+          gapoktan:gapoktan, 
+          namaKelompok:namaKelompok, 
+          desa:desa
+        }
+      })
+      const penyuluhData = await dataPenyuluh.findOne({
         where: {
-          id: data.kelompokId,
-        },
-      });
-      let idKelompok = data.kelompokId;
-      if (cekKelompok) {
-        await kelompok.update(
-          {
-            namaKelompok,
-            penyuluh,
-            gapoktan,
-          },
-          {
-            where: {
-              id: data.kelompokId,
-            },
-          }
-        );
-      } else {
-        const kelompoks = await kelompok.create({
-          namaKelompok,
-          penyuluh,
-          gapoktan,
-        });
-        idKelompok = kelompoks.id;
-        await dataPetani.update(
-          {
-            kelompokId: kelompoks.id,
-          },
-          {
-            where: {
-              id,
-            },
-          }
-        );
-      }
+          id: penyuluh,
+        }
+      })
+      let urlImg
       const { file } = req;
       console.log(file);
       if (file) {
@@ -392,52 +398,52 @@ const updateTaniDetail = async (req, res) => {
           file: file.buffer,
           fileName: `IMG-${Date.now()}.${ext}`,
         });
-        await dataPerson.update(
-          {
-            NIK,
-            NoWa,
-            alamat,
-            desa,
-            nama,
-            kecamatan,
-            password,
-            foto: img.url,
-            kelompokId: idKelompok,
-          },
-          {
-            where: {
-              id,
-            },
-          }
-        );
-        return res.status(200).json({
-          message: "Petani Berhasil Di update",
-        });
+        img.url;
+        urlImg = img.url;
       }
-      await dataPerson.update(
+      const hashedPassword = bcrypt.hashSync(password, 10);
+      const accountUpdate = await tbl_akun.update(
         {
-          NIK,
-          NoWa,
-          alamat,
-          desa,
+          email,
+          password: hashedPassword,
+          no_wa: NoWa,
           nama,
-          kecamatan,
-          password,
-          kelompokId: idKelompok,
+          pekerjaan:'',
+          peran:"petani",
+          foto:urlImg,
         },
         {
-          where: {
-            id,
-          },
+          where: { accountID: data.accountID },
         }
       );
-      return res.status(200).json({
-        message: "Petani Berhasil Di update",
+      const petaniUpdate = await dataPetani.update(
+        {
+          nik: NIK
+          , nkk: nokk
+          , foto:urlImg
+          , nama
+          , alamat
+          , desa
+          , kecamatan
+          , password: hashedPassword
+          , email
+          , noTelp: NoWa
+          , fk_penyuluhId: penyuluhData.id
+          , fk_kelompokId: kelompokData.id
+        },
+        {
+          where: { id },
+        }
+      );
+      res.status(200).json({
+        message: "Berhasil Mengupdate Data Petani",
+        petaniUpdate,
+        accountUpdate,
       });
     }
   } catch (error) {
     res.status(error.statusCode || 500).json({
-      message: `gagal update data petani`,
+      message: `Failed to update data petani. ${error.message}`,
     });
   }
 };
@@ -523,6 +529,7 @@ const tambahTanamanPetani = async (req, res) => {
     });
   }
 };
+
 const ubahTanamanPetaniById = async (req, res) => {
   try {
     const { id } = req.params;
@@ -623,6 +630,7 @@ const getTanamanPetaniById = async (req, res) => {
     });
   }
 };
+
 const deleteTanamanPetaniById = async (req, res) => {
   const { id } = req.params;
   try {
