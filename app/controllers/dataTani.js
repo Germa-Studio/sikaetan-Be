@@ -3,11 +3,15 @@ const {
   tanamanPetani,
   kelompok,
   laporanTanam,
+  dataPenyuluh,
   dataPetani,
+  tbl_akun,
 } = require("../models");
-const { Op } = require("sequelize");
+const { Op, NOW } = require("sequelize");
 const ApiError = require("../../utils/ApiError");
 const imageKit = require("../../midleware/imageKit");
+//import bycrypt
+const bcrypt = require("bcrypt");
 
 const laporanPetani = async (req, res) => {
   try {
@@ -80,8 +84,11 @@ const tambahDaftarTani = async (req, res) => {
     } else {
       const {
         NIK,
+        nokk,
         NoWa,
+        email,
         alamat,
+        foto,
         desa,
         nama,
         kecamatan,
@@ -94,9 +101,19 @@ const tambahDaftarTani = async (req, res) => {
       if (!NIK) throw new ApiError(400, "NIK tidak boleh kosong");
       if (!nama) throw new ApiError(400, "nama tidak boleh kosong");
       if (!penyuluh) throw new ApiError(400, "penyuluh tidak boleh kosong");
-      const tani = await dataPetani.findOne({ where: { NIK } });
+      const tani = await dataPetani.findOne({ where: { nik:NIK } });
       if (tani) throw new ApiError(400, "NIK sudah digunakan");
       const { file } = req;
+      const penyuluhData = await dataPenyuluh.findOne({ where: { nama: penyuluh } });
+      const hashedPassword = bcrypt.hashSync(password, 10);
+      
+      const kelompokData = await kelompok.findOne({
+        where: { 
+          gapoktan:gapoktan, 
+          namaKelompok:namaKelompok, 
+          desa:desa
+        }
+      })
       let urlImg;
       if (file) {
         const validFormat =
@@ -121,40 +138,34 @@ const tambahDaftarTani = async (req, res) => {
         img.url;
         console.log({ ...req.body, img: img.url });
       }
-      const dataKelompok = await kelompok.create({
-        gapoktan,
-        penyuluh,
-        namaKelompok,
-        desa,
-      });
-      const daftarTani = await dataPetani.create({
-        NIK,
-        NoWa,
-        role: "petani",
-        alamat,
-        desa,
+      const newAccount = await tbl_akun.create({
+        email,
+        password: hashedPassword,
+        no_wa: NoWa,
         nama,
-        kecamatan,
-        password,
-        kelompokId: dataKelompok.id,
-        foto: urlImg,
+        pekerjaan:'',
+        peran:"petani",
+        foto:urlImg,
       });
       const daftarPetani = await dataPetani.create({
-        NIK
-        , nkk
-        , foto
+        nik: NIK
+        , nkk: nokk
+        , foto:urlImg
         , nama
         , alamat
         , desa
         , kecamatan
-        , password
+        , password: hashedPassword
         , email
-        , noTelp
+        , noTelp:NoWa
+        , fk_penyuluhId: penyuluhData.id
+        , kelompokId: kelompokData.id
       })
 
       res.status(200).json({
         message: "Berhasil Menambahakan Daftar Tani",
-        daftarTani,
+        daftarPetani,
+        newAccount,
       });
     }
   } catch (error) {
@@ -274,11 +285,6 @@ const dataTaniDetail = async (req, res) => {
   const { id } = req.params;
   try {
     const data = await dataPetani.findOne({
-      include: [
-        {
-          model: kelompok,
-        },
-      ],
       where: {
         id,
       },

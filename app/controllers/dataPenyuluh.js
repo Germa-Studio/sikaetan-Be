@@ -33,8 +33,8 @@ const tambahDataPenyuluh = async(req, res)=>{
         let urlImg
         if(!NIP) throw new ApiError(400, "NIP tidak boleh kosong")
         if(!nama) throw new ApiError(400, "nama tidak boleh kosong")
-        const tani = await dataPenyuluh.findOne({ where: { nik, }, });
-        if(tani) throw new ApiError(400, "NIK sudah digunakan")
+        const tani = await dataPenyuluh.findOne({ where: { nik:NIP, }, });
+        if(tani) throw new ApiError(400, "NIP sudah digunakan")
         if (file) {
           const validFormat =
             file.mimetype === 'image/png' ||
@@ -51,11 +51,20 @@ const tambahDataPenyuluh = async(req, res)=>{
           const ext = split[split.length - 1];
     
           // upload file ke imagekit
-          const img = await imageKit.upload({
-            file: file.buffer,
-            fileName: `IMG-${Date.now()}.${ext}`,
-          });
-          urlImg = img.url
+          try {
+            const img = await imageKit.upload({
+              file: file.buffer,
+              fileName: `IMG-${Date.now()}.${ext}`,
+            });
+            urlImg = img.url;
+          } catch (uploadError) {
+            console.error('Error uploading image:', uploadError.message);
+            // Handle the error, and possibly return an error response to the client.
+            return res.status(500).json({
+              status: 'failed',
+              message: 'Error uploading image.',
+            });
+          }          
         }
         const newAccount = await tbl_akun.create({
           email,
@@ -64,13 +73,13 @@ const tambahDataPenyuluh = async(req, res)=>{
           nama,
           pekerjaan,
           peran:"penyuluh",
-          foto: `${file ? urlImg : ""}`,
+          foto:urlImg,
         });
         // const newPerson = await dataPerson.create({NIP, NoWa, alamat, desa, nama, kecamatan, password, foto:urlImg, role:"penyuluh" })
         const newPenyuluh = await dataPenyuluh.create({
           nik: NIP,
           nama: nama,
-          foto: `${file ? urlImg : ""}`,
+          foto:urlImg,
           alamat,
           email,
           noTelp: NoWa,

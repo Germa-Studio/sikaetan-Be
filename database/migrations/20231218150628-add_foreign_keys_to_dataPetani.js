@@ -18,6 +18,15 @@ module.exports = {
       onUpdate: 'CASCADE',
       onDelete: 'CASCADE',
     });
+    await queryInterface.addColumn('datapetanis', 'fk_kelompokId', {
+      type: Sequelize.INTEGER,
+      references: {
+        model: 'kelompoks',
+        key: 'id',
+      },
+      onUpdate: 'CASCADE',
+      onDelete: 'CASCADE',
+    });
   },
 
   async down (queryInterface, Sequelize) {
@@ -28,5 +37,6 @@ module.exports = {
      * await queryInterface.dropTable('users');
      */
     await queryInterface.removeConstraint('datapetanis', 'fk_penyuluhId');
+    await queryInterface.removeConstraint('kelompoks', 'fk_kelompokId');
   }
 };
