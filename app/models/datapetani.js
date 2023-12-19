@@ -13,6 +13,7 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
       this.belongsTo(models.dataPenyuluh, {foreignKey:'fk_penyuluhId'});
       this.belongsTo(models.kelompok, {foreignKey:'fk_kelompokId'});
+      this.hasMany(models.tanamanPetani, {foreignKey: 'fk_petaniId'});
     }
   }
   dataPetani.init({
@@ -25,7 +26,8 @@ module.exports = (sequelize, DataTypes) => {
     kecamatan: DataTypes.STRING,
     password: DataTypes.STRING,
     email: DataTypes.STRING,
-    noTelp: DataTypes.NUMBER
+    noTelp: DataTypes.NUMBER,
+    accountID: DataTypes.NUMBER,
   }, {
     sequelize,
     modelName: 'dataPetani',

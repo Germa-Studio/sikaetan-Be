@@ -39,6 +39,9 @@ module.exports = {
       noTelp: {
         type: Sequelize.STRING
       },
+      accountID: {
+        type: Sequelize.INTEGER
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE

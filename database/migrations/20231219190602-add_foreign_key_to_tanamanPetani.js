@@ -9,34 +9,24 @@ module.exports = {
      * Example:
      * await queryInterface.createTable('users', { id: Sequelize.INTEGER });
      */
-    await queryInterface.addColumn('datapetanis', 'fk_penyuluhId', {
+    await queryInterface.addColumn('tanamanpetanis', 'fk_petaniId', {
       type: Sequelize.INTEGER,
       references: {
-        model: 'datapenyuluhs',
+        model: 'datapetanis',
         key: 'id',
       },
       onUpdate: 'CASCADE',
-      onDelete: 'SET NULL',
-    });
-    await queryInterface.addColumn('datapetanis', 'fk_kelompokId', {
-      type: Sequelize.INTEGER,
-      references: {
-        model: 'kelompoks',
-        key: 'id',
-      },
-      onUpdate: 'CASCADE',
-      onDelete: 'SET NULL',
+      onDelete: 'CASCADE',
     });
   },
 
   async down (queryInterface, Sequelize) {
     /**
      * Add reverting commands here.
-     *s
+     *
      * Example:
      * await queryInterface.dropTable('users');
      */
-    await queryInterface.removeConstraint('datapetanis', 'fk_penyuluhId');
-    await queryInterface.removeConstraint('kelompoks', 'fk_kelompokId');
+    await queryInterface.removeConstraint('datapetanis', 'fk_petaniId');
   }
 };
