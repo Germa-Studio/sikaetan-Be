@@ -9,6 +9,7 @@ const dataTani = require("./dataTani");
 const InfoTani = require("./InfoTani");
 const tokoTani = require("./tokoTani");
 const liveChat = require("./liveChat");
+const statistik = require("./statistik");
 const dataPenyuluh = require("./dataPenyuluh");
 const select = require("./select");
 const allUsers = require("./allUsers");
@@ -29,6 +30,7 @@ router.post("/cek-nik", auth, cekNik);
 router.post("/cek-nip", auth, cekNiP);
 
 router.use("/auth", akun);
+router.use("/statistik", statistik);
 router.use("/", dataTani);
 router.use("/", InfoTani);
 router.use("/", tokoTani);
