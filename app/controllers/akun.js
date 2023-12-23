@@ -65,7 +65,7 @@ const register = async (req, res) => {
     // hash password
     const hashedPassword = bcrypt.hashSync(password, 10);
     // generate 6digit random number
-    const accountID = Math.floor(100000 + Math.random() * 900000);
+    const accountID = crypto.randomUUID();
     let urlImg;
     if (file) {
       const validFormat =
@@ -98,7 +98,7 @@ const register = async (req, res) => {
       pekerjaan,
       peran,
       foto: urlImg,
-      accountID: accountID
+      accountID: accountID,
     });
 
     // generate token utk user yg success login
