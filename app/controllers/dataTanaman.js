@@ -15,6 +15,9 @@ const getAllDataTanaman = async (req, res) => {
       throw new ApiError(403, "Anda tidak memiliki akses.");
     }
 
+    const limitFilter = Number(limit) || 10;
+    const pageFilter = Number(page) || 1;
+
     const data = await dataTanaman.findAll({
       include: [
         {
@@ -22,14 +25,9 @@ const getAllDataTanaman = async (req, res) => {
           as: "kelompok",
         },
       ],
-      limit: Number(limit) || 10,
-      offset: Number(page) ? Number(page) - 1 * Number(limit) : 0,
+      limit: limitFilter,
+      offset: (pageFilter - 1) * limitFilter,
       order: [[sortBy || "id", sortType || "ASC"]],
-      where: {
-        kategori: {
-          [Op.like]: `%${search}%`,
-        },
-      },
     });
     const total = await dataTanaman.count({
       where: {
