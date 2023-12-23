@@ -21,7 +21,8 @@ module.exports = (sequelize, DataTypes) => {
     pekerjaan: DataTypes.STRING,
     peran: DataTypes.STRING,
     foto: DataTypes.STRING,
-    accountID: DataTypes.NUMBER
+    accountID: DataTypes.NUMBER,
+    isVerified: DataTypes.BOOLEAN
   }, {
     sequelize,
     modelName: 'tbl_akun',

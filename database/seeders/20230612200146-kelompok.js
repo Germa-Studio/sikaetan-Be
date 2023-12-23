@@ -26,6 +26,7 @@ module.exports = {
       peran: 'super admin',
       foto: 'https://cdn.iconscout.com/icon/free/png-512/avatar-370-456322.png',
       accountID: 123456,
+      isVerified: true,
       createdAt: new Date(),
       updatedAt: new Date()
     },{
@@ -85,7 +86,21 @@ module.exports = {
       createdAt: new Date(),
       updatedAt: new Date()
     }], {});
-    
+    await queryInterface.bulkInsert('tanamanpetanis', [{
+      statusKepemilikanLahan: 'MILIK SENDIRI',
+      luasLahan: 200,
+      kategori: 'TANAMAN PANGAN',
+      jenis: 'JENIS SAYUR',
+      komoditas: 'PADI',
+      periodeMusimTanam: 'KEMARAU',
+      periodeBulanTanam: 'AGUSTUS',
+      prakiraanLuasPanen: 175,
+      prakiraanProduksiPanen: 350,
+      prakiraanBulanPanen: 'DESEMBER',
+      fk_petaniId: 1,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    }], {});
   },
 
   async down (queryInterface, Sequelize) {

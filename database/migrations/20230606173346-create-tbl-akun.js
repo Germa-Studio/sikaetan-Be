@@ -33,6 +33,11 @@ module.exports = {
       accountID: {
         type:Sequelize.INTEGER
       },
+      isVerified: {
+        type:Sequelize.BOOLEAN
+        , defaultValue: false
+        , allowNull: false
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE

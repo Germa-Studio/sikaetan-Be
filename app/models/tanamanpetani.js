@@ -16,18 +16,16 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
   tanamanPetani.init({
-    statusLahan: DataTypes.STRING,
+    statusKepemilikanLahan: DataTypes.STRING,
     luasLahan: DataTypes.STRING,
     kategori: DataTypes.STRING,
     jenis: DataTypes.STRING,
-    jenisPanen: DataTypes.STRING,
     komoditas: DataTypes.STRING,
-    musimTanam: DataTypes.INTEGER,
-    tanggalTanam: DataTypes.STRING,
-    perkiraanPanen: DataTypes.STRING,
-    perkiraanHasilPanen: DataTypes.INTEGER,
-    realisasiHasilPanen: DataTypes.INTEGER,
-    realisasiLuasLahan: DataTypes.STRING
+    periodeMusimTanam: DataTypes.STRING,
+    periodeBulanTanam: DataTypes.STRING,
+    prakiraanLuasPanen: DataTypes.INTEGER,
+    prakiraanProduksiPanen: DataTypes.INTEGER,
+    prakiraanBulanPanen: DataTypes.STRING 
   }, {
     sequelize,
     modelName: 'tanamanPetani',
