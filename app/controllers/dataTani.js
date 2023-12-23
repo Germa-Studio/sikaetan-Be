@@ -77,11 +77,7 @@ const laporanPenyuluh = async (req, res) => {
 const tambahDaftarTani = async (req, res) => {
   const { peran } = req.user;
   try {
-    if (
-      peran !== "admin" &&
-      peran !== "super admin" &&
-      peran !== "penyuluh"
-    ) {
+    if (peran !== "admin" && peran !== "super admin" && peran !== "penyuluh") {
       throw new ApiError(400, "Anda tidak memiliki akses.");
     } else {
       const {
@@ -99,30 +95,32 @@ const tambahDaftarTani = async (req, res) => {
         namaKelompok,
       } = req.body;
 
-      if (!NIK){
+      if (!NIK) {
         throw new ApiError(400, "NIK tidak boleh kosong");
-      } 
-      if (!nama){
+      }
+      if (!nama) {
         throw new ApiError(400, "nama tidak boleh kosong");
-      } 
-      if (!penyuluh){
+      }
+      if (!penyuluh) {
         throw new ApiError(400, "penyuluh tidak boleh kosong");
-      } 
-      const tani = await dataPetani.findOne({ where: { nik:NIK } });
-      if (tani){
+      }
+      const tani = await dataPetani.findOne({ where: { nik: NIK } });
+      if (tani) {
         throw new ApiError(400, "NIK sudah digunakan");
-      } 
+      }
       const { file } = req;
-      const penyuluhData = await dataPenyuluh.findOne({ where: { id: penyuluh } });
+      const penyuluhData = await dataPenyuluh.findOne({
+        where: { id: penyuluh },
+      });
       const hashedPassword = bcrypt.hashSync(password, 10);
-      const accountID = Math.floor(100000 + Math.random() * 900000);
+      const accountID = crypto.randomUUID();
       const kelompokData = await kelompok.findOne({
-        where: { 
-          gapoktan:gapoktan, 
-          namaKelompok:namaKelompok, 
-          desa:desa
-        }
-      })
+        where: {
+          gapoktan: gapoktan,
+          namaKelompok: namaKelompok,
+          desa: desa,
+        },
+      });
       // console.log(kelompokData)
       let urlImg;
       if (file) {
@@ -154,26 +152,26 @@ const tambahDaftarTani = async (req, res) => {
         password: hashedPassword,
         no_wa: NoWa,
         nama,
-        pekerjaan:'',
-        peran:"petani",
-        foto:urlImg,
+        pekerjaan: "",
+        peran: "petani",
+        foto: urlImg,
         accountID: accountID,
       });
       const daftarPetani = await dataPetani.create({
-        nik: NIK
-        , nkk: nokk
-        , foto:urlImg
-        , nama
-        , alamat
-        , desa
-        , kecamatan
-        , password: hashedPassword
-        , email
-        , noTelp: NoWa
-        , accountID: accountID
-        , fk_penyuluhId: penyuluhData.id
-        , fk_kelompokId: kelompokData.id
-      })
+        nik: NIK,
+        nkk: nokk,
+        foto: urlImg,
+        nama,
+        alamat,
+        desa,
+        kecamatan,
+        password: hashedPassword,
+        email,
+        noTelp: NoWa,
+        accountID: accountID,
+        fk_penyuluhId: penyuluhData.id,
+        fk_kelompokId: kelompokData.id,
+      });
 
       res.status(200).json({
         message: "Berhasil Menambahakan Daftar Tani",
@@ -252,7 +250,7 @@ const daftarTani = async (req, res) => {
           },
           {
             model: dataPenyuluh,
-          }
+          },
         ],
       });
       res.status(200).json({
@@ -288,10 +286,10 @@ const deleteDaftarTani = async (req, res) => {
         },
       });
       await tbl_akun.destroy({
-        where:{
-          accountID:data.accountID
-        }
-      })
+        where: {
+          accountID: data.accountID,
+        },
+      });
       res.status(200).json({
         message: "Petani Berhasil Di Hapus",
       });
@@ -308,7 +306,7 @@ const dataTaniDetail = async (req, res) => {
   try {
     const data = await dataPetani.findOne({
       where: {
-        id:id,
+        id: id,
       },
       include: [
         {
@@ -316,7 +314,7 @@ const dataTaniDetail = async (req, res) => {
         },
         {
           model: dataPenyuluh,
-        }
+        },
       ],
     });
     res.status(200).json({
@@ -350,11 +348,7 @@ const updateTaniDetail = async (req, res) => {
   } = req.body;
 
   try {
-    if (
-      peran !== "admin" &&
-      peran !== "super admin" &&
-      peran !== "penyuluh"
-    ) {
+    if (peran !== "admin" && peran !== "super admin" && peran !== "penyuluh") {
       throw new ApiError(400, "Anda tidak memiliki akses.");
     } else {
       const data = await dataPetani.findOne({
@@ -364,18 +358,18 @@ const updateTaniDetail = async (req, res) => {
       });
       if (!data) throw new ApiError(400, "data tidak ditemukan.");
       const kelompokData = await kelompok.findOne({
-        where: { 
-          gapoktan:gapoktan, 
-          namaKelompok:namaKelompok, 
-          desa:desa
-        }
-      })
+        where: {
+          gapoktan: gapoktan,
+          namaKelompok: namaKelompok,
+          desa: desa,
+        },
+      });
       const penyuluhData = await dataPenyuluh.findOne({
         where: {
           id: penyuluh,
-        }
-      })
-      let urlImg
+        },
+      });
+      let urlImg;
       const { file } = req;
       console.log(file);
       if (file) {
@@ -408,9 +402,9 @@ const updateTaniDetail = async (req, res) => {
           password: hashedPassword,
           no_wa: NoWa,
           nama,
-          pekerjaan:'',
-          peran:"petani",
-          foto:urlImg,
+          pekerjaan: "",
+          peran: "petani",
+          foto: urlImg,
         },
         {
           where: { accountID: data.accountID },
@@ -418,18 +412,18 @@ const updateTaniDetail = async (req, res) => {
       );
       const petaniUpdate = await dataPetani.update(
         {
-          nik: NIK
-          , nkk: nokk
-          , foto:urlImg
-          , nama
-          , alamat
-          , desa
-          , kecamatan
-          , password: hashedPassword
-          , email
-          , noTelp: NoWa
-          , fk_penyuluhId: penyuluhData.id
-          , fk_kelompokId: kelompokData.id
+          nik: NIK,
+          nkk: nokk,
+          foto: urlImg,
+          nama,
+          alamat,
+          desa,
+          kecamatan,
+          password: hashedPassword,
+          email,
+          noTelp: NoWa,
+          fk_penyuluhId: penyuluhData.id,
+          fk_kelompokId: kelompokData.id,
         },
         {
           where: { id },

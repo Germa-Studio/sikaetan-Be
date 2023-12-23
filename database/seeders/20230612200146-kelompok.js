@@ -1,12 +1,11 @@
-'use strict';
+"use strict";
 
-const kelompok = require('../buatSeeder/kelompok')
+const kelompok = require("../buatSeeder/kelompok");
 const bcrypt = require("bcrypt");
-
 
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
-  async up (queryInterface, Sequelize) {
+  async up(queryInterface, Sequelize) {
     /**
      * Add seed commands here.
      *
@@ -101,14 +100,15 @@ module.exports = {
       createdAt: new Date(),
       updatedAt: new Date()
     }], {});
+
   },
 
-  async down (queryInterface, Sequelize) {
+  async down(queryInterface, Sequelize) {
     /**
      * Add commands to revert seed here.
      *
      * Example:
      * await queryInterface.bulkDelete('People', null, {});
      */
-  }
+  },
 };

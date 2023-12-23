@@ -1,58 +1,58 @@
-'use strict';
+"use strict";
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('dataPetanis', {
+    await queryInterface.createTable("dataPetanis", {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
       },
       nik: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
       },
       nkk: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
       },
       nama: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
       },
       foto: {
-        type: Sequelize.TEXT
-      }, 
+        type: Sequelize.TEXT,
+      },
       alamat: {
-        type: Sequelize.TEXT
+        type: Sequelize.TEXT,
       },
       desa: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
       },
       kecamatan: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
       },
       password: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
       },
       email: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
       },
       noTelp: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
       },
       accountID: {
-        type: Sequelize.INTEGER
+        type: Sequelize.STRING,
       },
       createdAt: {
         allowNull: false,
-        type: Sequelize.DATE
+        type: Sequelize.DATE,
       },
       updatedAt: {
         allowNull: false,
-        type: Sequelize.DATE
-      }
+        type: Sequelize.DATE,
+      },
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('dataPetanis');
-  }
+    await queryInterface.dropTable("dataPetanis");
+  },
 };

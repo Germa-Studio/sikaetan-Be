@@ -1,17 +1,22 @@
 const { dataTanaman, kelompok } = require("../models");
+
 const ApiError = require("../../utils/ApiError");
-const imageKit = require("../../midleware/imageKit");
 const dotenv = require("dotenv");
-const bcrypt = require("bcrypt");
+const { Op } = require("sequelize");
+
 dotenv.config();
 
 const getAllDataTanaman = async (req, res) => {
   const { peran } = req.user || {};
+  const { limit, page, sortBy, sortType, search } = req.query;
 
   try {
     if (peran !== "admin" && peran !== "super admin" && peran !== "penyuluh") {
       throw new ApiError(403, "Anda tidak memiliki akses.");
     }
+
+    const limitFilter = Number(limit) || 10;
+    const pageFilter = Number(page) || 1;
 
     const data = await dataTanaman.findAll({
       include: [
@@ -20,11 +25,33 @@ const getAllDataTanaman = async (req, res) => {
           as: "kelompok",
         },
       ],
+      limit: limitFilter,
+      offset: (pageFilter - 1) * limitFilter,
+      order: [[sortBy || "id", sortType || "ASC"]],
+    });
+    const total = await dataTanaman.count({
+      where: {
+        kategori: {
+          [Op.like]: `%${search}%`,
+        },
+      },
     });
 
     res.status(200).json({
       message: "Data berhasil didapatkan.",
-      data,
+      data: {
+        data,
+        total,
+        currentPages: Number(page) || 1,
+        limit: Number(limit) || 10,
+        maxPages: Math.ceil(total / (Number(limit) || 10)),
+        from: Number(page) ? (Number(page) - 1) * Number(limit) + 1 : 1,
+        to: Number(page)
+          ? (Number(page) - 1) * Number(limit) + data.length
+          : data.length,
+        sortBy: sortBy || "id",
+        sortType: sortType || "ASC",
+      },
     });
   } catch (error) {
     res.status(error.statusCode || 500).json({
