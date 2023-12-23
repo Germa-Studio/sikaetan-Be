@@ -29,13 +29,7 @@ const getAllDataTanaman = async (req, res) => {
       offset: (pageFilter - 1) * limitFilter,
       order: [[sortBy || "id", sortType || "ASC"]],
     });
-    const total = await dataTanaman.count({
-      where: {
-        kategori: {
-          [Op.like]: `%${search}%`,
-        },
-      },
-    });
+    const total = await dataTanaman.count();
 
     res.status(200).json({
       message: "Data berhasil didapatkan.",
