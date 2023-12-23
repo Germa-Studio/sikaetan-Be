@@ -472,19 +472,8 @@ const getLaporanPetani = async (req, res) => {
 
 const tambahTanamanPetani = async (req, res) => {
   try {
-    console.log(req.body);
     const {
-      dataPersonId,
-      statusLahan,
-      luasLahan,
-      kategori,
-      jenis,
-      jenisPanen,
-      komoditas,
-      musimTanam,
-      tanggalTanam,
-      perkiraanPanen,
-      perkiraanHasilPanen,
+      
     } = req.body;
     for (const key in req.body) {
       if (!req.body[key] && key != "jenis" && key != "jenisPanen") {
@@ -586,7 +575,7 @@ const getTanamanPetani = async (req, res) => {
     const data = await tanamanPetani.findAll({
       include: [
         {
-          model: dataPerson,
+          model: dataPetani,
           include: [
             {
               model: kelompok,

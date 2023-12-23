@@ -11,22 +11,20 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
     }
   }
-  tbl_akun.init(
-    {
-      email: DataTypes.STRING,
-      no_wa: DataTypes.STRING,
-      nama: DataTypes.STRING,
-      password: DataTypes.STRING,
-      pekerjaan: DataTypes.STRING,
-      peran: DataTypes.STRING,
-      foto: DataTypes.STRING,
-      accountID: DataTypes.STRING,
-    },
-    {
-      sequelize,
-      modelName: "tbl_akun",
-      tableName: "tbl_akun",
-    }
-  );
+  tbl_akun.init({
+    email: DataTypes.STRING,
+    no_wa: DataTypes.STRING,
+    nama: DataTypes.STRING,
+    password: DataTypes.STRING,
+    pekerjaan: DataTypes.STRING,
+    peran: DataTypes.STRING,
+    foto: DataTypes.STRING,
+    accountID: DataTypes.NUMBER,
+    isVerified: DataTypes.BOOLEAN
+  }, {
+    sequelize,
+    modelName: 'tbl_akun',
+    tableName:'tbl_akun'
+  });
   return tbl_akun;
 };

@@ -9,10 +9,7 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      dataPersonId:{
-        type: Sequelize.INTEGER
-      },
-      statusLahan: {
+      statusKepemilikanLahan: {
         type: Sequelize.STRING
       },
       luasLahan: {
@@ -24,28 +21,22 @@ module.exports = {
       jenis: {
         type: Sequelize.STRING
       },
-      jenisPanen: {
-        type: Sequelize.STRING
-      },
       komoditas: {
         type: Sequelize.STRING
       },
-      musimTanam: {
-        type: Sequelize.INTEGER
-      },
-      tanggalTanam: {
+      periodeMusimTanam: {
         type: Sequelize.STRING
       },
-      perkiraanPanen: {
+      periodeBulanTanam: {
         type: Sequelize.STRING
       },
-      perkiraanHasilPanen: {
+      prakiraanLuasPanen: {
         type: Sequelize.INTEGER
       },
-      realisasiHasilPanen: {
+      prakiraanProduksiPanen: {
         type: Sequelize.INTEGER
       },
-      realisasiLuasLahan: {
+      prakiraanBulanPanen: {
         type: Sequelize.STRING
       },
       createdAt: {
