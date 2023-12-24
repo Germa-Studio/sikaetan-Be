@@ -16,6 +16,7 @@ const allUsers = require("./allUsers");
 const chart = require("./chart");
 const laporanTanam = require("./laporanTanam");
 const chatt = require("./chatt");
+const tanamanPetani = require("./tanamanPetani");
 const { getProfile } = require("../controllers/akun");
 
 router.use("/api-docs", swaggerUI.serve);
@@ -31,6 +32,7 @@ router.post("/cek-nip", auth, cekNiP);
 
 router.use("/auth", akun);
 router.use("/statistik", statistik);
+router.use("/tanaman-petani", tanamanPetani);
 router.use("/", dataTani);
 router.use("/", InfoTani);
 router.use("/", tokoTani);
