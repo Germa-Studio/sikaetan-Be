@@ -33,6 +33,7 @@ const searchPoktan = async (req, res) => {
           },
         ],
       },
+      limit: 10,
     });
     res.status(200).json({
       message: "Data semua users berhasil di peroleh",
@@ -52,27 +53,13 @@ const searchPetani = async (req, res) => {
       where: {
         [Op.or]: [
           {
-            nama: {
-              [Op.like]: `%${search}%`,
-            },
-          },
-          {
             nik: {
-              [Op.like]: `%${search}%`,
-            },
-          },
-          {
-            nkk: {
-              [Op.like]: `%${search}%`,
-            },
-          },
-          {
-            email: {
               [Op.like]: `%${search}%`,
             },
           },
         ],
       },
+      limit: 10,
     });
     res.status(200).json({
       message: "Data semua users berhasil di peroleh",
