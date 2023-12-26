@@ -6,6 +6,8 @@ const ApiError = require("../../utils/ApiError");
 const isEmailValid = require("../../utils/emailValidation");
 const imageKit = require("../../midleware/imageKit");
 
+const crypto = require("crypto");
+
 dotenv.config();
 
 const login = async (req, res) => {
