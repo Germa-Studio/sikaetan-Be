@@ -3448,6 +3448,93 @@
         }
       }
     },
+    "/tanaman-petani/statistik": {
+      "get": {
+        "summary": "Mendapatkan Statistik Tanaman Petani",
+        "tags": ["Tanaman Petani"],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "month",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Bulan yang akan dicari"
+          },
+          {
+            "in": "query",
+            "name": "year",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Tahun yang akan dicari"
+          },
+          {
+            "in": "query",
+            "name": "lineType",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": ["komoditas", "kategori"]
+            },
+            "description": "Grouping yang akan digunakan untuk line chart"
+          },
+          {
+            "in": "query",
+            "name": "pieType",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": ["komoditas", "kategori"]
+            },
+            "description": "Grouping yang akan digunakan untuk pie chart"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Berhasil mendapatkan Statistik Tanaman Petani",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "example": "Data berhasil didapatkan",
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "statistik": {
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/Statistik Tanaman Petani"
+                          }
+                        },
+                        "summary": {
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/Summary Tanaman Petani"
+                          }
+                        },
+                        "latest": {
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/Tanaman Petani"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/chart": {
       "post": {
         "summary": "Menambahkan Data Chart",
@@ -4409,6 +4496,138 @@
   },
   "components": {
     "schemas": {
+      "Statistik Tanaman Petani": {
+        "type": "object",
+        "properties": {
+          "date": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2023-31-01"
+          },
+          "komoditas": {
+            "type": "string",
+            "example": "UBI JALAR"
+          },
+          "kategori": {
+            "type": "string",
+            "example": "HOLTIKULTURA"
+          },
+          "count": {
+            "type": "integer",
+            "example": 1
+          }
+        }
+      },
+      "Summary Tanaman Petani": {
+        "type": "object",
+        "properties": {
+          "komoditas": {
+            "type": "string",
+            "example": "UBI JALAR"
+          },
+          "kategori": {
+            "type": "string",
+            "example": "HOLTIKULTURA"
+          },
+          "count": {
+            "type": "integer",
+            "example": 1
+          }
+        }
+      },
+      "Tanaman Petani": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "example": 1
+          },
+          "statusKepemilikanLahan": {
+            "type": "string",
+            "enum": ["MILIK SENDIRI", "SEWA", "PINJAM"],
+            "example": "MILIK SENDIRI"
+          },
+          "luasLahan": {
+            "type": "integer",
+            "example": 200
+          },
+          "kategori": {
+            "type": "string",
+            "example": "Tanaman Pangan"
+          },
+          "jenis": {
+            "type": "string",
+            "example": "Padi"
+          },
+          "komoditas": {
+            "type": "string",
+            "example": "Padi"
+          },
+          "periodeMusimTanam": {
+            "type": "string",
+            "enum": ["KEMARAU", "HUJAN"],
+            "example": "KEMARAU"
+          },
+          "periodeBulanTanam": {
+            "type": "string",
+            "enum": [
+              "JANUARI",
+              "FEBRUARI",
+              "MARET",
+              "APRIL",
+              "MEI",
+              "JUNI",
+              "JULI",
+              "AGUSTUS",
+              "SEPTEMBER",
+              "OKTOBER",
+              "NOVEMBER",
+              "DESEMBER"
+            ],
+            "example": "JANUARI"
+          },
+          "prakiraanLuasPanen": {
+            "type": "integer",
+            "example": 100
+          },
+          "prakiraanProduksiPanen": {
+            "type": "integer",
+            "example": 100
+          },
+          "prakiraanBulanPanen": {
+            "type": "string",
+            "enum": [
+              "JANUARI",
+              "FEBRUARI",
+              "MARET",
+              "APRIL",
+              "MEI",
+              "JUNI",
+              "JULI",
+              "AGUSTUS",
+              "SEPTEMBER",
+              "OKTOBER",
+              "NOVEMBER",
+              "DESEMBER"
+            ],
+            "example": "JANUARI"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2021-07-26T07:26:58.000Z"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2021-07-26T07:26:58.000Z"
+          },
+          "fk_petaniId": {
+            "type": "integer",
+            "example": 1
+          }
+        }
+      },
       "User": {
         "type": "object",
         "properties": {
