@@ -10,6 +10,7 @@ const ApiError = require("../../utils/ApiError");
 const imageKit = require("../../midleware/imageKit");
 const dotenv = require("dotenv");
 const bcrypt = require("bcrypt");
+const crypto = require("crypto");
 dotenv.config();
 const tambahDataPenyuluh = async (req, res) => {
   const { peran } = req.user || {};

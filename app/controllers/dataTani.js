@@ -12,6 +12,8 @@ const ApiError = require("../../utils/ApiError");
 const imageKit = require("../../midleware/imageKit");
 //import bycrypt
 const bcrypt = require("bcrypt");
+//import crypto
+const crypto = require("crypto");
 
 const laporanPetani = async (req, res) => {
   try {
