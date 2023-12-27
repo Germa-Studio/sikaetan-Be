@@ -9,6 +9,7 @@ const {
   getUserNotVerify,
   verifikasi,
   getProfile,
+  // verifikasiUser,
 } = require("../controllers/akun");
 
 router.post("/login", login);
@@ -18,5 +19,6 @@ router.post("/petani-register", upload.single("foto"), registerPetani);
 router.get("/profile", getProfile);
 router.get("/verify", getUserNotVerify);
 router.get("/verify/:id", verifikasi);
+// router.put("/verify/:id", verifikasiUser)
 
 module.exports = router;

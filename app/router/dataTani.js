@@ -44,11 +44,18 @@ router.put("/daftar-tani/:id", auth, upload.single("foto"), updateTaniDetail);
 const {
   getAllTanamanPetani,
   // getTanamanPetaniById,
-  // tambahTanamanPetani,
+  tambahDataTanamanPetani,
   // ubahTanamanPetaniById,
+  getDetailedDataTanamanPetani,
+  deleteDatatanamanPetani,
+  editDataTanamanPetani,
   // deleteTanamanPetaniById,
   } = require("../controllers/tanamanPetani");
 
 router.get("/list-tanaman", auth, getAllTanamanPetani);
+router.put("/list-tanaman/:id", auth, editDataTanamanPetani);
+router.get("/list-tanaman/:id", auth, getDetailedDataTanamanPetani);
+router.post("/list-tanaman", auth, tambahDataTanamanPetani);
+router.delete("/list-tanaman/:id", auth, deleteDatatanamanPetani);
 
 module.exports = router;
