@@ -8,6 +8,16 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
+      // connect with datapetani
+      tbl_akun.hasOne(models.dataPetani, {
+        foreignKey: "accountID",
+        as: "petani",
+      });
+      // connect with datapenyuluh
+      tbl_akun.hasOne(models.dataPenyuluh, {
+        foreignKey: "accountID",
+        as: "penyuluh",
+      });
       // define association here
     }
   }
