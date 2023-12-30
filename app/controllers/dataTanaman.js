@@ -159,6 +159,9 @@ const editDataTanaman = async (req, res) => {
       prakiraanHasilPanen,
       prakiraanBulanPanen,
       fk_kelompokId,
+      realisasiLuasPanen,
+      realisasiHasilPanen,
+      realisasiBulanPanen,
     } = req.body;
 
     if (!kategori) throw new ApiError(400, "Kategori tidak boleh kosong.");
@@ -189,6 +192,9 @@ const editDataTanaman = async (req, res) => {
         prakiraanHasilPanen,
         prakiraanBulanPanen,
         fk_kelompokId,
+        realisasiLuasPanen,
+        realisasiHasilPanen,
+        realisasiBulanPanen,
       },
       { where: { id } }
     );
