@@ -8,7 +8,7 @@ dotenv.config();
 
 const getAllDataTanaman = async (req, res) => {
   const { peran } = req.user || {};
-  const { limit, page, sortBy, sortType, search } = req.query;
+  const { limit, page, sortBy, sortType, poktan_id } = req.query;
 
   try {
     if (peran !== "admin" && peran !== "super admin" && peran !== "penyuluh") {
@@ -18,7 +18,7 @@ const getAllDataTanaman = async (req, res) => {
     const limitFilter = Number(limit) || 10;
     const pageFilter = Number(page) || 1;
 
-    const data = await dataTanaman.findAll({
+    const filter = {
       include: [
         {
           model: kelompok,
@@ -28,7 +28,17 @@ const getAllDataTanaman = async (req, res) => {
       limit: limitFilter,
       offset: (pageFilter - 1) * limitFilter,
       order: [[sortBy || "id", sortType || "ASC"]],
-    });
+    };
+
+    if (poktan_id !== "undefined") {
+      filter.where = {
+        fk_kelompokId: {
+          [Op.eq]: poktan_id,
+        },
+      };
+    }
+
+    const data = await dataTanaman.findAll({ ...filter });
     const total = await dataTanaman.count();
 
     res.status(200).json({
