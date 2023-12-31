@@ -30,7 +30,7 @@ module.exports = {
           .arrayElement([
             "tanaman pangan",
             "tanaman perkebunan",
-            "holtikultura",
+            "tanaman holtikultura",
           ])
           .toUpperCase(),
         jenis: faker.helpers.arrayElement(["buah", "sayur"]).toUpperCase(),

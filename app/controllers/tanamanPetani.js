@@ -171,6 +171,9 @@ const getTanamanPetaniStatistically = async (req, res) => {
   try {
     const lineChartType = lineType || "komoditas";
     const pieChartType = pieType || "komoditas";
+    const date_starts = new Date(`${year}-${month}-01`)
+    let date_ends = new Date(`${year}-${month}-31`)
+    date_ends = new Date(date_ends.setDate(date_ends.getDate() + 1))
     const lineChart = await tanamanPetani.findAll({
       attributes: [
         [Sequelize.fn("DATE", Sequelize.col("createdAt")), "date"],
@@ -181,8 +184,8 @@ const getTanamanPetaniStatistically = async (req, res) => {
       where: {
         createdAt: {
           [Op.between]: [
-            new Date(`${year}-${month}-01`),
-            new Date(`${year}-${month}-31`),
+            date_starts,
+            date_ends
           ],
         },
       },
@@ -197,8 +200,8 @@ const getTanamanPetaniStatistically = async (req, res) => {
       where: {
         createdAt: {
           [Op.between]: [
-            new Date(`${year}-${month}-01`),
-            new Date(`${year}-${month}-31`),
+            date_starts,
+            date_ends
           ],
         },
       },
