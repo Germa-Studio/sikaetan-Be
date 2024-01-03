@@ -3,6 +3,7 @@ const { dataTanaman, kelompok } = require("../models");
 const ApiError = require("../../utils/ApiError");
 const dotenv = require("dotenv");
 const { Op } = require("sequelize");
+const ExcelJS = require("exceljs");
 
 dotenv.config();
 
@@ -243,10 +244,57 @@ const hapusDataTanaman = async (req, res) => {
   }
 };
 
+const uploadDataTanaman = async (req, res) => {
+  const { peran } = req.user || {};
+
+  try {
+    if (peran !== "admin" && peran !== "super admin" && peran !== "penyuluh") {
+      throw new ApiError(403, "Anda tidak memiliki akses.");
+    }
+
+    const { file } = req;
+    if (!file) throw new ApiError(400, "File tidak ditemukan.");
+
+    const workbook = new ExcelJS.Workbook();
+    await workbook.xlsx.load(file.buffer);
+
+    const worksheet = workbook.getWorksheet(1);
+
+    // Iterate through rows and columns to read data
+    worksheet.eachRow({ includeEmpty: true }, async (row, rowNumber) => {
+      if (rowNumber === 1) return;
+
+      await dataTanaman.create({
+        fk_kelompokId: row.getCell(1).value,
+        kategori: row.getCell(2).value,
+        komoditas: row.getCell(3).value,
+        periodeTanam: row.getCell(4).value,
+        luasLahan: row.getCell(5).value,
+        prakiraanLuasPanen: row.getCell(6).value,
+        prakiraanHasilPanen: row.getCell(7).value,
+        prakiraanBulanPanen: row.getCell(8).value,
+        realisasiLuasPanen: row.getCell(9).value,
+        realisasiHasilPanen: row.getCell(10).value,
+        realisasiBulanPanen: row.getCell(11).value,
+      });
+    });
+
+    res.status(201).json({
+      message: "Data berhasil ditambahkan.",
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(error.statusCode || 500).json({
+      message: error.message,
+    });
+  }
+};
+
 module.exports = {
   tambahDataTanaman,
   getAllDataTanaman,
   getDetailedDataTanaman,
   editDataTanaman,
   hapusDataTanaman,
+  uploadDataTanaman,
 };
