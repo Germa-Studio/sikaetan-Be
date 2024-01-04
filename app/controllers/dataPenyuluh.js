@@ -11,6 +11,7 @@ const imageKit = require("../../midleware/imageKit");
 const dotenv = require("dotenv");
 const bcrypt = require("bcrypt");
 const crypto = require("crypto");
+const ExcelJS = require("exceljs");
 dotenv.config();
 const tambahDataPenyuluh = async (req, res) => {
   const { peran } = req.user || {};
@@ -124,6 +125,67 @@ const tambahDataPenyuluh = async (req, res) => {
     });
   }
 };
+
+const uploadDataPenyuluh = async (req, res) => {
+  const { peran } = req.user || {}
+
+  try{
+    if (peran !== "admin" && peran !== "super admin" && peran !== "penyuluh") {
+      throw new ApiError(403, "Anda tidak memiliki akses.");
+    }
+
+    const { file } = req;
+    if (!file) throw new ApiError(400, "File tidak ditemukan.");
+
+    const workbook = new ExcelJS.Workbook();
+    await workbook.xlsx.load(file.buffer);
+
+    const worksheet = workbook.getWorksheet(1);
+    worksheet.eachRow({ includeEmpty: true }, async (row, rowNumber) => {
+      if (rowNumber === 1) return;
+      const accountID = crypto.randomUUID();
+      const password = row.getCell(6).value.toString();
+      const hashedPassword = bcrypt.hashSync(password, 10);
+      const urlImg = "https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/images/bg-7.png"
+      
+      await dataPenyuluh.create({
+        nik: row.getCell(1).value.toString(),
+        nama: row.getCell(2).value.toString(),
+        foto: urlImg,
+        alamat: row.getCell(3).value.toString(),
+        email: row.getCell(4).value.toString(),
+        noTelp: row.getCell(5).value.toString(),
+        kecamatan: row.getCell(8).value.toString(),
+        desa: row.getCell(9).value.toString(),
+        password: hashedPassword,
+        namaProduct: row.getCell(7).value.toString(),
+        desaBinaan: row.getCell(10).value.toString(),
+        kecamatanBinaan: row.getCell(11).value.toString(),
+        accountID: accountID,
+      });
+
+      await tbl_akun.create({
+        email: row.getCell(4).value.toString(),
+        password: hashedPassword,
+        no_wa: row.getCell(5).value.toString(),
+        nama: row.getCell(2).value.toString(),
+        pekerjaan: "",
+        peran: "penyuluh",
+        foto: urlImg,
+        accountID: accountID,
+      })
+
+    });
+    res.status(201).json({
+      message: "Data berhasil ditambahkan.",
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(error.statusCode || 500).json({
+      message: error.message,
+    });
+  }
+}
 
 const daftarPenyuluh = async (req, res) => {
   const { nama, peran } = req.user || {};
@@ -544,4 +606,5 @@ module.exports = {
   presensiKehadiranWeb,
   daftarPenyuluhById,
   updatePenyuluh,
+  uploadDataPenyuluh
 };

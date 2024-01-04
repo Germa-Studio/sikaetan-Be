@@ -12,7 +12,8 @@ const {
   deleteDaftarPenyuluh,
   presensiKehadiranWeb,
   daftarPenyuluhById,
-  updatePenyuluh
+  updatePenyuluh,
+  uploadDataPenyuluh
 } = require('../controllers/dataPenyuluh');
 
 router.post('/penyuluh/add', auth, upload.single('foto') ,tambahDataPenyuluh);
@@ -26,5 +27,6 @@ router.get('/daftar-penyuluh', auth, daftarPenyuluh);
 router.get('/daftar-penyuluh/:id', auth, daftarPenyuluhById);
 router.put('/daftar-penyuluh/:id', auth, upload.single('foto') ,updatePenyuluh);
 router.delete('/daftar-penyuluh/:id', auth, deleteDaftarPenyuluh);
+router.post('/upload-data-penyuluh',auth, upload.single("file"), uploadDataPenyuluh)
 
 module.exports = router;

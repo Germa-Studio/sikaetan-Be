@@ -4,6 +4,7 @@ const imageKit = require("../../midleware/imageKit");
 const dotenv = require("dotenv");
 const bcrypt = require("bcrypt");
 const { Op, Sequelize } = require("sequelize");
+const ExcelJS = require("exceljs");
 
 dotenv.config();
 
@@ -334,6 +335,56 @@ const editDataTanamanPetani = async(req, res) => {
   }
 };
 
+const uploadDataTanamanPetani = async (req, res) => {
+  const { peran } = req.user || {};
+
+  try {
+    if (peran !== "admin" && peran !== "super admin" && peran !== "penyuluh") {
+      throw new ApiError(403, "Anda tidak memiliki akses.");
+    }
+
+    const { file } = req;
+    if (!file) throw new ApiError(400, "File tidak ditemukan.");
+
+    const workbook = new ExcelJS.Workbook();
+    await workbook.xlsx.load(file.buffer);
+
+    const worksheet = workbook.getWorksheet(1);
+
+    // Iterate through rows and columns to read data
+    worksheet.eachRow({ includeEmpty: true }, async (row, rowNumber) => {
+      if (rowNumber === 1) return;
+      const nikPetani = row.getCell(1).value.toString(); // Fix variable name
+      const petani = await dataPetani.findOne({ nik: nikPetani });
+      if (petani) { // Check if petani is found before creating tanamanPetani
+        await tanamanPetani.create({
+          fk_petaniId: petani.id,
+          statusKepemilikanLahan: row.getCell(2).value,
+          luasLahan: row.getCell(3).value,
+          kategori: row.getCell(4).value,
+          jenis: row.getCell(5).value,
+          komoditas: row.getCell(6).value,
+          periodeMusimTanam: row.getCell(7).value,
+          periodeBulanTanam: row.getCell(8).value,
+          prakiraanLuasPanen: row.getCell(9).value,
+          prakiraanProduksiPanen: row.getCell(10).value,
+          prakiraanBulanPanen: row.getCell(11).value,
+        });
+      } else {
+        console.error(`Petani dengan NIK ${nikPetani} tidak ditemukan.`);
+      }
+    });
+
+    res.status(201).json({
+      message: "Data berhasil ditambahkan.",
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(error.statusCode || 500).json({
+      message: error.message,
+    });
+  }
+};
 
 module.exports = {
   getAllTanamanPetani,
@@ -342,4 +393,5 @@ module.exports = {
   editDataTanamanPetani,
   deleteDatatanamanPetani,
   getDetailedDataTanamanPetani,
+  uploadDataTanamanPetani
 };
