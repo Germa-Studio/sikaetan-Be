@@ -39,6 +39,8 @@ const getAllDataTanaman = async (req, res) => {
       };
     }
 
+    console.log({ page });
+
     const data = await dataTanaman.findAll({ ...filter });
     const total = await dataTanaman.count();
 
@@ -47,9 +49,9 @@ const getAllDataTanaman = async (req, res) => {
       data: {
         data,
         total,
-        currentPages: Number(page) || 1,
-        limit: Number(limit) || 10,
-        maxPages: Math.ceil(total / (Number(limit) || 10)),
+        currentPages: Number(page),
+        limit: Number(limit),
+        maxPages: Math.ceil(total / Number(limit)),
         from: Number(page) ? (Number(page) - 1) * Number(limit) + 1 : 1,
         to: Number(page)
           ? (Number(page) - 1) * Number(limit) + data.length
