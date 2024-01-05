@@ -317,26 +317,42 @@ const tambahLaporanTani = async (req, res) => {
 };
 
 const daftarTani = async (req, res) => {
+  const { peran } = req.user || {};
+  const { page, limit } = req.query;
   try {
-    const { userInfo } = req.user;
-    if (userInfo !== null) {
-      const data = await dataPetani.findAll({
-        include: [
-          {
-            model: kelompok,
-          },
-          {
-            model: dataPenyuluh,
-          },
-        ],
-      });
-      res.status(200).json({
-        message: "Data laporan Tani Berhasil Diperoleh",
-        tani: data,
-      });
-    } else {
+    if (peran !== "admin" && peran !== "super admin" && peran !== "penyuluh") {
       throw new ApiError(400, "Anda tidak memiliki akses.");
+    } 
+    const limitFilter = Number(limit) || 10;
+    const pageFilter = Number(page) || 1;
+    const query = {
+      include: [
+        {
+          model: kelompok,
+        },
+        {
+          model: dataPenyuluh,
+        },
+      ],
+      limit: limitFilter,
+      offset: (pageFilter - 1) * limitFilter,
+      limit: parseInt(limit),
     }
+    const data = await dataPetani.findAll({ ...query
+    });
+    const total = await dataPetani.count({...query});
+    res.status(200).json({
+      message: "Data laporan Tani Berhasil Diperoleh",
+      data,
+      total,
+      currentPages: page,
+      limit: Number(limit),
+      maxPages: Math.ceil(total / (Number(limit) || 10)),
+      from: Number(page) ? (Number(page) - 1) * Number(limit) + 1 : 1,
+      to: Number(page)
+        ? (Number(page) - 1) * Number(limit) + data.length
+        : data.length,
+    });
   } catch (error) {
     res.status(error.statusCode || 500).json({
       message: error.message,

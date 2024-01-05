@@ -187,7 +187,7 @@ const uploadDataPenyuluh = async (req, res) => {
   }
 }
 
-const daftarPenyuluh = async (req, res) => {
+const  opsiPenyuluh = async (req, res) => {
   const { nama, peran } = req.user || {};
   try {
     if (peran !== "admin" && peran !== "super admin" && peran !== "penyuluh") {
@@ -199,6 +199,42 @@ const daftarPenyuluh = async (req, res) => {
         dataDaftarPenyuluh,
       });
     }
+  } catch (error) {
+    res.status(error.statusCode || 500).json({
+      message: error.message,
+    });
+  }
+};
+
+
+const daftarPenyuluh = async (req, res) => {
+  const { peran } = req.user || {};
+  const { page, limit } = req.query;
+  try {
+    if (peran !== "admin" && peran !== "super admin" && peran !== "penyuluh") {
+      throw new ApiError(400, "Anda tidak memiliki akses.");
+    } 
+    const limitFilter = Number(limit) || 10;
+    const pageFilter = Number(page) || 1;
+    const query = {
+      limit: limitFilter,
+      offset: (pageFilter - 1) * limitFilter,
+      limit: parseInt(limit),
+    }
+    const data = await dataPenyuluh.findAll({...query});
+    const total = await dataPenyuluh.count({...query});
+    res.status(200).json({
+      message: "Semua Data Penyuluh",
+      data,
+      total,
+      currentPages: page,
+      limit: Number(limit),
+      maxPages: Math.ceil(total / (Number(limit) || 10)),
+      from: Number(page) ? (Number(page) - 1) * Number(limit) + 1 : 1,
+      to: Number(page)
+        ? (Number(page) - 1) * Number(limit) + data.length
+        : data.length,
+    });
   } catch (error) {
     res.status(error.statusCode || 500).json({
       message: error.message,
@@ -547,6 +583,7 @@ const updatePenyuluh = async (req, res) => {
         urlImg = img.url;
       }
       const hashedPassword = bcrypt.hashSync(password, 10);
+      // decrypt password
       const accountUpdate = await tbl_akun.update(
         {
           email,
@@ -606,5 +643,6 @@ module.exports = {
   presensiKehadiranWeb,
   daftarPenyuluhById,
   updatePenyuluh,
-  uploadDataPenyuluh
+  uploadDataPenyuluh,
+  opsiPenyuluh
 };

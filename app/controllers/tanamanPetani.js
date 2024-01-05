@@ -10,7 +10,7 @@ dotenv.config();
 
 const getAllTanamanPetani = async (req, res) => {
   const { peran } = req.user || {};
-  const { page = 1, limit = 10, petaniId } = req.query;
+  const { page, limit, petaniId } = req.query;
 
   try {
     if (peran !== "admin" && peran !== "super admin" && peran !== "penyuluh") {
@@ -18,6 +18,8 @@ const getAllTanamanPetani = async (req, res) => {
     }
 
     // Include petaniId in the query if it's provided
+    const limitFilter = Number(limit) || 10;
+    const pageFilter = Number(page) || 1;
     const query = {
       include: [
         {
@@ -25,7 +27,8 @@ const getAllTanamanPetani = async (req, res) => {
           as: "dataPetani",
         },
       ],
-      offset: (page - 1) * limit,
+      limit: limitFilter,
+      offset: (pageFilter - 1) * limitFilter,
       limit: parseInt(limit),
     };
 
@@ -33,11 +36,20 @@ const getAllTanamanPetani = async (req, res) => {
       query.where = { fk_petaniId: petaniId };
     }
 
-    const data = await tanamanPetani.findAll(query);
+    const data = await tanamanPetani.findAll({ ...query });
+    const total = await tanamanPetani.count({...query});
 
     res.status(200).json({
       message: "Data berhasil didapatkan.",
       data,
+      total,
+      currentPages: page ?? 1,
+      limit: Number(limit) || 10,
+      maxPages: Math.ceil(total / (Number(limit) || 10)),
+      from: Number(page) ? (Number(page) - 1) * Number(limit) + 1 : 1,
+      to: Number(page)
+        ? (Number(page) - 1) * Number(limit) + data.length
+        : data.length,
     });
   } catch (error) {
     res.status(error.statusCode || 500).json({
