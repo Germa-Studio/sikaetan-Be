@@ -38,6 +38,10 @@ module.exports = {
         type: Sequelize.INTEGER,
         allowNull: true,
       },
+      realisasiBulanPanen: {
+        type: Sequelize.STRING,
+        allowNull: true,
+      },
       fk_kelompokId: {
         type: Sequelize.INTEGER,
         references: {

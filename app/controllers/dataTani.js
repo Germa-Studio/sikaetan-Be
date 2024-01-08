@@ -14,6 +14,7 @@ const imageKit = require("../../midleware/imageKit");
 const bcrypt = require("bcrypt");
 //import crypto
 const crypto = require("crypto");
+const ExcelJS = require("exceljs");
 
 const laporanPetani = async (req, res) => {
   try {
@@ -188,6 +189,80 @@ const tambahDaftarTani = async (req, res) => {
   }
 };
 
+const uploadDataPetani = async(req, res) => {
+  const { peran } = req.user || {}
+
+  try {
+    if (peran !== "admin" && peran !== "super admin" && peran !== "penyuluh") {
+      throw new ApiError(403, "Anda tidak memiliki akses.");
+    }
+
+    const { file } = req;
+    if (!file) throw new ApiError(400, "File tidak ditemukan.");
+
+    const workbook = new ExcelJS.Workbook();
+    await workbook.xlsx.load(file.buffer);
+
+    const worksheet = workbook.getWorksheet(1);
+
+    worksheet.eachRow({ includeEmpty: true }, async (row, rowNumber) => {
+      if (rowNumber === 1) return;
+      const nikPenyuluh = row.getCell(1).value.toString(); // Fix variable name
+      const penyuluh = await dataPenyuluh.findOne({ nik: nikPenyuluh });
+      const accountID = crypto.randomUUID();
+      const password = row.getCell(10).value.toString();
+      const hashedPassword = bcrypt.hashSync(password, 10);
+      const kelompokData = await kelompok.findOne({
+        where: {
+          gapoktan: row.getCell(11).value.toString(),
+          namaKelompok: row.getCell(12).value.toString(),
+          desa: row.getCell(6).value.toString(),
+        },
+      });
+      //default url image
+      const urlImg = "https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/images/bg-7.png"
+      if(penyuluh){
+        await dataPetani.create({
+          nik: row.getCell(2).value.toString(),
+          nkk: row.getCell(3).value.toString(),
+          nama: row.getCell(4).value.toString(),
+          alamat: row.getCell(5).value.toString(),
+          desa: row.getCell(6).value.toString(),
+          kecamatan: row.getCell(7).value.toString(),
+          foto: urlImg,
+          noTelp: row.getCell(8).value.toString(),
+          email: row.getCell(9).value.toString(),
+          password: hashedPassword,
+          accountID: accountID,
+          fk_penyuluhId: penyuluh.id,
+          fk_kelompokId: kelompokData.id,
+        })
+
+        await tbl_akun.create({
+          email: row.getCell(9).value.toString(),
+          password: hashedPassword,
+          no_wa: row.getCell(8).value.toString(),
+          nama: row.getCell(4).value.toString(),
+          pekerjaan: "",
+          peran: "petani",
+          foto: urlImg,
+          accountID: accountID,
+        })
+      }else {
+        console.error(`Penyuluh dengan NIK ${nikPenyuluh} tidak ditemukan.`);
+      }
+    });
+    res.status(201).json({
+      message: "Data berhasil ditambahkan.",
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(error.statusCode || 500).json({
+      message: error.message,
+    });
+  }
+};
+
 const tambahLaporanTani = async (req, res) => {
   try {
     const { NIK, tanggalLaporan, komdisiTanaman, deskripsi } = req.body;
@@ -242,26 +317,42 @@ const tambahLaporanTani = async (req, res) => {
 };
 
 const daftarTani = async (req, res) => {
+  const { peran } = req.user || {};
+  const { page, limit } = req.query;
   try {
-    const { userInfo } = req.user;
-    if (userInfo !== null) {
-      const data = await dataPetani.findAll({
-        include: [
-          {
-            model: kelompok,
-          },
-          {
-            model: dataPenyuluh,
-          },
-        ],
-      });
-      res.status(200).json({
-        message: "Data laporan Tani Berhasil Diperoleh",
-        tani: data,
-      });
-    } else {
+    if (peran !== "admin" && peran !== "super admin" && peran !== "penyuluh") {
       throw new ApiError(400, "Anda tidak memiliki akses.");
+    } 
+    const limitFilter = Number(limit) || 10;
+    const pageFilter = Number(page) || 1;
+    const query = {
+      include: [
+        {
+          model: kelompok,
+        },
+        {
+          model: dataPenyuluh,
+        },
+      ],
+      limit: limitFilter,
+      offset: (pageFilter - 1) * limitFilter,
+      limit: parseInt(limit),
     }
+    const data = await dataPetani.findAll({ ...query
+    });
+    const total = await dataPetani.count({...query});
+    res.status(200).json({
+      message: "Data laporan Tani Berhasil Diperoleh",
+      data,
+      total,
+      currentPages: page,
+      limit: Number(limit),
+      maxPages: Math.ceil(total / (Number(limit) || 10)),
+      from: Number(page) ? (Number(page) - 1) * Number(limit) + 1 : 1,
+      to: Number(page)
+        ? (Number(page) - 1) * Number(limit) + data.length
+        : data.length,
+    });
   } catch (error) {
     res.status(error.statusCode || 500).json({
       message: error.message,
@@ -655,4 +746,5 @@ module.exports = {
   getTanamanPetaniById,
   ubahTanamanPetaniById,
   deleteTanamanPetaniById,
+  uploadDataPetani
 };

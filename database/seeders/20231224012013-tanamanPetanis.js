@@ -13,14 +13,14 @@ module.exports = {
      *   isBetaMember: false
      * }], {});
      */
-    const datas = Array.from({ length: 1000 }).map((_) => {
+    const datas = Array.from({ length: 50 }).map((_) => {
       const submitDate = faker.date.between({
         from: new Date(2023, 1, 1),
         to: new Date(),
       });
       return {
         statusKepemilikanLahan: faker.helpers
-          .arrayElement(["milik sendiri", "sewa", "pinjam"])
+          .arrayElement(["MILIK SENDIRI", "TANAH SEWA"])
           .toUpperCase(),
         luasLahan: faker.number.int({
           min: 100,
@@ -28,44 +28,38 @@ module.exports = {
         }),
         kategori: faker.helpers
           .arrayElement([
-            "tanaman pangan",
-            "tanaman perkebunan",
-            "holtikultura",
-          ])
-          .toUpperCase(),
+            "Tanaman Pangan",
+          ]).toUpperCase(),
         jenis: faker.helpers.arrayElement(["buah", "sayur"]).toUpperCase(),
         komoditas: faker.helpers
           .arrayElement([
-            "padi konvensional",
-            "padi ramah lingkungan",
-            "padi organik",
-            "jagung",
-            "kedelai",
-            "ubi jalar",
-            "ubi kayu",
-            "kacang tanah",
-            "kacang hijau",
-          ])
-          .toUpperCase(),
+            "Padi Konvensional",
+            "Padi Ramah Lingkungan",
+            "Padi Organik",
+            "Jagung",
+            "Kedelai",
+            "Ubi Jalar",
+            "Ubi Kayu",
+            "Kacang Tanah",
+            "Kacang Hijau",
+          ]),
         periodeMusimTanam: faker.helpers
-          .arrayElement(["hujan", "kemarau"])
-          .toUpperCase(),
+          .arrayElement(["Tanaman Semusim", "Tanaman Tahunan"]),
         periodeBulanTanam: faker.helpers
           .arrayElement([
-            "januari",
-            "februari",
-            "maret",
-            "april",
-            "mei",
-            "juni",
-            "juli",
-            "agustus",
-            "september",
-            "oktober",
-            "november",
-            "desember",
-          ])
-          .toUpperCase(),
+            "Januari",
+            "Februari",
+            "Maret",
+            "April",
+            "Mei",
+            "Juni",
+            "Juli",
+            "Agustus",
+            "September",
+            "Oktober",
+            "November",
+            "Desember",
+          ]),
         prakiraanLuasPanen: faker.number.int({
           min: 100,
           max: 500,
@@ -76,20 +70,19 @@ module.exports = {
         }),
         prakiraanBulanPanen: faker.helpers
           .arrayElement([
-            "januari",
-            "februari",
-            "maret",
-            "april",
-            "mei",
-            "juni",
-            "juli",
-            "agustus",
-            "september",
-            "oktober",
-            "november",
-            "desember",
-          ])
-          .toUpperCase(),
+            "Januari",
+            "Februari",
+            "Maret",
+            "April",
+            "Mei",
+            "Juni",
+            "Juli",
+            "Agustus",
+            "September",
+            "Oktober",
+            "November",
+            "Desember",
+          ]),
         fk_petaniId: 1,
         createdAt: submitDate,
         updatedAt: submitDate,

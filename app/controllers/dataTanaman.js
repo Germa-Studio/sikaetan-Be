@@ -3,12 +3,13 @@ const { dataTanaman, kelompok } = require("../models");
 const ApiError = require("../../utils/ApiError");
 const dotenv = require("dotenv");
 const { Op } = require("sequelize");
+const ExcelJS = require("exceljs");
 
 dotenv.config();
 
 const getAllDataTanaman = async (req, res) => {
   const { peran } = req.user || {};
-  const { limit, page, sortBy, sortType, search } = req.query;
+  const { limit, page, sortBy, sortType, poktan_id } = req.query;
 
   try {
     if (peran !== "admin" && peran !== "super admin" && peran !== "penyuluh") {
@@ -18,7 +19,7 @@ const getAllDataTanaman = async (req, res) => {
     const limitFilter = Number(limit) || 10;
     const pageFilter = Number(page) || 1;
 
-    const data = await dataTanaman.findAll({
+    const filter = {
       include: [
         {
           model: kelompok,
@@ -28,7 +29,19 @@ const getAllDataTanaman = async (req, res) => {
       limit: limitFilter,
       offset: (pageFilter - 1) * limitFilter,
       order: [[sortBy || "id", sortType || "ASC"]],
-    });
+    };
+
+    if (poktan_id !== "undefined") {
+      filter.where = {
+        fk_kelompokId: {
+          [Op.eq]: poktan_id,
+        },
+      };
+    }
+
+    console.log({ page });
+
+    const data = await dataTanaman.findAll({ ...filter });
     const total = await dataTanaman.count();
 
     res.status(200).json({
@@ -36,9 +49,9 @@ const getAllDataTanaman = async (req, res) => {
       data: {
         data,
         total,
-        currentPages: Number(page) || 1,
-        limit: Number(limit) || 10,
-        maxPages: Math.ceil(total / (Number(limit) || 10)),
+        currentPages: Number(page),
+        limit: Number(limit),
+        maxPages: Math.ceil(total / Number(limit)),
         from: Number(page) ? (Number(page) - 1) * Number(limit) + 1 : 1,
         to: Number(page)
           ? (Number(page) - 1) * Number(limit) + data.length
@@ -159,6 +172,9 @@ const editDataTanaman = async (req, res) => {
       prakiraanHasilPanen,
       prakiraanBulanPanen,
       fk_kelompokId,
+      realisasiLuasPanen,
+      realisasiHasilPanen,
+      realisasiBulanPanen,
     } = req.body;
 
     if (!kategori) throw new ApiError(400, "Kategori tidak boleh kosong.");
@@ -189,6 +205,9 @@ const editDataTanaman = async (req, res) => {
         prakiraanHasilPanen,
         prakiraanBulanPanen,
         fk_kelompokId,
+        realisasiLuasPanen,
+        realisasiHasilPanen,
+        realisasiBulanPanen,
       },
       { where: { id } }
     );
@@ -227,10 +246,57 @@ const hapusDataTanaman = async (req, res) => {
   }
 };
 
+const uploadDataTanaman = async (req, res) => {
+  const { peran } = req.user || {};
+
+  try {
+    if (peran !== "admin" && peran !== "super admin" && peran !== "penyuluh") {
+      throw new ApiError(403, "Anda tidak memiliki akses.");
+    }
+
+    const { file } = req;
+    if (!file) throw new ApiError(400, "File tidak ditemukan.");
+
+    const workbook = new ExcelJS.Workbook();
+    await workbook.xlsx.load(file.buffer);
+
+    const worksheet = workbook.getWorksheet(1);
+
+    // Iterate through rows and columns to read data
+    worksheet.eachRow({ includeEmpty: true }, async (row, rowNumber) => {
+      if (rowNumber === 1) return;
+
+      await dataTanaman.create({
+        fk_kelompokId: row.getCell(1).value,
+        kategori: row.getCell(2).value,
+        komoditas: row.getCell(3).value,
+        periodeTanam: row.getCell(4).value,
+        luasLahan: row.getCell(5).value,
+        prakiraanLuasPanen: row.getCell(6).value,
+        prakiraanHasilPanen: row.getCell(7).value,
+        prakiraanBulanPanen: row.getCell(8).value,
+        realisasiLuasPanen: row.getCell(9).value,
+        realisasiHasilPanen: row.getCell(10).value,
+        realisasiBulanPanen: row.getCell(11).value,
+      });
+    });
+
+    res.status(201).json({
+      message: "Data berhasil ditambahkan.",
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(error.statusCode || 500).json({
+      message: error.message,
+    });
+  }
+};
+
 module.exports = {
   tambahDataTanaman,
   getAllDataTanaman,
   getDetailedDataTanaman,
   editDataTanaman,
   hapusDataTanaman,
+  uploadDataTanaman,
 };

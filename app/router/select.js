@@ -1,12 +1,13 @@
-const router = require('express').Router();
-const auth = require('../../midleware/auth');
+const router = require("express").Router();
+const auth = require("../../midleware/auth");
 const {
   selectTani,
-  selectKelompok
-} = require('../controllers/select');
+  selectKelompok,
+  selectKelompokById,
+} = require("../controllers/select");
 
-
-router.get('/kelompok-tani/:desa', selectKelompok);
-router.get('/select-tani/:kecamatan', auth, selectTani);
+router.get("/kelompok-tani/desa/:desa", selectKelompok);
+router.get("/kelompok-tani/:id", selectKelompokById);
+router.get("/select-tani/:kecamatan", auth, selectTani);
 
 module.exports = router;
