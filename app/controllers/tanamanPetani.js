@@ -18,8 +18,8 @@ const getAllTanamanPetani = async (req, res) => {
     }
 
     // Include petaniId in the query if it's provided
-    const limitFilter = Number(limit) || 10;
-    const pageFilter = Number(page) || 1;
+    const limitFilter = Number(limit);
+    const pageFilter = Number(page);
     const query = {
       include: [
         {
@@ -29,7 +29,7 @@ const getAllTanamanPetani = async (req, res) => {
       ],
       limit: limitFilter,
       offset: (pageFilter - 1) * limitFilter,
-      limit: parseInt(limit),
+      // limit: parseInt(limit),
     };
 
     if (petaniId) {
@@ -43,9 +43,9 @@ const getAllTanamanPetani = async (req, res) => {
       message: "Data berhasil didapatkan.",
       data,
       total,
-      currentPages: page ?? 1,
-      limit: Number(limit) || 10,
-      maxPages: Math.ceil(total / (Number(limit) || 10)),
+      currentPages: Number(page),
+      limit: Number(limit),
+      maxPages: Math.ceil(total / (Number(limit))),
       from: Number(page) ? (Number(page) - 1) * Number(limit) + 1 : 1,
       to: Number(page)
         ? (Number(page) - 1) * Number(limit) + data.length
