@@ -1,4 +1,9 @@
-const { tanamanPetani, kelompok, dataPetani, dataPenyuluh } = require("../models");
+const {
+  tanamanPetani,
+  kelompok,
+  dataPetani,
+  dataPenyuluh,
+} = require("../models");
 const ApiError = require("../../utils/ApiError");
 const imageKit = require("../../midleware/imageKit");
 const dotenv = require("dotenv");
@@ -10,7 +15,7 @@ dotenv.config();
 
 const getAllTanamanPetani = async (req, res) => {
   const { peran } = req.user || {};
-  const { page, limit, petaniId } = req.query;
+  const { page, limit, petaniId, isExport } = req.query;
 
   try {
     if (peran !== "admin" && peran !== "super admin" && peran !== "penyuluh") {
@@ -20,6 +25,8 @@ const getAllTanamanPetani = async (req, res) => {
     // Include petaniId in the query if it's provided
     const limitFilter = Number(limit);
     const pageFilter = Number(page);
+    const isExportFilter = Boolean(isExport);
+
     const query = {
       include: [
         {
@@ -36,8 +43,26 @@ const getAllTanamanPetani = async (req, res) => {
       query.where = { fk_petaniId: petaniId };
     }
 
-    const data = await tanamanPetani.findAll({ ...query });
-    const total = await tanamanPetani.count({...query});
+    const data = await tanamanPetani.findAll(
+      isExportFilter
+        ? {
+            include: [
+              {
+                model: dataPetani,
+                as: "dataPetani",
+                include: [
+                  {
+                    model: kelompok,
+                    as: "kelompok",
+                  },
+                ],
+              },
+            ],
+          }
+        : { ...query }
+    );
+    const total = await tanamanPetani.count({ ...query });
+    // { ...query } can be replaced with 'query' since it's the same object and don't need to be spread using '...'
 
     res.status(200).json({
       message: "Data berhasil didapatkan.",
@@ -45,7 +70,7 @@ const getAllTanamanPetani = async (req, res) => {
       total,
       currentPages: Number(page),
       limit: Number(limit),
-      maxPages: Math.ceil(total / (Number(limit))),
+      maxPages: Math.ceil(total / Number(limit)),
       from: Number(page) ? (Number(page) - 1) * Number(limit) + 1 : 1,
       to: Number(page)
         ? (Number(page) - 1) * Number(limit) + data.length
@@ -73,7 +98,7 @@ const getTanamanPetaniById = async (req, res) => {
         {
           model: dataPetani,
           as: "dataPetani",
-        }
+        },
       ],
     });
 
@@ -86,31 +111,32 @@ const getTanamanPetaniById = async (req, res) => {
       message: error.message,
     });
   }
-}
+};
 
 const tambahDataTanamanPetani = async (req, res) => {
   // Validate request body
   const { peran } = req.user || {};
-  
-  try{
+
+  try {
     if (peran !== "admin" && peran !== "super admin" && peran !== "penyuluh") {
       throw new ApiError(403, "Anda tidak memiliki akses.");
     }
-    const{
-      statusKepemilikanLahan
-      , luasLahan
-      , kategori
-      , jenis
-      , komoditas
-      , periodeMusimTanam
-      , periodeBulanTanam
-      , prakiraanLuasPanen
-      , prakiraanProduksiPanen
-      , prakiraanBulanPanen
-      , fk_petaniId
+    const {
+      statusKepemilikanLahan,
+      luasLahan,
+      kategori,
+      jenis,
+      komoditas,
+      periodeMusimTanam,
+      periodeBulanTanam,
+      prakiraanLuasPanen,
+      prakiraanProduksiPanen,
+      prakiraanBulanPanen,
+      fk_petaniId,
     } = req.body;
-    console.log({statusKepemilikanLahan})
-    if (!statusKepemilikanLahan) throw new ApiError(400, "Status Tanah tidak boleh kosong");
+    console.log({ statusKepemilikanLahan });
+    if (!statusKepemilikanLahan)
+      throw new ApiError(400, "Status Tanah tidak boleh kosong");
     if (!kategori) throw new ApiError(400, "Kategori tidak boleh kosong.");
     if (!komoditas) throw new ApiError(400, "Komoditas tidak boleh kosong.");
     if (!periodeBulanTanam)
@@ -128,39 +154,39 @@ const tambahDataTanamanPetani = async (req, res) => {
 
     const Petani = await dataPetani.findOne({
       where: { id: fk_petaniId },
-    })
-    if (!Petani) throw new ApiError(400, "Data Petani tidak ditemukan")
+    });
+    if (!Petani) throw new ApiError(400, "Data Petani tidak ditemukan");
 
     const data = await tanamanPetani.create({
-      statusKepemilikanLahan
-      , luasLahan
-      , kategori
-      , jenis
-      , komoditas
-      , periodeMusimTanam
-      , periodeBulanTanam
-      , prakiraanLuasPanen
-      , prakiraanProduksiPanen
-      , prakiraanBulanPanen
-      , fk_petaniId
+      statusKepemilikanLahan,
+      luasLahan,
+      kategori,
+      jenis,
+      komoditas,
+      periodeMusimTanam,
+      periodeBulanTanam,
+      prakiraanLuasPanen,
+      prakiraanProduksiPanen,
+      prakiraanBulanPanen,
+      fk_petaniId,
     });
 
     res.status(200).json({
       message: "Data berhasil ditambahkan.",
       data,
     });
-  } catch (error){
+  } catch (error) {
     res.status(error.statusCode || 500).json({
       message: error.message,
     });
   }
 };
 
-const deleteDatatanamanPetani = async(req, res) => {
+const deleteDatatanamanPetani = async (req, res) => {
   const { id } = req.params;
   const { peran } = req.user || {};
 
-  try{
+  try {
     if (peran !== "admin" && peran !== "super admin" && peran !== "penyuluh") {
       throw new ApiError(403, "Anda tidak memiliki akses.");
     }
@@ -172,21 +198,21 @@ const deleteDatatanamanPetani = async(req, res) => {
       message: "Data berhasil dihapus.",
       data,
     });
-  } catch (error){
+  } catch (error) {
     res.status(error.statusCode || 500).json({
       message: error.message,
     });
   }
-}
+};
 
 const getTanamanPetaniStatistically = async (req, res) => {
   const { month, year, lineType, pieType } = req.query;
   try {
     const lineChartType = lineType || "komoditas";
     const pieChartType = pieType || "komoditas";
-    const date_starts = new Date(`${year}-${month}-01`)
-    let date_ends = new Date(`${year}-${month}-31`)
-    date_ends = new Date(date_ends.setDate(date_ends.getDate() + 1))
+    const date_starts = new Date(`${year}-${month}-01`);
+    let date_ends = new Date(`${year}-${month}-31`);
+    date_ends = new Date(date_ends.setDate(date_ends.getDate() + 1));
     const lineChart = await tanamanPetani.findAll({
       attributes: [
         [Sequelize.fn("DATE", Sequelize.col("createdAt")), "date"],
@@ -196,10 +222,7 @@ const getTanamanPetaniStatistically = async (req, res) => {
       group: [lineChartType, Sequelize.fn("DATE", Sequelize.col("createdAt"))],
       where: {
         createdAt: {
-          [Op.between]: [
-            date_starts,
-            date_ends
-          ],
+          [Op.between]: [date_starts, date_ends],
         },
       },
       order: [[Sequelize.col("createdAt"), "ASC"]],
@@ -212,10 +235,7 @@ const getTanamanPetaniStatistically = async (req, res) => {
       group: [pieChartType],
       where: {
         createdAt: {
-          [Op.between]: [
-            date_starts,
-            date_ends
-          ],
+          [Op.between]: [date_starts, date_ends],
         },
       },
     });
@@ -263,7 +283,7 @@ const getDetailedDataTanamanPetani = async (req, res) => {
               as: "dataPenyuluh",
             },
           ],
-        }
+        },
       ],
     });
 
@@ -278,28 +298,29 @@ const getDetailedDataTanamanPetani = async (req, res) => {
   }
 };
 
-const editDataTanamanPetani = async(req, res) => {
+const editDataTanamanPetani = async (req, res) => {
   const { id } = req.params;
   const { peran } = req.user || {};
 
-  try{
+  try {
     if (peran !== "admin" && peran !== "super admin" && peran !== "penyuluh") {
       throw new ApiError(403, "Anda tidak memiliki akses.");
     }
-    const{
-      statusKepemilikanLahan
-      , luasLahan
-      , kategori
-      , jenis
-      , komoditas
-      , periodeMusimTanam
-      , periodeBulanTanam
-      , prakiraanLuasPanen
-      , prakiraanProduksiPanen
-      , prakiraanBulanPanen
-      , fk_petaniId
+    const {
+      statusKepemilikanLahan,
+      luasLahan,
+      kategori,
+      jenis,
+      komoditas,
+      periodeMusimTanam,
+      periodeBulanTanam,
+      prakiraanLuasPanen,
+      prakiraanProduksiPanen,
+      prakiraanBulanPanen,
+      fk_petaniId,
     } = req.body;
-    if (!statusKepemilikanLahan) throw new ApiError(400, "Status Tanah tidak boleh kosong");
+    if (!statusKepemilikanLahan)
+      throw new ApiError(400, "Status Tanah tidak boleh kosong");
     if (!kategori) throw new ApiError(400, "Kategori tidak boleh kosong.");
     if (!komoditas) throw new ApiError(400, "Komoditas tidak boleh kosong.");
     if (!periodeBulanTanam)
@@ -317,29 +338,31 @@ const editDataTanamanPetani = async(req, res) => {
 
     const Petani = await dataPetani.findOne({
       where: { id: fk_petaniId },
-    })
-    if (!Petani) throw new ApiError(400, "Data Petani tidak ditemukan")
+    });
+    if (!Petani) throw new ApiError(400, "Data Petani tidak ditemukan");
 
-    const data = await tanamanPetani.update({
-      statusKepemilikanLahan
-      , luasLahan
-      , kategori
-      , jenis
-      , komoditas
-      , periodeMusimTanam
-      , periodeBulanTanam
-      , prakiraanLuasPanen
-      , prakiraanProduksiPanen
-      , prakiraanBulanPanen
-      , fk_petaniId
-    },
-    {where: {id}});
+    const data = await tanamanPetani.update(
+      {
+        statusKepemilikanLahan,
+        luasLahan,
+        kategori,
+        jenis,
+        komoditas,
+        periodeMusimTanam,
+        periodeBulanTanam,
+        prakiraanLuasPanen,
+        prakiraanProduksiPanen,
+        prakiraanBulanPanen,
+        fk_petaniId,
+      },
+      { where: { id } }
+    );
 
     res.status(200).json({
       message: "Data berhasil diupdate.",
       data,
     });
-  } catch (error){
+  } catch (error) {
     res.status(error.statusCode || 500).json({
       message: error.message,
     });
@@ -367,7 +390,8 @@ const uploadDataTanamanPetani = async (req, res) => {
       if (rowNumber === 1) return;
       const nikPetani = row.getCell(1).value.toString(); // Fix variable name
       const petani = await dataPetani.findOne({ nik: nikPetani });
-      if (petani) { // Check if petani is found before creating tanamanPetani
+      if (petani) {
+        // Check if petani is found before creating tanamanPetani
         await tanamanPetani.create({
           fk_petaniId: petani.id,
           statusKepemilikanLahan: row.getCell(2).value,
@@ -404,5 +428,5 @@ module.exports = {
   editDataTanamanPetani,
   deleteDatatanamanPetani,
   getDetailedDataTanamanPetani,
-  uploadDataTanamanPetani
+  uploadDataTanamanPetani,
 };

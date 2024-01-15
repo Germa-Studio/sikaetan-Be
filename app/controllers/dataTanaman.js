@@ -50,11 +50,9 @@ const getAllDataTanaman = async (req, res) => {
               },
             ],
           }
-        : { ...filter }
+        : filter
     );
-    const total = await dataTanaman.count({
-      where: filter.where,
-    });
+    const total = await dataTanaman.count(filter);
 
     res.status(200).json({
       message: "Data berhasil didapatkan.",
