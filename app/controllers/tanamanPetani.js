@@ -299,7 +299,6 @@ const editDataTanamanPetani = async(req, res) => {
       , prakiraanBulanPanen
       , fk_petaniId
     } = req.body;
-    console.log({statusKepemilikanLahan})
     if (!statusKepemilikanLahan) throw new ApiError(400, "Status Tanah tidak boleh kosong");
     if (!kategori) throw new ApiError(400, "Kategori tidak boleh kosong.");
     if (!komoditas) throw new ApiError(400, "Komoditas tidak boleh kosong.");
