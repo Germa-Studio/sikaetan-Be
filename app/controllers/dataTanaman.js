@@ -9,15 +9,16 @@ dotenv.config();
 
 const getAllDataTanaman = async (req, res) => {
   const { peran } = req.user || {};
-  const { limit, page, sortBy, sortType, poktan_id } = req.query;
+  const { limit, page, sortBy, sortType, poktan_id, isExport } = req.query;
 
   try {
     if (peran !== "admin" && peran !== "super admin" && peran !== "penyuluh") {
       throw new ApiError(403, "Anda tidak memiliki akses.");
     }
 
-    const limitFilter = Number(limit) || 10;
-    const pageFilter = Number(page) || 1;
+    const limitFilter = Number(limit);
+    const pageFilter = Number(page);
+    const isExportFilter = Boolean(isExport);
 
     const filter = {
       include: [
@@ -39,10 +40,21 @@ const getAllDataTanaman = async (req, res) => {
       };
     }
 
-    console.log({ page });
-
-    const data = await dataTanaman.findAll({ ...filter });
-    const total = await dataTanaman.count();
+    const data = await dataTanaman.findAll(
+      isExportFilter
+        ? {
+            include: [
+              {
+                model: kelompok,
+                as: "kelompok",
+              },
+            ],
+          }
+        : { ...filter }
+    );
+    const total = await dataTanaman.count({
+      where: filter.where,
+    });
 
     res.status(200).json({
       message: "Data berhasil didapatkan.",
