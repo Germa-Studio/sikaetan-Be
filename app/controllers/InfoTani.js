@@ -198,7 +198,7 @@ const tambahEventTani = async (req, res) => {
 const deleteInfoTani = async(req, res)=>{
   const {nama, peran} = req.user
   try {
-  if (peran !=='OPERATOR SUPER ADMIN'){
+  if (peran !=='super admin' && peran !=='admin'){
      throw new ApiError(400, 'Anda tidak memiliki akses.');
   }else{
       const beritaId = req.params.id;
@@ -226,7 +226,7 @@ const deleteInfoTani = async(req, res)=>{
 const deleteEventTani = async(req, res)=>{
   try {
     const {nama, peran} = req.user
-    if (peran !=='OPERATOR SUPER ADMIN'){
+    if (peran !=='super admin' && peran !=='admin'){
        throw new ApiError(400, 'Anda tidak memiliki akses.');
     }else{
         const eventId = req.params.id;
