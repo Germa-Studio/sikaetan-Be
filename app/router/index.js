@@ -17,6 +17,7 @@ const chart = require("./chart");
 const laporanTanam = require("./laporanTanam");
 const chatt = require("./chatt");
 const footer = require("./footer");
+const faq = require("./faq");
 const tanamanPetani = require("./tanamanPetani");
 const { getProfile } = require("../controllers/akun");
 
@@ -35,6 +36,7 @@ router.use("/auth", akun);
 router.use("/statistik", statistik);
 router.use("/tanaman-petani", tanamanPetani);
 router.use("/footer", footer);
+router.use("/faq", faq);
 router.use("/", dataTani);
 router.use("/", InfoTani);
 router.use("/", tokoTani);
