@@ -18,6 +18,7 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: "accountID",
         // as: "penyuluh",
       });
+      // this.hasOne(models.dataOperator, { foreignKey: "fk_accountID" });
       // define association here
     }
   }
@@ -29,7 +30,7 @@ module.exports = (sequelize, DataTypes) => {
     pekerjaan: DataTypes.STRING,
     peran: DataTypes.STRING,
     foto: DataTypes.STRING,
-    accountID: DataTypes.NUMBER,
+    accountID: DataTypes.UUID,
     isVerified: DataTypes.BOOLEAN
   }, {
     sequelize,
