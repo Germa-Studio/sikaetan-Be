@@ -591,7 +591,7 @@ const updatePenyuluh = async (req, res) => {
           no_wa: NoWa,
           nama,
           pekerjaan: "",
-          peran: "petani",
+          peran: "penyuluh",
           foto: urlImg,
         },
         {

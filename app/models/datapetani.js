@@ -12,7 +12,7 @@ module.exports = (sequelize, DataTypes) => {
       // connect with tbl_akun
       dataPetani.belongsTo(models.tbl_akun, {
         foreignKey: "accountID",
-        as: "akun",
+        // as: "akun",
       });
       this.belongsTo(models.dataPenyuluh, { foreignKey: "fk_penyuluhId" });
       this.belongsTo(models.kelompok, { foreignKey: "fk_kelompokId" });
