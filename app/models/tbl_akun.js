@@ -11,12 +11,12 @@ module.exports = (sequelize, DataTypes) => {
       // connect with datapetani
       tbl_akun.hasOne(models.dataPetani, {
         foreignKey: "accountID",
-        as: "petani",
+        // as: "petani",
       });
       // connect with datapenyuluh
       tbl_akun.hasOne(models.dataPenyuluh, {
         foreignKey: "accountID",
-        as: "penyuluh",
+        // as: "penyuluh",
       });
       // define association here
     }
