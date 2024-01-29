@@ -1,4 +1,5 @@
 const { Footer } = require("../models");
+const imageKit = require("../../midleware/imageKit");
 
 const getFooters = async (req, res) => {
   try {
@@ -33,22 +34,63 @@ const getFooters = async (req, res) => {
 
 const updateFooter = async (req, res) => {
   try {
-    const { key = "", value = "" } = req.body;
+    const { key, value } = req.body;
+    const { file } = req;
+
+    if (!key) {
+      res.status(400).json({
+        message: "Key tidak boleh kosong",
+      });
+      return;
+    }
+
+    if (!value && !file) {
+      res.status(400).json({
+        message: "Value atau file tidak boleh kosong",
+      });
+      return;
+    }
+
+    let img = null;
+
+    if (file) {
+      const validFormat =
+        file.mimetype === "image/png" ||
+        file.mimetype === "image/jpg" ||
+        file.mimetype === "image/jpeg" ||
+        file.mimetype === "image/gif";
+      if (!validFormat) {
+        return res.status(400).json({
+          status: "failed",
+          message: "Wrong Image Format",
+        });
+      }
+
+      const split = file.originalname.split(".");
+      const ext = split[split.length - 1];
+
+      // upload file ke imagekit
+      img = await imageKit.upload({
+        file: file.buffer,
+        fileName: `IMG-footer-${key}.${ext}`,
+      });
+    }
 
     const filter = key ? { key } : {};
     const data = await Footer.findAll({
       where: filter,
     });
+
     if (data.length === 0) {
       await Footer.create({
         key: key,
-        value,
+        value: img ? img.url : value,
         isActive: true,
       });
     } else {
       await Footer.update(
         {
-          value,
+          value: img ? img.url : value,
         },
         {
           where: {
