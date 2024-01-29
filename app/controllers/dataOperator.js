@@ -22,7 +22,6 @@ const { sequelize } = require('../models'); // Assuming you have your Sequelize 
 
 const tambahDataOperator = async (req, res) => {
     const{peran} = req.user || {};
-    console.log(req.body);
     try{
         if (peran !== "super admin") {
             throw new ApiError(400, "Anda tidak memiliki akses.");
@@ -58,7 +57,6 @@ const tambahDataOperator = async (req, res) => {
                 });
                 img.url;
                 urlImg = img.url;
-                console.log({ ...req.body, img: img.url });
             }
             const newAccount = await tbl_akun.create({
                 email,
@@ -182,12 +180,19 @@ const getOperatorDetail = async(req,res) =>{
                 `SELECT do.*, ta.peran
                  FROM dataOperators do
                  INNER JOIN tbl_akun ta ON do.accountID = ta.accountID
-                 WHERE do.id = :id`,
+                 WHERE do.id = :id
+                 LIMIT 1`,
                 {
                   replacements: { id },
                   type: QueryTypes.SELECT,
                 }
             );
+
+            // const data =await dataOperator.findOne({
+            //     where: {
+            //         id,
+            //     },
+            // });
             if (!data) {
                 throw new ApiError(404, "Data operator tidak ditemukan");
             } else {
@@ -207,12 +212,13 @@ const getOperatorDetail = async(req,res) =>{
 const updateOperatorDetail = async(req,res) =>{
     const {id} = req.params;
     const {peran} = req.user || {};
+
     try {
         if (peran !== "super admin") {
             throw new ApiError(400, "Anda tidak memiliki akses.");
         } else {
-            const {nik, nkk, nama, peran, email, noTelp, foto, alamat, password} = req.body;
-            const hashedPassword = bcrypt.hashSync(password, 10);
+            const {nik, nkk, nama, peran, email, notelp, alamat, password} = req.body;
+            const{file} = req;
             const data = await dataOperator.findOne({
                 where: {
                     id,
@@ -223,23 +229,23 @@ const updateOperatorDetail = async(req,res) =>{
             } else {
                 /**
                  * @description saving image
-                 */
-                let urlImg;
-                if (file) {
+                */
+               let urlImg;
+               if (file) {
                     const validFormat =
                     file.mimetype === "image/png" ||
                     file.mimetype === "image/jpg" ||
                     file.mimetype === "image/jpeg" ||
                     file.mimetype === "image/gif";
                     if (!validFormat) {
-                    return res.status(400).json({
+                        return res.status(400).json({
                         status: "failed",
                         message: "Wrong Image Format",
                     });
                     }
                     const split = file.originalname.split(".");
                     const ext = split[split.length - 1];
-
+                    
                     // upload file ke imagekit
                     const img = await imageKit.upload({
                     file: file.buffer,
@@ -247,14 +253,14 @@ const updateOperatorDetail = async(req,res) =>{
                     });
                     img.url;
                     urlImg = img.url;
-                    console.log({ ...req.body, img: img.url });
                 }
+                const hashedPassword = bcrypt.hashSync(password, 10);
                 const updateData = await dataOperator.update({
                     nik,
                     nkk,
                     nama,
                     email,
-                    noTelp,
+                    noTelp: notelp,
                     foto: urlImg,
                     alamat,
                     password: hashedPassword,
@@ -264,9 +270,24 @@ const updateOperatorDetail = async(req,res) =>{
                         id,
                     },
                 });
+                const accountUpdate = await tbl_akun.update(
+                    {
+                      email,
+                      password: hashedPassword,
+                      no_wa: notelp,
+                      nama,
+                      pekerjaan: "",
+                      peran: peran,
+                      foto: urlImg,
+                    },
+                    {
+                      where: { accountID: data.accountID },
+                    }
+                  );
                 res.status(200).json({
                     message: "Data operator berhasil diupdate",
                     data: updateData,
+                    accountUpdate
                 });
             }
         }
