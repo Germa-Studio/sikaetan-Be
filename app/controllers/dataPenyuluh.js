@@ -418,12 +418,12 @@ const jurnalKegiatan = async (req, res) => {
 };
 
 const tambahJurnalKegiatan = async (req, res) => {
-  const { peran } = req.user || {};
+  const { nama, peran } = req.user || {};
   try {
-    if (peran !== "admin" && peran !== "super admin" && peran !== "PENYULUH") {
+    if (peran !== "admin" && peran !== "super admin" && peran !== "penyuluh") {
       throw new ApiError(400, "Anda tidak memiliki akses.");
     } else {
-      const { NIP, judul, tanggalDibuat, uraian, statusJurnal } = req.body;
+      const { judul, tanggalDibuat, uraian, statusJurnal } = req.body;
       const { file } = req;
       let urlImg;
       if (!NIP) throw new ApiError(400, "NIP tidak boleh kosong");
@@ -457,6 +457,7 @@ const tambahJurnalKegiatan = async (req, res) => {
         uraian,
         statusJurnal,
         gambar: urlImg,
+        pengubah: nama,
       });
       await dataPerson.update(
         { jurnalKegiatanId: dataJurnalHarian.id },

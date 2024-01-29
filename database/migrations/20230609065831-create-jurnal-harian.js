@@ -24,6 +24,9 @@ module.exports = {
       statusJurnal: {
         type: Sequelize.STRING
       },
+      pengubah: {
+        type: Sequelize.STRING
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE
