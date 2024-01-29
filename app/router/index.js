@@ -19,6 +19,7 @@ const chatt = require("./chatt");
 const footer = require("./footer");
 const faq = require("./faq");
 const tanamanPetani = require("./tanamanPetani");
+const dataOperator = require("./dataOperator");
 const { getProfile } = require("../controllers/akun");
 
 router.use("/api-docs", swaggerUI.serve);
@@ -47,5 +48,6 @@ router.use("/", allUsers);
 router.use("/", chart);
 router.use("/", chatt);
 router.use("/", laporanTanam);
+router.use("/", dataOperator)
 
 module.exports = router;

@@ -503,7 +503,6 @@ const updateDetailProfile = async(req, res)=>{
         });
         let urlImg;
         const { file } = req;
-        console.log(file);
         if (file) {
           const validFormat =
             file.mimetype === "image/png" ||
