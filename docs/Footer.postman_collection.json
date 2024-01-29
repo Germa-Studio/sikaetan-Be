@@ -1,0 +1,803 @@
+{
+	"info": {
+		"_postman_id": "5cd1ba7b-0eaf-4622-9464-9eec30366691",
+		"name": "Footer",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "26985888",
+		"_collection_link": "https://martian-escape-868499.postman.co/workspace/NDNE~1b52fc4e-90e4-41cd-a1a0-52ea84a9a1b3/collection/26985888-5cd1ba7b-0eaf-4622-9464-9eec30366691?action=share&source=collection_link&creator=26985888"
+	},
+	"item": [
+		{
+			"name": "Get List of Footers data",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{JWT Token}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{Backend Url}}/footer",
+					"host": [
+						"{{Backend Url}}"
+					],
+					"path": [
+						"footer"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Get List of Footers data",
+					"originalRequest": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{JWT Token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{Backend Url}}/footer",
+							"host": [
+								"{{Backend Url}}"
+							],
+							"path": [
+								"footer"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "X-Powered-By",
+							"value": "Express"
+						},
+						{
+							"key": "Access-Control-Allow-Origin",
+							"value": "*"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "Content-Length",
+							"value": "367"
+						},
+						{
+							"key": "ETag",
+							"value": "W/\"16f-BojUMFOvGSgFZXsbRxh8SqSLItI\""
+						},
+						{
+							"key": "Date",
+							"value": "Mon, 29 Jan 2024 00:35:28 GMT"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=5"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"message\": \"Footer Berhasil Dimuat\",\n    \"footer\": [\n        {\n            \"id\": 3,\n            \"key\": \"abc\",\n            \"value\": \"xyzx\",\n            \"isActive\": false,\n            \"createdAt\": \"2024-01-28T07:36:33.000Z\",\n            \"updatedAt\": \"2024-01-28T07:36:39.000Z\"\n        },\n        {\n            \"id\": 5,\n            \"key\": \"jjk\",\n            \"value\": \"https://ik.imagekit.io/hw6fintvt1/IMG-footer-jjk_fL72RndVy.jpeg\",\n            \"isActive\": true,\n            \"createdAt\": \"2024-01-29T00:25:03.000Z\",\n            \"updatedAt\": \"2024-01-29T00:34:07.000Z\"\n        }\n    ]\n}"
+				}
+			]
+		},
+		{
+			"name": "Get Footer Detail",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{JWT Token}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{Backend Url}}/footer?key=jjks",
+					"host": [
+						"{{Backend Url}}"
+					],
+					"path": [
+						"footer"
+					],
+					"query": [
+						{
+							"key": "key",
+							"value": "jjks"
+						}
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Get Footer Detail",
+					"originalRequest": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{JWT Token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{Backend Url}}/footer?key=jjk",
+							"host": [
+								"{{Backend Url}}"
+							],
+							"path": [
+								"footer"
+							],
+							"query": [
+								{
+									"key": "key",
+									"value": "jjk"
+								}
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "X-Powered-By",
+							"value": "Express"
+						},
+						{
+							"key": "Access-Control-Allow-Origin",
+							"value": "*"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "Content-Length",
+							"value": "234"
+						},
+						{
+							"key": "ETag",
+							"value": "W/\"ea-l6suFz1w9O8hUgszeiiG1ek/w50\""
+						},
+						{
+							"key": "Date",
+							"value": "Mon, 29 Jan 2024 00:34:48 GMT"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=5"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"message\": \"Footer Berhasil Dimuat\",\n    \"footer\": {\n        \"id\": 5,\n        \"key\": \"jjk\",\n        \"value\": \"https://ik.imagekit.io/hw6fintvt1/IMG-footer-jjk_fL72RndVy.jpeg\",\n        \"isActive\": true,\n        \"createdAt\": \"2024-01-29T00:25:03.000Z\",\n        \"updatedAt\": \"2024-01-29T00:34:07.000Z\"\n    }\n}"
+				},
+				{
+					"name": "Footer Not Found",
+					"originalRequest": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{JWT Token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{Backend Url}}/footer?key=jjks",
+							"host": [
+								"{{Backend Url}}"
+							],
+							"path": [
+								"footer"
+							],
+							"query": [
+								{
+									"key": "key",
+									"value": "jjks"
+								}
+							]
+						}
+					},
+					"status": "Not Found",
+					"code": 404,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "X-Powered-By",
+							"value": "Express"
+						},
+						{
+							"key": "Access-Control-Allow-Origin",
+							"value": "*"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "Content-Length",
+							"value": "36"
+						},
+						{
+							"key": "ETag",
+							"value": "W/\"24-Gp8RWfAYcQpV3avvNO4qqUuFICg\""
+						},
+						{
+							"key": "Date",
+							"value": "Mon, 29 Jan 2024 00:35:01 GMT"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=5"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"message\": \"Footer Tidak Ditemukan\"\n}"
+				}
+			]
+		},
+		{
+			"name": "Create or Update Footer",
+			"request": {
+				"auth": {
+					"type": "jwt",
+					"jwt": [
+						{
+							"key": "addTokenTo",
+							"value": "header",
+							"type": "string"
+						},
+						{
+							"key": "algorithm",
+							"value": "HS256",
+							"type": "string"
+						},
+						{
+							"key": "isSecretBase64Encoded",
+							"value": false,
+							"type": "boolean"
+						},
+						{
+							"key": "payload",
+							"value": "{}",
+							"type": "string"
+						},
+						{
+							"key": "headerPrefix",
+							"value": "Bearer",
+							"type": "string"
+						},
+						{
+							"key": "queryParamKey",
+							"value": "token",
+							"type": "string"
+						},
+						{
+							"key": "header",
+							"value": "{}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{JWT Token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "key",
+							"value": "jjk",
+							"type": "text"
+						},
+						{
+							"key": "file",
+							"type": "file",
+							"src": "/Users/akbrirwnda/Downloads/jjk/fifth.jpeg"
+						},
+						{
+							"key": "value",
+							"value": "coba",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{Backend Url}}/footer",
+					"host": [
+						"{{Backend Url}}"
+					],
+					"path": [
+						"footer"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Success with file",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{JWT Token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "key",
+									"value": "jjk",
+									"type": "text"
+								},
+								{
+									"key": "file",
+									"type": "file",
+									"src": "/Users/akbrirwnda/Downloads/jjk/fifth.jpeg"
+								},
+								{
+									"key": "value",
+									"value": "coba",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{Backend Url}}/footer",
+							"host": [
+								"{{Backend Url}}"
+							],
+							"path": [
+								"footer"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "X-Powered-By",
+							"value": "Express"
+						},
+						{
+							"key": "Access-Control-Allow-Origin",
+							"value": "*"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "Content-Length",
+							"value": "40"
+						},
+						{
+							"key": "ETag",
+							"value": "W/\"28-yrsTy0SB/fIyMl62enuZ0DO7psU\""
+						},
+						{
+							"key": "Date",
+							"value": "Mon, 29 Jan 2024 00:25:03 GMT"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=5"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"message\": \"Footer Berhasil Diperbarui\"\n}"
+				},
+				{
+					"name": "Success without file (value)",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{JWT Token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "key",
+									"value": "jjk",
+									"type": "text"
+								},
+								{
+									"key": "file",
+									"type": "file",
+									"src": "/Users/akbrirwnda/Downloads/jjk/fifth.jpeg",
+									"disabled": true
+								},
+								{
+									"key": "value",
+									"value": "coba",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{Backend Url}}/footer",
+							"host": [
+								"{{Backend Url}}"
+							],
+							"path": [
+								"footer"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "X-Powered-By",
+							"value": "Express"
+						},
+						{
+							"key": "Access-Control-Allow-Origin",
+							"value": "*"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "Content-Length",
+							"value": "40"
+						},
+						{
+							"key": "ETag",
+							"value": "W/\"28-yrsTy0SB/fIyMl62enuZ0DO7psU\""
+						},
+						{
+							"key": "Date",
+							"value": "Mon, 29 Jan 2024 00:32:46 GMT"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=5"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"message\": \"Footer Berhasil Diperbarui\"\n}"
+				}
+			]
+		},
+		{
+			"name": "Delete Footer",
+			"request": {
+				"auth": {
+					"type": "jwt",
+					"jwt": [
+						{
+							"key": "addTokenTo",
+							"value": "header",
+							"type": "string"
+						},
+						{
+							"key": "algorithm",
+							"value": "HS256",
+							"type": "string"
+						},
+						{
+							"key": "isSecretBase64Encoded",
+							"value": false,
+							"type": "boolean"
+						},
+						{
+							"key": "payload",
+							"value": "{}",
+							"type": "string"
+						},
+						{
+							"key": "headerPrefix",
+							"value": "Bearer",
+							"type": "string"
+						},
+						{
+							"key": "queryParamKey",
+							"value": "token",
+							"type": "string"
+						},
+						{
+							"key": "header",
+							"value": "{}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{JWT Token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "key",
+							"value": "jjk",
+							"type": "text"
+						},
+						{
+							"key": "file",
+							"type": "file",
+							"src": "/Users/akbrirwnda/Downloads/jjk/fifth.jpeg"
+						},
+						{
+							"key": "value",
+							"value": "coba",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{Backend Url}}/footer?key=abc",
+					"host": [
+						"{{Backend Url}}"
+					],
+					"path": [
+						"footer"
+					],
+					"query": [
+						{
+							"key": "key",
+							"value": "abc"
+						}
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Footer Key Not Found",
+					"originalRequest": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{JWT Token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "key",
+									"value": "jjk",
+									"type": "text"
+								},
+								{
+									"key": "file",
+									"type": "file",
+									"src": "/Users/akbrirwnda/Downloads/jjk/fifth.jpeg"
+								},
+								{
+									"key": "value",
+									"value": "coba",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{Backend Url}}/footer?key=jjks",
+							"host": [
+								"{{Backend Url}}"
+							],
+							"path": [
+								"footer"
+							],
+							"query": [
+								{
+									"key": "key",
+									"value": "jjks"
+								}
+							]
+						}
+					},
+					"status": "Not Found",
+					"code": 404,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "X-Powered-By",
+							"value": "Express"
+						},
+						{
+							"key": "Access-Control-Allow-Origin",
+							"value": "*"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "Content-Length",
+							"value": "36"
+						},
+						{
+							"key": "ETag",
+							"value": "W/\"24-Gp8RWfAYcQpV3avvNO4qqUuFICg\""
+						},
+						{
+							"key": "Date",
+							"value": "Mon, 29 Jan 2024 00:36:02 GMT"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=5"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"message\": \"Footer Tidak Ditemukan\"\n}"
+				},
+				{
+					"name": "Delete Success",
+					"originalRequest": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{JWT Token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "key",
+									"value": "jjk",
+									"type": "text"
+								},
+								{
+									"key": "file",
+									"type": "file",
+									"src": "/Users/akbrirwnda/Downloads/jjk/fifth.jpeg"
+								},
+								{
+									"key": "value",
+									"value": "coba",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{Backend Url}}/footer?key=abc",
+							"host": [
+								"{{Backend Url}}"
+							],
+							"path": [
+								"footer"
+							],
+							"query": [
+								{
+									"key": "key",
+									"value": "abc"
+								}
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "X-Powered-By",
+							"value": "Express"
+						},
+						{
+							"key": "Access-Control-Allow-Origin",
+							"value": "*"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "Content-Length",
+							"value": "37"
+						},
+						{
+							"key": "ETag",
+							"value": "W/\"25-WZSaMP2CQvN7K4sYuv/kmCmBn34\""
+						},
+						{
+							"key": "Date",
+							"value": "Mon, 29 Jan 2024 00:36:46 GMT"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=5"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"message\": \"Footer Berhasil Dihapus\"\n}"
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "Backend Url",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "JWT Token",
+			"value": "",
+			"type": "string"
+		}
+	]
+}
