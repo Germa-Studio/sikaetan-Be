@@ -17,15 +17,16 @@ const chart = require("./chart");
 const laporanTanam = require("./laporanTanam");
 const chatt = require("./chatt");
 const tanamanPetani = require("./tanamanPetani");
+const logActivity = require("./logActivity");
 const { getProfile } = require("../controllers/akun");
 
 router.use("/api-docs", swaggerUI.serve);
 router.get("/api-docs", swaggerUI.setup(swaggerDocument));
 
 router.get("/", (req, res) => {
-  res.status(200).json({
-    message: "API is running",
-  });
+	res.status(200).json({
+		message: "API is running",
+	});
 });
 router.post("/cek-nik", auth, cekNik);
 router.post("/cek-nip", auth, cekNiP);
@@ -43,5 +44,6 @@ router.use("/", allUsers);
 router.use("/", chart);
 router.use("/", chatt);
 router.use("/", laporanTanam);
+router.use("/", logActivity);
 
 module.exports = router;
