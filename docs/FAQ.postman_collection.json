@@ -1,0 +1,885 @@
+{
+	"info": {
+		"_postman_id": "376715ed-f2c5-460a-b375-0c3aef6eb40f",
+		"name": "FAQ",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "26985888",
+		"_collection_link": "https://martian-escape-868499.postman.co/workspace/NDNE~1b52fc4e-90e4-41cd-a1a0-52ea84a9a1b3/collection/26985888-376715ed-f2c5-460a-b375-0c3aef6eb40f?action=share&source=collection_link&creator=26985888"
+	},
+	"item": [
+		{
+			"name": "Get List of FAQs data",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{JWT Token}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{Backend Url}}/faq",
+					"host": [
+						"{{Backend Url}}"
+					],
+					"path": [
+						"faq"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Get List of FAQs data",
+					"originalRequest": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{JWT Token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{Backend Url}}/faq",
+							"host": [
+								"{{Backend Url}}"
+							],
+							"path": [
+								"faq"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "X-Powered-By",
+							"value": "Express"
+						},
+						{
+							"key": "Access-Control-Allow-Origin",
+							"value": "*"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "Content-Length",
+							"value": "162"
+						},
+						{
+							"key": "ETag",
+							"value": "W/\"a2-Qdi2xAdk4LSpkdSh7It6mG+DzJs\""
+						},
+						{
+							"key": "Date",
+							"value": "Mon, 29 Jan 2024 00:38:12 GMT"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=5"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"message\": \"FAQ Berhasil Dimuat\",\n    \"faq\": [\n        {\n            \"id\": 2,\n            \"question\": \"abc\",\n            \"answer\": \"xyzsx\",\n            \"createdAt\": \"2024-01-28T07:42:52.000Z\",\n            \"updatedAt\": \"2024-01-28T07:42:52.000Z\"\n        }\n    ]\n}"
+				}
+			]
+		},
+		{
+			"name": "Get FAQ Detail",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{JWT Token}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{Backend Url}}/faq/2",
+					"host": [
+						"{{Backend Url}}"
+					],
+					"path": [
+						"faq",
+						"2"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "ID Not Found",
+					"originalRequest": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{JWT Token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{Backend Url}}/faq/1",
+							"host": [
+								"{{Backend Url}}"
+							],
+							"path": [
+								"faq",
+								"1"
+							]
+						}
+					},
+					"status": "Not Found",
+					"code": 404,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "X-Powered-By",
+							"value": "Express"
+						},
+						{
+							"key": "Access-Control-Allow-Origin",
+							"value": "*"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "Content-Length",
+							"value": "33"
+						},
+						{
+							"key": "ETag",
+							"value": "W/\"21-qRfMAnt15d6SDGo6OvPQGni6MxA\""
+						},
+						{
+							"key": "Date",
+							"value": "Mon, 29 Jan 2024 00:38:44 GMT"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=5"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"message\": \"FAQ Tidak Ditemukan\"\n}"
+				},
+				{
+					"name": "Get Footer Detail",
+					"originalRequest": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{JWT Token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{Backend Url}}/faq/2",
+							"host": [
+								"{{Backend Url}}"
+							],
+							"path": [
+								"faq",
+								"2"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "X-Powered-By",
+							"value": "Express"
+						},
+						{
+							"key": "Access-Control-Allow-Origin",
+							"value": "*"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "Content-Length",
+							"value": "160"
+						},
+						{
+							"key": "ETag",
+							"value": "W/\"a0-6baNiIRcWJgDbK7lD+PLaW8Yk5I\""
+						},
+						{
+							"key": "Date",
+							"value": "Mon, 29 Jan 2024 00:38:56 GMT"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=5"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"message\": \"FAQ Berhasil Dimuat\",\n    \"faq\": {\n        \"id\": 2,\n        \"question\": \"abc\",\n        \"answer\": \"xyzsx\",\n        \"createdAt\": \"2024-01-28T07:42:52.000Z\",\n        \"updatedAt\": \"2024-01-28T07:42:52.000Z\"\n    }\n}"
+				}
+			]
+		},
+		{
+			"name": "Create FAQ",
+			"request": {
+				"auth": {
+					"type": "jwt",
+					"jwt": [
+						{
+							"key": "addTokenTo",
+							"value": "header",
+							"type": "string"
+						},
+						{
+							"key": "algorithm",
+							"value": "HS256",
+							"type": "string"
+						},
+						{
+							"key": "isSecretBase64Encoded",
+							"value": false,
+							"type": "boolean"
+						},
+						{
+							"key": "payload",
+							"value": "{}",
+							"type": "string"
+						},
+						{
+							"key": "headerPrefix",
+							"value": "Bearer",
+							"type": "string"
+						},
+						{
+							"key": "queryParamKey",
+							"value": "token",
+							"type": "string"
+						},
+						{
+							"key": "header",
+							"value": "{}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{JWT Token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"question\": \"Sample question\",\n    \"answer\": \"sample answer\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{Backend Url}}/faq",
+					"host": [
+						"{{Backend Url}}"
+					],
+					"path": [
+						"faq"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Create New FAQ",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{JWT Token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"question\": \"Sample question\",\n    \"answer\": \"sample answer\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{Backend Url}}/faq",
+							"host": [
+								"{{Backend Url}}"
+							],
+							"path": [
+								"faq"
+							]
+						}
+					},
+					"status": "Created",
+					"code": 201,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "X-Powered-By",
+							"value": "Express"
+						},
+						{
+							"key": "Access-Control-Allow-Origin",
+							"value": "*"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "Content-Length",
+							"value": "185"
+						},
+						{
+							"key": "ETag",
+							"value": "W/\"b9-y6Miy7HxzKT8cqAvcb1uLfwIGE0\""
+						},
+						{
+							"key": "Date",
+							"value": "Mon, 29 Jan 2024 00:40:21 GMT"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=5"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"message\": \"FAQ Berhasil Ditambahkan\",\n    \"faq\": {\n        \"id\": 4,\n        \"question\": \"Sample question\",\n        \"answer\": \"sample answer\",\n        \"updatedAt\": \"2024-01-29T00:40:21.866Z\",\n        \"createdAt\": \"2024-01-29T00:40:21.866Z\"\n    }\n}"
+				}
+			]
+		},
+		{
+			"name": "Update FAQ",
+			"request": {
+				"auth": {
+					"type": "jwt",
+					"jwt": [
+						{
+							"key": "addTokenTo",
+							"value": "header",
+							"type": "string"
+						},
+						{
+							"key": "algorithm",
+							"value": "HS256",
+							"type": "string"
+						},
+						{
+							"key": "isSecretBase64Encoded",
+							"value": false,
+							"type": "boolean"
+						},
+						{
+							"key": "payload",
+							"value": "{}",
+							"type": "string"
+						},
+						{
+							"key": "headerPrefix",
+							"value": "Bearer",
+							"type": "string"
+						},
+						{
+							"key": "queryParamKey",
+							"value": "token",
+							"type": "string"
+						},
+						{
+							"key": "header",
+							"value": "{}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{JWT Token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"question\": \"Sample question\",\n    \"answer\": \"sample answer\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{Backend Url}}/faq/2",
+					"host": [
+						"{{Backend Url}}"
+					],
+					"path": [
+						"faq",
+						"2"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "FAQ Not Found",
+					"originalRequest": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{JWT Token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"question\": \"Sample question\",\n    \"answer\": \"sample answer\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{Backend Url}}/faq/1",
+							"host": [
+								"{{Backend Url}}"
+							],
+							"path": [
+								"faq",
+								"1"
+							]
+						}
+					},
+					"status": "Not Found",
+					"code": 404,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "X-Powered-By",
+							"value": "Express"
+						},
+						{
+							"key": "Access-Control-Allow-Origin",
+							"value": "*"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "Content-Length",
+							"value": "33"
+						},
+						{
+							"key": "ETag",
+							"value": "W/\"21-qRfMAnt15d6SDGo6OvPQGni6MxA\""
+						},
+						{
+							"key": "Date",
+							"value": "Mon, 29 Jan 2024 00:41:14 GMT"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=5"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"message\": \"FAQ Tidak Ditemukan\"\n}"
+				},
+				{
+					"name": "Update FAQ",
+					"originalRequest": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{JWT Token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"question\": \"Sample question\",\n    \"answer\": \"sample answer\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{Backend Url}}/faq/2",
+							"host": [
+								"{{Backend Url}}"
+							],
+							"path": [
+								"faq",
+								"2"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "X-Powered-By",
+							"value": "Express"
+						},
+						{
+							"key": "Access-Control-Allow-Origin",
+							"value": "*"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "Content-Length",
+							"value": "37"
+						},
+						{
+							"key": "ETag",
+							"value": "W/\"25-mPo98x/4vwt7DOBi8SqgGeNMNlE\""
+						},
+						{
+							"key": "Date",
+							"value": "Mon, 29 Jan 2024 00:41:31 GMT"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=5"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"message\": \"FAQ Berhasil Diperbarui\"\n}"
+				}
+			]
+		},
+		{
+			"name": "Delete FAQ",
+			"request": {
+				"auth": {
+					"type": "jwt",
+					"jwt": [
+						{
+							"key": "addTokenTo",
+							"value": "header",
+							"type": "string"
+						},
+						{
+							"key": "algorithm",
+							"value": "HS256",
+							"type": "string"
+						},
+						{
+							"key": "isSecretBase64Encoded",
+							"value": false,
+							"type": "boolean"
+						},
+						{
+							"key": "payload",
+							"value": "{}",
+							"type": "string"
+						},
+						{
+							"key": "headerPrefix",
+							"value": "Bearer",
+							"type": "string"
+						},
+						{
+							"key": "queryParamKey",
+							"value": "token",
+							"type": "string"
+						},
+						{
+							"key": "header",
+							"value": "{}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{JWT Token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "key",
+							"value": "jjk",
+							"type": "text"
+						},
+						{
+							"key": "file",
+							"type": "file",
+							"src": "/Users/akbrirwnda/Downloads/jjk/fifth.jpeg"
+						},
+						{
+							"key": "value",
+							"value": "coba",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{Backend Url}}/faq/2",
+					"host": [
+						"{{Backend Url}}"
+					],
+					"path": [
+						"faq",
+						"2"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "ID Not Found",
+					"originalRequest": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{JWT Token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "key",
+									"value": "jjk",
+									"type": "text"
+								},
+								{
+									"key": "file",
+									"type": "file",
+									"src": "/Users/akbrirwnda/Downloads/jjk/fifth.jpeg"
+								},
+								{
+									"key": "value",
+									"value": "coba",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{Backend Url}}/faq/1",
+							"host": [
+								"{{Backend Url}}"
+							],
+							"path": [
+								"faq",
+								"1"
+							]
+						}
+					},
+					"status": "Not Found",
+					"code": 404,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "X-Powered-By",
+							"value": "Express"
+						},
+						{
+							"key": "Access-Control-Allow-Origin",
+							"value": "*"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "Content-Length",
+							"value": "33"
+						},
+						{
+							"key": "ETag",
+							"value": "W/\"21-qRfMAnt15d6SDGo6OvPQGni6MxA\""
+						},
+						{
+							"key": "Date",
+							"value": "Mon, 29 Jan 2024 00:42:04 GMT"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=5"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"message\": \"FAQ Tidak Ditemukan\"\n}"
+				},
+				{
+					"name": "Delete FAQ",
+					"originalRequest": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{JWT Token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "key",
+									"value": "jjk",
+									"type": "text"
+								},
+								{
+									"key": "file",
+									"type": "file",
+									"src": "/Users/akbrirwnda/Downloads/jjk/fifth.jpeg"
+								},
+								{
+									"key": "value",
+									"value": "coba",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{Backend Url}}/faq/2",
+							"host": [
+								"{{Backend Url}}"
+							],
+							"path": [
+								"faq",
+								"2"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "X-Powered-By",
+							"value": "Express"
+						},
+						{
+							"key": "Access-Control-Allow-Origin",
+							"value": "*"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "Content-Length",
+							"value": "34"
+						},
+						{
+							"key": "ETag",
+							"value": "W/\"22-tfA7hmLOAOE3j+XTNSJoG3tObM4\""
+						},
+						{
+							"key": "Date",
+							"value": "Mon, 29 Jan 2024 00:42:13 GMT"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=5"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"message\": \"FAQ Berhasil Dihapus\"\n}"
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "Backend Url",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "JWT Token",
+			"value": "",
+			"type": "string"
+		}
+	]
+}
