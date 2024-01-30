@@ -396,12 +396,12 @@ const tambahPresensiKehadiran = async (req, res) => {
 const jurnalKegiatan = async (req, res) => {
   const { peran } = req.user || {};
   try {
-    if (peran !== "admin" && peran !== "super admin" && peran !== "PENYULUH") {
+    if (peran !== "admin" && peran !== "super admin" && peran !== "penyuluh") {
       throw new ApiError(400, "Anda tidak memiliki akses.");
     } else {
-      const newData = await dataPerson.findAll({
+      const newData = await jurnalHarian.findAll({
         include: [
-          { model: jurnalHarian, required: true },
+          // { model: jurnalHarian, required: true },
           { model: dataPenyuluh },
         ],
       });
@@ -417,18 +417,146 @@ const jurnalKegiatan = async (req, res) => {
   }
 };
 
+const jurnalKegiatanbyId = async (req, res) => {
+  const { peran } = req.user || {};
+  const { id } = req.params;
+  console.log("this is id..",id)
+  try {
+    if (peran !== "admin" && peran !== "super admin" && peran !== "penyuluh") {
+      throw new ApiError(400, "Anda tidak memiliki akses.");
+    } else {
+      const newData = await jurnalHarian.findOne({
+        where: {
+          id: id,
+        },
+        include: [
+          // { model: jurnalHarian, required: true },
+          { model: dataPenyuluh },
+        ],
+      });
+      res.status(200).json({
+        message: "berhasil mendapatkan data Jurnal",
+        newData,
+      });
+    }
+  } catch (error) {
+    res.status(error.statusCode || 500).json({
+      message: error.message,
+    });
+  }
+};
+
+const deleteJurnalKegiatan = async (req, res) => {
+  const { id } = req.params;
+  const { nama, peran } = req.user || {};
+  try {
+    if (peran !== "admin" && peran !== "super admin") {
+      throw new ApiError(400, "Anda tidak memiliki akses.");
+    } else {
+      const data = await jurnalHarian.findOne({
+        where: {
+          id: id,
+        },
+      });
+      if (!data) throw new ApiError(400, "data tidak ditemukan.");
+      await jurnalHarian.destroy({
+        where: {
+          id,
+        },
+      });
+      res.status(200).json({
+        message: "Jurnal Berhasil Di Hapus",
+      });
+    }
+  } catch (error) {
+    res.status(error.statusCode || 500).json({
+      message: `gagal menghapus data Jurnal, ${error.message}`,
+    });
+  }
+};
+
+const updateJurnalKegiatan = async (req, res) => {
+  const { id } = req.params;
+  const { nama, peran } = req.user || {};
+  try {
+    if (peran !== "admin" && peran !== "super admin" && peran !== "penyuluh") {
+      throw new ApiError(400, "Anda tidak memiliki akses.");
+    } else {
+      const {
+        judul,
+        tanggalDibuat,
+        uraian,
+        statusJurnal,
+        NIK,
+        gambar,
+      } = req.body;
+      const { file } = req;
+      const data = await jurnalHarian.findOne({
+        where: {
+          id,
+        },
+      });
+      const penyuluh = await dataPenyuluh.findOne({ where: { nik:NIK } });
+      if (!data) throw new ApiError(400, "data tidak ditemukan.");
+      let urlImg;
+      if (file?.filename) {
+        const validFormat =
+          file.mimetype === "image/png" ||
+          file.mimetype === "image/jpg" ||
+          file.mimetype === "image/jpeg" ||
+          file.mimetype === "image/gif";
+        if (!validFormat) {
+          return res.status(400).json({
+            status: "failed",
+            message: "Wrong Image Format",
+          });
+        }
+        const split = file.originalname.split(".");
+        const ext = split[split.length - 1];
+        urlImg = `${process.env.URL_SERVER}/files/jurnal/
+        ${file.filename}`;
+      }
+      const newData = await jurnalHarian.update(
+        {
+          judul,
+          tanggalDibuat,
+          uraian,
+          statusJurnal,
+          gambar: urlImg,
+          pengubah: nama,
+          fk_penyuluhId: penyuluh.id,
+        },
+        {
+          where: {
+            id: id,
+          },
+        }
+      );
+      res.status(200).json({
+        message: "berhasil merubah data Jurnal",
+        newData,
+      });
+    };
+  } catch (error) {
+    res.status(error.statusCode || 500).json({
+      message: error.message,
+    });
+  }
+};
+
+
 const tambahJurnalKegiatan = async (req, res) => {
   const { nama, peran } = req.user || {};
   try {
     if (peran !== "admin" && peran !== "super admin" && peran !== "penyuluh") {
       throw new ApiError(400, "Anda tidak memiliki akses.");
     } else {
-      const { judul, tanggalDibuat, uraian, statusJurnal } = req.body;
+      const { NIK, judul, tanggalDibuat, uraian, statusJurnal } = req.body;
       const { file } = req;
       let urlImg;
-      if (!NIP) throw new ApiError(400, "NIP tidak boleh kosong");
-      const tani = await dataPerson.findOne({ where: { NIP } });
-      if (!tani) throw new ApiError(400, "NIP tidak Ditemukan");
+      if (!NIK) throw new ApiError(400, "NIP tidak boleh kosong");
+      const penyuluh = await dataPenyuluh.findOne({ where: { nik:NIK } });
+      if (!penyuluh) throw new ApiError(400, "NIP tidak Ditemukan");
       if (file) {
         const validFormat =
           file.mimetype === "image/png" ||
@@ -458,25 +586,11 @@ const tambahJurnalKegiatan = async (req, res) => {
         statusJurnal,
         gambar: urlImg,
         pengubah: nama,
-      });
-      await dataPerson.update(
-        { jurnalKegiatanId: dataJurnalHarian.id },
-        {
-          where: {
-            NIP,
-          },
-        }
-      );
-      const newData = await dataPerson.findOne({
-        where: { NIP },
-        include: [
-          { model: jurnalHarian, required: true },
-          { model: dataPenyuluh },
-        ],
+        fk_penyuluhId: penyuluh.id,
       });
       res.status(200).json({
         message: "berhasil menambahkan data Jurnal",
-        newData,
+        dataJurnalHarian,
       });
     }
   } catch (error) {
@@ -643,5 +757,8 @@ module.exports = {
   daftarPenyuluhById,
   updatePenyuluh,
   uploadDataPenyuluh,
+  jurnalKegiatanbyId,
+  deleteJurnalKegiatan,
+  updateJurnalKegiatan,
   opsiPenyuluh
 };
