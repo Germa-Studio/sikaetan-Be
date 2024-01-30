@@ -180,7 +180,6 @@ const uploadDataPenyuluh = async (req, res) => {
       message: "Data berhasil ditambahkan.",
     });
   } catch (error) {
-    console.log(error);
     res.status(error.statusCode || 500).json({
       message: error.message,
     });
@@ -395,7 +394,6 @@ const tambahPresensiKehadiran = async (req, res) => {
 };
 
 const jurnalKegiatan = async (req, res) => {
-  console.log(req);
   const { peran } = req.user || {};
   try {
     if (peran !== "admin" && peran !== "super admin" && peran !== "PENYULUH") {
@@ -591,7 +589,7 @@ const updatePenyuluh = async (req, res) => {
           no_wa: NoWa,
           nama,
           pekerjaan: "",
-          peran: "petani",
+          peran: "penyuluh",
           foto: urlImg,
         },
         {

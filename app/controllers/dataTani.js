@@ -148,7 +148,6 @@ const tambahDaftarTani = async (req, res) => {
         });
         img.url;
         urlImg = img.url;
-        console.log({ ...req.body, img: img.url });
       }
       const newAccount = await tbl_akun.create({
         email,
@@ -256,7 +255,6 @@ const uploadDataPetani = async(req, res) => {
       message: "Data berhasil ditambahkan.",
     });
   } catch (error) {
-    console.log(error);
     res.status(error.statusCode || 500).json({
       message: error.message,
     });
@@ -464,7 +462,6 @@ const updateTaniDetail = async (req, res) => {
       });
       let urlImg;
       const { file } = req;
-      console.log(file);
       if (file) {
         const validFormat =
           file.mimetype === "image/png" ||

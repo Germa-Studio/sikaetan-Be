@@ -1,5 +1,5 @@
 const router = require("express").Router();
-// const auth = require('../../midleware/auth');
+const auth = require('../../midleware/auth');
 const upload = require("../../midleware/uploader");
 const {
   login,
@@ -9,6 +9,7 @@ const {
   getUserNotVerify,
   verifikasi,
   getProfile,
+  getDetailProfile,
   // verifikasiUser,
 } = require("../controllers/akun");
 
@@ -17,6 +18,7 @@ router.post("/register", upload.single("foto"), register);
 router.post("/petani-login", loginPetani);
 router.post("/petani-register", upload.single("foto"), registerPetani);
 router.get("/profile", getProfile);
+router.get("/detailprofile", auth, getDetailProfile);
 router.get("/verify", getUserNotVerify);
 router.get("/verify/:id", verifikasi);
 // router.put("/verify/:id", verifikasiUser)

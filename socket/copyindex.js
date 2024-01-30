@@ -65,7 +65,6 @@ const SocketServer = (server) => {
           sockets = [...sockets, ...users.get(id).sockets]
         }
       }) 
-      console.log(message)
       try {
         const msg = {
           type: message.type,
@@ -189,7 +188,6 @@ const SocketServer = (server) => {
       message.toUserId.forEach(id => {
         if (users.has(id)) {
           users.get(id).sockets.forEach(socket => {
-            console.log(socket)
             io.to(socket).emit('typing', message)
           })
         }
@@ -229,10 +227,8 @@ const getChatters = async (userId) => {
   `)
 
 
-  console.log(result)
     return result.length > 0 ? result.map(el => el.userId) : []
   } catch (error) {
-    console.log(error)
     return []
   }
 }

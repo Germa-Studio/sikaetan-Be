@@ -134,7 +134,6 @@ const tambahDataTanamanPetani = async (req, res) => {
       prakiraanBulanPanen,
       fk_petaniId,
     } = req.body;
-    console.log({ statusKepemilikanLahan });
     if (!statusKepemilikanLahan)
       throw new ApiError(400, "Status Tanah tidak boleh kosong");
     if (!kategori) throw new ApiError(400, "Kategori tidak boleh kosong.");
@@ -414,7 +413,6 @@ const uploadDataTanamanPetani = async (req, res) => {
       message: "Data berhasil ditambahkan.",
     });
   } catch (error) {
-    console.log(error);
     res.status(error.statusCode || 500).json({
       message: error.message,
     });

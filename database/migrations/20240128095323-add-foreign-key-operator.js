@@ -9,34 +9,33 @@ module.exports = {
      * Example:
      * await queryInterface.createTable('users', { id: Sequelize.INTEGER });
      */
-    await queryInterface.addColumn('datapetanis', 'fk_penyuluhId', {
-      type: Sequelize.INTEGER,
-      references: {
-        model: 'datapenyuluhs',
-        key: 'id',
-      },
-      onUpdate: 'CASCADE',
-      onDelete: 'SET NULL',
-    });
-    await queryInterface.addColumn('datapetanis', 'fk_kelompokId', {
+    // await queryInterface.addColumn('dataOperators', 'fk_accountID', {
+    //   type: Sequelize.UUID,
+    //   allowNull: false,
+    //   references: {
+    //     model: 'tbl_akun',
+    //     key: 'accountID',
+    //   },
+    //   onUpdate: 'CASCADE',
+    //   onDelete: 'SET NULL',
+    // });
+    await queryInterface.addColumn('dataOperators', 'fk_kelompokID', {
       type: Sequelize.INTEGER,
       references: {
         model: 'kelompoks',
         key: 'id',
       },
-      onUpdate: 'CASCADE',
-      onDelete: 'SET NULL',
-    });
+    })
   },
 
   async down (queryInterface, Sequelize) {
     /**
      * Add reverting commands here.
-     *s
+     *
      * Example:
      * await queryInterface.dropTable('users');
      */
-    await queryInterface.removeConstraint('datapetanis', 'fk_penyuluhId');
-    await queryInterface.removeConstraint('datapetanis', 'fk_kelompokId');
+    // await queryInterface.removeConstraint('dataOperators', 'fk_accountID');
+    await queryInterface.removeConstraint('dataOperators', 'fk_kelompokID');
   }
 };
