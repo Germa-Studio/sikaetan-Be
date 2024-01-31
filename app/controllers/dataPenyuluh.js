@@ -488,7 +488,7 @@ const updateJurnalKegiatan = async (req, res) => {
         uraian,
         statusJurnal,
         NIK,
-        gambar,
+        // gambar,
       } = req.body;
       const { file } = req;
       const data = await jurnalHarian.findOne({
