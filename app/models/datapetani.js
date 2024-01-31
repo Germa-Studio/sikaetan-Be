@@ -12,6 +12,7 @@ module.exports = (sequelize, DataTypes) => {
       // connect with tbl_akun
       dataPetani.belongsTo(models.tbl_akun, {
         foreignKey: "accountID",
+        targetKey: "accountID",
         // as: "akun",
       });
       this.belongsTo(models.dataPenyuluh, { foreignKey: "fk_penyuluhId" });
@@ -31,7 +32,7 @@ module.exports = (sequelize, DataTypes) => {
       password: DataTypes.STRING,
       email: DataTypes.STRING,
       noTelp: DataTypes.NUMBER,
-      accountID: DataTypes.STRING,
+      accountID: DataTypes.UUID,
     },
     {
       sequelize,

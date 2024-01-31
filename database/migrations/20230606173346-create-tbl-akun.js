@@ -35,9 +35,9 @@ module.exports = {
         type: Sequelize.STRING,
       },
       isVerified: {
-        type:Sequelize.BOOLEAN
-        , defaultValue: false
-        , allowNull: false
+        type: Sequelize.BOOLEAN,
+        defaultValue: false,
+        allowNull: false,
       },
       createdAt: {
         allowNull: false,
