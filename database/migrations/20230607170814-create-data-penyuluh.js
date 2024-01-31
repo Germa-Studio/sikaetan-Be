@@ -46,7 +46,8 @@ module.exports = {
         type: Sequelize.STRING,
       },
       accountID: {
-        type: Sequelize.STRING,
+        unique: true,
+        type: Sequelize.UUID,
       },
       createdAt: {
         allowNull: false,
