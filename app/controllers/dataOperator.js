@@ -111,8 +111,9 @@ const getDaftarOperator = async (req, res) => {
             const data = await dataOperator.findAll({ ...query
             });
             const total = await dataOperator.count({ ...query});
+            console.log({data})
             res.status(200).json({
-                message: "Data laporan Tani Berhasil Diperoleh",
+                message: "Data Operator Berhasil Diperoleh",
                 data,
                 total,
                 currentPages: page,
@@ -164,7 +165,7 @@ const deleteDaftarOperator = async (req, res) => {
         }
     } catch (error) {
         res.status(error.statusCode || 500).json({
-            message: `gagal menghapus data petani, ${error.message}`,
+            message: `gagal menghapus data operator, ${error.message}`,
         });
     }
 }
