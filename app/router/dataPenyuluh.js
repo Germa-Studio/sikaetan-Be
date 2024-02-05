@@ -15,6 +15,9 @@ const {
   updatePenyuluh,
   uploadDataPenyuluh,
   opsiPenyuluh,
+  jurnalKegiatanbyId,
+  deleteJurnalKegiatan,
+  updateJurnalKegiatan,
 } = require('../controllers/dataPenyuluh');
 
 router.post('/penyuluh/add', auth, upload.single('foto') ,tambahDataPenyuluh);
@@ -23,6 +26,9 @@ router.post('/jurnal-kegiatan/add', auth, upload.single('gambar'), tambahJurnalK
 router.get('/presensi-kehadiran', auth, presensiKehadiran);
 router.get('/presensi-kehadiran/web', auth, presensiKehadiranWeb);
 router.get('/jurnal-kegiatan', auth, jurnalKegiatan);
+router.get('/jurnal-kegiatan/:id', auth, jurnalKegiatanbyId);
+router.put('/jurnal-kegiatan/:id', auth, upload.single('gambar'), updateJurnalKegiatan);
+router.delete('/jurnal-kegiatan/:id', auth, deleteJurnalKegiatan);
 router.get('/riwayat-chat', auth, RiwayatChat);
 router.get('/daftar-penyuluh', auth, daftarPenyuluh);
 router.get('/daftar-penyuluh/:id', auth, daftarPenyuluhById);
