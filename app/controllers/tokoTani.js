@@ -19,6 +19,9 @@ const tambahDaftarPenjual = async (req, res) => {
       deskripsi,
       status,
     } = req.body;
+
+    const { id: penjualId } = req.params;
+
     let id;
     if (!nik) throw new ApiError(400, "NIK tidak boleh kosong");
 
@@ -62,30 +65,59 @@ const tambahDaftarPenjual = async (req, res) => {
       imageUrl = img.url;
     }
 
-    const newPenjual = await penjual.create({
-      profesiPenjual,
-      namaProducts,
-      stok,
-      satuan: satuan === "" ? "Pcs" : satuan,
-      harga,
-      deskripsi,
-      fotoTanaman: imageUrl,
-      status,
-      accountID: id,
-    });
+    if (penjualId === "add") {
+      const newPenjual = await penjual.create({
+        profesiPenjual,
+        namaProducts,
+        stok,
+        satuan: satuan === "" ? "Pcs" : satuan,
+        harga,
+        deskripsi,
+        fotoTanaman: imageUrl,
+        status,
+        accountID: id,
+      });
 
-    const dataPenjual = await penjual.findOne({
-      where: { id: newPenjual.id },
-      include: [
-        {
-          model: tblAkun,
-        },
-      ],
-    });
-    return res.status(200).json({
-      message: "Berhasil Membuat Data Penjual",
-      dataPenjual,
-    });
+      const dataPenjual = await penjual.findOne({
+        where: { id: newPenjual.id },
+        include: [
+          {
+            model: tblAkun,
+          },
+        ],
+      });
+
+      return res.status(200).json({
+        message: "Berhasil Membuat Data Penjual",
+        dataPenjual,
+      });
+    } else {
+      const dataPenjual = await penjual.findOne({
+        where: { id: penjualId },
+        include: [
+          {
+            model: tblAkun,
+          },
+        ],
+      });
+
+      await dataPenjual.update({
+        profesiPenjual,
+        namaProducts,
+        stok,
+        satuan: satuan === "" ? "Pcs" : satuan,
+        harga,
+        deskripsi,
+        fotoTanaman: imageUrl,
+        status,
+        accountID: id,
+      });
+
+      return res.status(200).json({
+        message: "Berhasil Memperbarui Data Penjual",
+        dataPenjual,
+      });
+    }
   } catch (error) {
     res.status(error.statusCode || 500).json({
       message: error.message,
@@ -132,6 +164,40 @@ const productPetani = async (req, res) => {
       to: Number(page)
         ? (Number(page) - 1) * Number(limit) + data.length
         : data.length,
+    });
+  } catch (error) {
+    res.status(error.statusCode || 500).json({
+      message: error.message,
+    });
+  }
+};
+
+const getDetailProduk = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const data = await penjual.findOne({
+      where: {
+        id,
+      },
+      include: [
+        {
+          model: tblAkun,
+          include: [
+            {
+              model: dataPetani,
+            },
+            {
+              model: dataPenyuluh,
+            },
+          ],
+        },
+      ],
+    });
+
+    if (!data) throw new ApiError(404, "Data Tidak Ditemukan");
+    res.status(200).json({
+      message: "Berhasil Mendapatkan Detail Produk",
+      data,
     });
   } catch (error) {
     res.status(error.statusCode || 500).json({
@@ -188,4 +254,5 @@ module.exports = {
   productPetani,
   productPenyuluh,
   deleteProduk,
+  getDetailProduk,
 };
