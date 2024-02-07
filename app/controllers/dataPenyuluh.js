@@ -17,7 +17,7 @@ const tambahDataPenyuluh = async (req, res) => {
   const { peran } = req.user || {};
   // console.log(peran)
   try {
-    if (peran !== "admin" && peran !== "super admin") {
+    if (peran === "petani" || peran === "penyuluh") {
       throw new ApiError(400, "Anda tidak memiliki akses.");
     } else {
       const {
@@ -128,10 +128,9 @@ const tambahDataPenyuluh = async (req, res) => {
 
 const uploadDataPenyuluh = async (req, res) => {
   const { peran } = req.user || {}
-
   try{
-    if (peran !== "admin" && peran !== "super admin" && peran !== "penyuluh") {
-      throw new ApiError(403, "Anda tidak memiliki akses.");
+    if (peran === "petani" || peran === "penyuluh") {
+      throw new ApiError(400, "Anda tidak memiliki akses.");
     }
 
     const { file } = req;
@@ -189,7 +188,7 @@ const uploadDataPenyuluh = async (req, res) => {
 const  opsiPenyuluh = async (req, res) => {
   const { nama, peran } = req.user || {};
   try {
-    if (peran !== "admin" && peran !== "super admin" && peran !== "penyuluh") {
+    if (peran === "petani") {
       throw new ApiError(400, "Anda tidak memiliki akses.");
     } else {
       const dataDaftarPenyuluh = await dataPenyuluh.findAll();
@@ -210,9 +209,9 @@ const daftarPenyuluh = async (req, res) => {
   const { peran } = req.user || {};
   const { page, limit } = req.query;
   try {
-    if (peran !== "admin" && peran !== "super admin" && peran !== "penyuluh") {
+    if (peran === "petani" || peran === "penyuluh") {
       throw new ApiError(400, "Anda tidak memiliki akses.");
-    } 
+    }
     const limitFilter = Number(limit) || 10;
     const pageFilter = Number(page) || 1;
     const query = {
@@ -245,7 +244,7 @@ const deleteDaftarPenyuluh = async (req, res) => {
   const { id } = req.params;
   const { nama, peran } = req.user || {};
   try {
-    if (peran !== "admin" && peran !== "super admin") {
+    if (peran === "petani"  || peran === "penyuluh" || peran === "operator admin") {
       throw new ApiError(400, "Anda tidak memiliki akses.");
     } else {
       const data = await dataPenyuluh.findOne({
@@ -396,7 +395,7 @@ const tambahPresensiKehadiran = async (req, res) => {
 const jurnalKegiatan = async (req, res) => {
   const { peran } = req.user || {};
   try {
-    if (peran !== "admin" && peran !== "super admin" && peran !== "penyuluh") {
+    if (peran === "petani") {
       throw new ApiError(400, "Anda tidak memiliki akses.");
     } else {
       const newData = await jurnalHarian.findAll({
@@ -422,7 +421,7 @@ const jurnalKegiatanbyId = async (req, res) => {
   const { id } = req.params;
   console.log("this is id..",id)
   try {
-    if (peran !== "admin" && peran !== "super admin" && peran !== "penyuluh") {
+    if (peran === "petani") {
       throw new ApiError(400, "Anda tidak memiliki akses.");
     } else {
       const newData = await jurnalHarian.findOne({
@@ -450,7 +449,7 @@ const deleteJurnalKegiatan = async (req, res) => {
   const { id } = req.params;
   const { nama, peran } = req.user || {};
   try {
-    if (peran !== "admin" && peran !== "super admin") {
+    if (peran === "petani") {
       throw new ApiError(400, "Anda tidak memiliki akses.");
     } else {
       const data = await jurnalHarian.findOne({
@@ -479,7 +478,7 @@ const updateJurnalKegiatan = async (req, res) => {
   const { id } = req.params;
   const { nama, peran } = req.user || {};
   try {
-    if (peran !== "admin" && peran !== "super admin" && peran !== "penyuluh") {
+    if (peran === "petani") {
       throw new ApiError(400, "Anda tidak memiliki akses.");
     } else {
       const {
@@ -548,7 +547,7 @@ const updateJurnalKegiatan = async (req, res) => {
 const tambahJurnalKegiatan = async (req, res) => {
   const { nama, peran } = req.user || {};
   try {
-    if (peran !== "admin" && peran !== "super admin" && peran !== "penyuluh") {
+    if (peran === "petani") {
       throw new ApiError(400, "Anda tidak memiliki akses.");
     } else {
       const { NIK, judul, tanggalDibuat, uraian, statusJurnal } = req.body;
@@ -627,7 +626,7 @@ const daftarPenyuluhById = async (req, res) => {
   const { id } = req.params;
   const { nama, peran } = req.user || {};
   try {
-    if (peran !== "admin" && peran !== "super admin" && peran !== "PENYULUH") {
+    if (peran === "petani" || peran === "penyuluh") {
       throw new ApiError(400, "Anda tidak memiliki akses.");
     } else {
       const dataDaftarPenyuluh = await dataPenyuluh.findOne({
@@ -648,7 +647,7 @@ const updatePenyuluh = async (req, res) => {
   const { id } = req.params;
   const { nama, peran } = req.user || {};
   try {
-    if (peran !== "admin" && peran !== "super admin" && peran !== "penyuluh") {
+    if (peran === "petani" || peran === "penyuluh") {
       throw new ApiError(400, "Anda tidak memiliki akses.");
     } else {
       const {

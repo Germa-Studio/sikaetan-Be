@@ -23,9 +23,9 @@ const { sequelize } = require('../models'); // Assuming you have your Sequelize 
 const tambahDataOperator = async (req, res) => {
     const{peran} = req.user || {};
     try{
-        if (peran !== "super admin") {
-            throw new ApiError(400, "Anda tidak memiliki akses.");
-        } else{
+        if (peran !== "operator super admin") {
+        throw new ApiError(400, "Anda tidak memiliki akses.");
+        }else{
             const {nik, nkk, nama, peran, email, notelp, alamat, password} = req.body;
             const{file} = req;
             const hashedPassword = bcrypt.hashSync(password, 10);
@@ -97,9 +97,9 @@ const getDaftarOperator = async (req, res) => {
     const {peran} = req.user || {};
     const { page, limit } = req.query;
     try {
-        if (peran !== "super admin") {
+        if (peran !== "operator super admin") {
             throw new ApiError(400, "Anda tidak memiliki akses.");
-        } else {
+        }else {
             const limitFilter = Number(limit) || 10;
             const pageFilter = Number(page) || 1;
             
@@ -136,9 +136,9 @@ const deleteDaftarOperator = async (req, res) => {
     const {id} = req.params;
     const {peran} = req.user || {};
     try {
-        if (peran !== "super admin") {
+        if (peran !== "operator super admin") {
             throw new ApiError(400, "Anda tidak memiliki akses.");
-        } else {
+        }else {
             const data = await dataOperator.findOne({
                 where: {
                     id,
@@ -174,9 +174,9 @@ const getOperatorDetail = async(req,res) =>{
     const {id} = req.params;
     const {peran} = req.user || {};
     try {
-        if (peran !== "super admin") {
+        if (peran !== "operator super admin") {
             throw new ApiError(400, "Anda tidak memiliki akses.");
-        } else {
+        }else {
             const data = await sequelize.query(
                 `SELECT do.*, ta.peran
                  FROM dataOperators do
@@ -215,7 +215,7 @@ const updateOperatorDetail = async(req,res) =>{
     const {peran} = req.user || {};
 
     try {
-        if (peran !== "super admin") {
+        if (peran !== "operator super admin") {
             throw new ApiError(400, "Anda tidak memiliki akses.");
         } else {
             const {nik, nkk, nama, peran, email, notelp, alamat, password} = req.body;

@@ -23,9 +23,7 @@ const login = async (req, res) => {
     const user = await tblAkun.findOne({ where: { email } });
     if (!user) throw new ApiError(400, "Email tidak terdaftar.");
     if (
-      user.peran != "admin" &&
-      user.peran != "super admin" &&
-      user.peran != "admin"
+      user.peran === "petani"
     ) {
       throw new ApiError(403, "Anda tidak memiliki akses");
     }

@@ -613,6 +613,10 @@ const tambahTanamanPetani = async (req, res) => {
 
 const ubahTanamanPetaniById = async (req, res) => {
   try {
+    const { peran } = req.user || {};
+    if (peran === "petani") {
+      throw new ApiError(400, "Anda tidak memiliki akses.");
+    }
     const { id } = req.params;
     const {
       statusLahan,
@@ -670,6 +674,10 @@ const ubahTanamanPetaniById = async (req, res) => {
 
 const getTanamanPetani = async (req, res) => {
   try {
+    const { peran } = req.user || {};
+    if (peran === "petani") {
+      throw new ApiError(400, "Anda tidak memiliki akses.");
+    }
     const data = await tanamanPetani.findAll({
       include: [
         {
@@ -696,6 +704,10 @@ const getTanamanPetani = async (req, res) => {
 const getTanamanPetaniById = async (req, res) => {
   const { id } = req.params;
   try {
+    const { peran } = req.user || {};
+    if (peran === "petani") {
+      throw new ApiError(400, "Anda tidak memiliki akses.");
+    }
     const data = await tanamanPetani.findOne({
       where: {
         id,
@@ -715,6 +727,10 @@ const getTanamanPetaniById = async (req, res) => {
 const deleteTanamanPetaniById = async (req, res) => {
   const { id } = req.params;
   try {
+    const { peran } = req.user || {};
+    if (peran === "petani" || peran === "penyuluh" || peran === 'operator poktan') {
+      throw new ApiError(400, "Anda tidak memiliki akses.");
+    }
     const data = await tanamanPetani.findOne({
       where: {
         id,

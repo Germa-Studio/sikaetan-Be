@@ -4,6 +4,9 @@ const { logactivity, tbl_akun } = require("../models");
 const getActivity = async (req, res) => {
 	const { page, limit } = req.query;
 	try {
+		if (peran === "petani") {
+			throw new ApiError(400, "Anda tidak memiliki akses.");
+		  }
 		const query = {
 			include: [
 				{
@@ -40,6 +43,9 @@ const getActivity = async (req, res) => {
 
 const getDataSampah = async (req, res) => {
 	try {
+		if (peran === "petani") {
+			throw new ApiError(400, "Anda tidak memiliki akses.");
+		  }
 		const { page, limit } = req.query;
 		const query = {
 			include: [
@@ -80,6 +86,9 @@ const getDataSampah = async (req, res) => {
 
 const postActivity = async (req, res) => {
 	try {
+		if (peran === "petani") {
+			throw new ApiError(400, "Anda tidak memiliki akses.");
+		  }
 		const { user_id, activity, type, detail_id } = req.body;
 		const detail = detail_id ? `${type} ${detail_id}` : type;
 		const newActivity = await logactivity.create({

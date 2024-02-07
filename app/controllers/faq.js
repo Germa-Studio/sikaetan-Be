@@ -41,6 +41,10 @@ const getDetailFaq = async (req, res) => {
 
 const createFaq = async (req, res) => {
   try {
+    const { peran } = req.user || {};
+    if (peran !== "operator admin" && peran !== "operator super admin") {
+      throw new ApiError(400, "Anda tidak memiliki akses.");
+    }
     const { question, answer } = req.body;
     const data = await faq.create({
       question,
@@ -61,6 +65,10 @@ const updateFaq = async (req, res) => {
   try {
     const { id } = req.params;
     const { question, answer } = req.body;
+    const { peran } = req.user || {};
+    if (peran !== "operator admin" && peran !== "operator super admin") {
+      throw new ApiError(400, "Anda tidak memiliki akses.");
+    }
     const data = await faq.findOne({
       where: {
         id,
@@ -96,6 +104,11 @@ const updateFaq = async (req, res) => {
 const deleteFaq = async (req, res) => {
   try {
     const { id } = req.params;
+    
+    const { peran } = req.user || {};
+    if (peran !== "operator admin" && peran !== "operator super admin") {
+      throw new ApiError(400, "Anda tidak memiliki akses.");
+    }
     const data = await faq.findOne({
       where: {
         id,
