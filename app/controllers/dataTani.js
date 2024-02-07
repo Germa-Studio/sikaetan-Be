@@ -188,8 +188,8 @@ const tambahDaftarTani = async (req, res) => {
   }
 };
 
-const uploadDataPetani = async(req, res) => {
-  const { peran } = req.user || {}
+const uploadDataPetani = async (req, res) => {
+  const { peran } = req.user || {};
 
   try {
     if (peran !== "admin" && peran !== "super admin" && peran !== "penyuluh") {
@@ -219,8 +219,9 @@ const uploadDataPetani = async(req, res) => {
         },
       });
       //default url image
-      const urlImg = "https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/images/bg-7.png"
-      if(penyuluh){
+      const urlImg =
+        "https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/images/bg-7.png";
+      if (penyuluh) {
         await dataPetani.create({
           nik: row.getCell(2).value.toString(),
           nkk: row.getCell(3).value.toString(),
@@ -235,7 +236,7 @@ const uploadDataPetani = async(req, res) => {
           accountID: accountID,
           fk_penyuluhId: penyuluh.id,
           fk_kelompokId: kelompokData.id,
-        })
+        });
 
         await tbl_akun.create({
           email: row.getCell(9).value.toString(),
@@ -246,8 +247,8 @@ const uploadDataPetani = async(req, res) => {
           peran: "petani",
           foto: urlImg,
           accountID: accountID,
-        })
-      }else {
+        });
+      } else {
         console.error(`Penyuluh dengan NIK ${nikPenyuluh} tidak ditemukan.`);
       }
     });
@@ -316,13 +317,18 @@ const tambahLaporanTani = async (req, res) => {
 
 const daftarTani = async (req, res) => {
   const { peran } = req.user || {};
-  const { page, limit } = req.query;
+  const { page, limit, verified } = req.query;
   try {
     if (peran !== "admin" && peran !== "super admin" && peran !== "penyuluh") {
       throw new ApiError(400, "Anda tidak memiliki akses.");
-    } 
+    }
     const limitFilter = Number(limit) || 10;
     const pageFilter = Number(page) || 1;
+    const whereFilter =
+      verified === ""
+        ? {}
+        : { "$tbl_akun.isVerified$": { [Op.eq]: verified === "true" ? 1 : 0 } };
+
     const query = {
       include: [
         {
@@ -331,14 +337,18 @@ const daftarTani = async (req, res) => {
         {
           model: dataPenyuluh,
         },
+        {
+          model: tbl_akun,
+        },
       ],
       limit: limitFilter,
       offset: (pageFilter - 1) * limitFilter,
       limit: parseInt(limit),
-    }
-    const data = await dataPetani.findAll({ ...query
-    });
-    const total = await dataPetani.count({...query});
+      where: whereFilter,
+    };
+
+    const data = await dataPetani.findAll({ ...query });
+    const total = await dataPetani.count({ ...query });
     res.status(200).json({
       message: "Data laporan Tani Berhasil Diperoleh",
       data,
@@ -562,9 +572,7 @@ const getLaporanPetani = async (req, res) => {
 
 const tambahTanamanPetani = async (req, res) => {
   try {
-    const {
-      
-    } = req.body;
+    const {} = req.body;
     for (const key in req.body) {
       if (!req.body[key] && key != "jenis" && key != "jenisPanen") {
         throw new ApiError(400, `${key} harus di isi`);
@@ -743,5 +751,5 @@ module.exports = {
   getTanamanPetaniById,
   ubahTanamanPetaniById,
   deleteTanamanPetaniById,
-  uploadDataPetani
+  uploadDataPetani,
 };
