@@ -3,6 +3,7 @@ const { logactivity, tbl_akun } = require("../models");
 
 const getActivity = async (req, res) => {
 	const { page, limit } = req.query;
+    const { peran } = req.user || {};
 	try {
 		if (peran === "petani") {
 			throw new ApiError(400, "Anda tidak memiliki akses.");
@@ -42,6 +43,8 @@ const getActivity = async (req, res) => {
 };
 
 const getDataSampah = async (req, res) => {
+	
+    const { peran } = req.user || {};
 	try {
 		if (peran === "petani") {
 			throw new ApiError(400, "Anda tidak memiliki akses.");
@@ -85,6 +88,7 @@ const getDataSampah = async (req, res) => {
 };
 
 const postActivity = async (req, res) => {
+    const { peran } = req.user || {};
 	try {
 		if (peran === "petani") {
 			throw new ApiError(400, "Anda tidak memiliki akses.");

@@ -25,9 +25,9 @@ const usersAll = async (req, res) => {
 const userVerify = async (req, res) => {
   try {
     const { peran } = req.user;
-    if (peran === "petani" || peran === "penyuluh" || peran === "operator poktan") {
-      throw new ApiError(400, "Anda tidak memiliki akses.");
-    }
+    // if (peran === "petani" || peran === "penyuluh" || peran === "operator poktan") {
+    //   throw new ApiError(400, "Anda tidak memiliki akses.");
+    // }
     const data = await sequelize.query(
       `SELECT
       a.id
