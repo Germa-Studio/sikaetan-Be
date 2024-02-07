@@ -66,13 +66,14 @@ const tambahDaftarPenjual = async (req, res) => {
       profesiPenjual,
       namaProducts,
       stok,
-      satuan,
+      satuan: satuan === "" ? "Pcs" : satuan,
       harga,
       deskripsi,
       fotoTanaman: imageUrl,
       status,
       accountID: id,
     });
+
     const dataPenjual = await penjual.findOne({
       where: { id: newPenjual.id },
       include: [
@@ -139,6 +140,25 @@ const productPetani = async (req, res) => {
   }
 };
 
+const deleteProduk = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const data = await penjual.destroy({
+      where: {
+        id,
+      },
+    });
+    res.status(200).json({
+      message: "Berhasil Menghapus Data Penjual",
+      data,
+    });
+  } catch (error) {
+    res.status(error.statusCode || 500).json({
+      message: error.message,
+    });
+  }
+};
+
 const productPenyuluh = async (req, res) => {
   try {
     const data = await penjual.findAll({
@@ -167,4 +187,5 @@ module.exports = {
   tambahDaftarPenjual,
   productPetani,
   productPenyuluh,
+  deleteProduk,
 };
