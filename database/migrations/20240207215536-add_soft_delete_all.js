@@ -19,8 +19,8 @@ module.exports = {
 			type: Sequelize.DATE,
 			allowNull: true,
 		});
-		queryInterface.addC; // done
-		lumn("dataoperators", "deletedAt", {
+		// done
+		queryInterface.addColumn("dataoperators", "deletedAt", {
 			type: Sequelize.DATE,
 			allowNull: true,
 		});
