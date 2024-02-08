@@ -8,7 +8,10 @@ const getFooters = async (req, res) => {
     const data = await Footer.findAll({
       where: filter,
     });
-
+    const { peran } = req.user || {};
+    if (peran !== "operator admin" && peran !== "operator super admin") {
+      throw new ApiError(400, "Anda tidak memiliki akses.");
+    }
     if (data.length === 0) {
       res.status(404).json({
         message: "Footer Tidak Ditemukan",
@@ -36,7 +39,10 @@ const updateFooter = async (req, res) => {
   try {
     const { key, value } = req.body;
     const { file } = req;
-
+    const { peran } = req.user || {};
+    if (peran !== "operator admin" && peran !== "operator super admin") {
+      throw new ApiError(400, "Anda tidak memiliki akses.");
+    }
     if (!key) {
       res.status(400).json({
         message: "Key tidak boleh kosong",
@@ -118,6 +124,11 @@ const deleteFooter = async (req, res) => {
         message: "Key tidak boleh kosong",
       });
       return;
+    }
+    
+    const { peran } = req.user || {};
+    if (peran !== "operator admin" && peran !== "operator super admin") {
+      throw new ApiError(400, "Anda tidak memiliki akses.");
     }
 
     const filter = key ? { key: key } : {};

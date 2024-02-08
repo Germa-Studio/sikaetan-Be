@@ -58,7 +58,7 @@ module.exports = {
           nama: "Haykal",
           password: bcrypt.hashSync("haykal123", 10),
           pekerjaan: "admin",
-          peran: "super admin",
+          peran: "operator super admin",
           foto: "https://cdn.iconscout.com/icon/free/png-512/avatar-370-456322.png",
           accountID: crypto.randomUUID(),
           isVerified: true,
@@ -94,6 +94,27 @@ module.exports = {
       ],
       {}
     );
+    await queryInterface.bulkInsert(
+      "dataOperators",
+      [
+        {
+            nik: "1234567890123456",
+            nkk: "1234567890123456",
+            alamat: "Jl. Jalan",
+            email: "haykal@admin.com",
+            noTelp: "081234567890",
+            nama: "Haykal",
+            password: bcrypt.hashSync("haykal123", 10),
+            // pekerjaan: "admin",
+            // peran: "operator super admin",
+            foto: "https://cdn.iconscout.com/icon/free/png-512/avatar-370-456322.png",
+            accountID: crypto.randomUUID(),
+            // isVerified: true,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+        }
+      ]
+    )
     await queryInterface.bulkInsert(
       "datapenyuluhs",
       [
