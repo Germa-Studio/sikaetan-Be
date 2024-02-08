@@ -80,21 +80,22 @@ const getDataSampah = async (req, res) => {
 
 const postActivity = async (req, res) => {
 	try {
-		const { user_id, activity, type, detail_id } = req.body;
+		// console.log("hehe sukses", req);
+		const { user_id, activity, type, detail_id } = req;
 		const detail = detail_id ? `${type} ${detail_id}` : type;
 		const newActivity = await logactivity.create({
 			user_id,
 			activity,
 			detail,
 		});
-		res.status(200).json({
-			message: "Berhasil Menambahkan Activity",
-			newActivity,
-		});
+		// res.status(200).json({
+		// 	message: "Berhasil Menambahkan Activity",
+		// 	newActivity,
+		// });
 	} catch (error) {
-		res.status(error.statusCode || 500).json({
-			message: error.message,
-		});
+		// res.status(error.statusCode || 500).json({
+		// 	message: error.message,
+		// });
 	}
 };
 
