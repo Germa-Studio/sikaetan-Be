@@ -342,7 +342,7 @@ const tambahLaporanTani = async (req, res) => {
 
 const daftarTani = async (req, res) => {
 	const { peran } = req.user || {};
-	const { page, limit } = req.query;
+	const { page, limit, verified } = req.query;
 	try {
 		if (
 			peran !== "admin" &&
@@ -353,6 +353,15 @@ const daftarTani = async (req, res) => {
 		}
 		const limitFilter = Number(limit) || 10;
 		const pageFilter = Number(page) || 1;
+		const whereFilter =
+			verified === ""
+				? {}
+				: {
+						"$tbl_akun.isVerified$": {
+							[Op.eq]: verified === "true" ? 1 : 0,
+						},
+				  };
+
 		const query = {
 			include: [
 				{
@@ -361,11 +370,16 @@ const daftarTani = async (req, res) => {
 				{
 					model: dataPenyuluh,
 				},
+				{
+					model: tbl_akun,
+				},
 			],
 			limit: limitFilter,
 			offset: (pageFilter - 1) * limitFilter,
 			limit: parseInt(limit),
+			where: whereFilter,
 		};
+
 		const data = await dataPetani.findAll({ ...query });
 		const total = await dataPetani.count({ ...query });
 		res.status(200).json({

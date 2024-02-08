@@ -58,10 +58,13 @@ const userVerify = async (req, res) => {
       , a.no_wa
       , a.email
       , isVerified
-      , CASE WHEN dp.nik IS NULL THEN p.NIK ELSE dp.nik END AS NIK
+      , CASE WHEN dp.nik IS NOT NULL THEN dp.NIK 
+      WHEN op.nik IS NOT NULL THEN op.NIK
+      ELSE p.nik END AS NIK
       FROM tbl_akun a
       LEFT JOIN datapenyuluhs dp ON a.accountID = dp.accountID
       LEFT JOIN datapetanis p ON a.accountID = p.accountID
+      LEFT JOIN dataOperators op ON a.accountID = op.accountID
       WHERE a.peran != 'super admin'`,
       {
         replacements: ['active'] ,

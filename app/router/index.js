@@ -21,15 +21,16 @@ const faq = require("./faq");
 const tanamanPetani = require("./tanamanPetani");
 const logActivity = require("./logActivity");
 const dataOperator = require("./dataOperator");
+const dashboard = require("./dashboard");
 const { getProfile } = require("../controllers/akun");
 
 router.use("/api-docs", swaggerUI.serve);
 router.get("/api-docs", swaggerUI.setup(swaggerDocument));
 
 router.get("/", (req, res) => {
-	res.status(200).json({
-		message: "API is running",
-	});
+  res.status(200).json({
+    message: "API is running",
+  });
 });
 router.post("/cek-nik", auth, cekNik);
 router.post("/cek-nip", auth, cekNiP);
@@ -39,6 +40,7 @@ router.use("/statistik", statistik);
 router.use("/tanaman-petani", tanamanPetani);
 router.use("/footer", footer);
 router.use("/faq", faq);
+router.use("/dashboard", dashboard);
 router.use("/", dataTani);
 router.use("/", InfoTani);
 router.use("/", tokoTani);

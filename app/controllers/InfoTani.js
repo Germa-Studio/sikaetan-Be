@@ -5,9 +5,15 @@ const auth = require("../../midleware/auth");
 const { postActivity } = require("./logActivity");
 
 const infoTani = async (req, res) => {
-	// console.log(req.user)
+	console.log(req.query);
 	try {
-		const data = await beritaTani.findAll({ order: [["id", "DESC"]] });
+		const { category } = req.query;
+
+		const filter = category ? { where: { kategori: category } } : {};
+		const data = await beritaTani.findAll({
+			order: [["id", "DESC"]],
+			...filter,
+		});
 		res.status(200).json({
 			message: "Berhasil Mendapatkan Data Info Tani",
 			infotani: data,
@@ -34,7 +40,7 @@ const infoTaniById = async (req, res) => {
 };
 const tambahInfoTani = async (req, res) => {
 	// console.log(req.user)
-	const { nama, peran, id } = req.user;
+	const { nama, peran } = req.user;
 	//
 	try {
 		if (
@@ -45,7 +51,7 @@ const tambahInfoTani = async (req, res) => {
 			throw new ApiError(400, "Anda tidak memiliki akses.");
 		} else {
 			const { judul, tanggal, status, kategori, isi } = req.body;
-			const { nama, peran, id } = req.user;
+			const { nama, peran } = req.user;
 			// const{nam} = req
 			if (!judul) throw new ApiError(400, "Judul tidak boleh kosong.");
 			if (!tanggal)
@@ -86,8 +92,6 @@ const tambahInfoTani = async (req, res) => {
 				createdBy: nama,
 				isi,
 			});
-
-			// console.log("info", infoTani.id, id);
 
 			await postActivity({
 				user_id: id,

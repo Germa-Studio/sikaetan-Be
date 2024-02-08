@@ -9,7 +9,10 @@ module.exports = (sequelize, DataTypes) => {
 		 */
 		static associate(models) {
 			// define association here
-			this.belongsTo(models.dataPerson, { foreignKey: "dataPersonId" });
+			this.belongsTo(models.tbl_akun, {
+				foreignKey: "accountID",
+				targetKey: "accountID",
+			});
 		}
 	}
 	penjual.init(
@@ -22,7 +25,7 @@ module.exports = (sequelize, DataTypes) => {
 			deskripsi: DataTypes.STRING,
 			fotoTanaman: DataTypes.TEXT,
 			status: DataTypes.STRING,
-			dataPersonId: DataTypes.INTEGER,
+			accountID: DataTypes.UUID,
 		},
 		{
 			sequelize,

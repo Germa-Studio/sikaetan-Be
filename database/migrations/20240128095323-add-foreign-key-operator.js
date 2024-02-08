@@ -1,8 +1,8 @@
-'use strict';
+"use strict";
 
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
-  async up (queryInterface, Sequelize) {
+  async up(queryInterface, Sequelize) {
     /**
      * Add altering commands here.
      *
@@ -10,7 +10,7 @@ module.exports = {
      * await queryInterface.createTable('users', { id: Sequelize.INTEGER });
      */
     // await queryInterface.addColumn('dataOperators', 'fk_accountID', {
-    //   type: Sequelize.UUID,
+    //   type: Sequelize.STRING,
     //   allowNull: false,
     //   references: {
     //     model: 'tbl_akun',
@@ -19,16 +19,16 @@ module.exports = {
     //   onUpdate: 'CASCADE',
     //   onDelete: 'SET NULL',
     // });
-    await queryInterface.addColumn('dataOperators', 'fk_kelompokID', {
+    await queryInterface.addColumn("dataOperators", "fk_kelompokID", {
       type: Sequelize.INTEGER,
       references: {
-        model: 'kelompoks',
-        key: 'id',
+        model: "kelompoks",
+        key: "id",
       },
-    })
+    });
   },
 
-  async down (queryInterface, Sequelize) {
+  async down(queryInterface, Sequelize) {
     /**
      * Add reverting commands here.
      *
@@ -36,6 +36,6 @@ module.exports = {
      * await queryInterface.dropTable('users');
      */
     // await queryInterface.removeConstraint('dataOperators', 'fk_accountID');
-    await queryInterface.removeConstraint('dataOperators', 'fk_kelompokID');
-  }
+    await queryInterface.removeConstraint("dataOperators", "fk_kelompokID");
+  },
 };

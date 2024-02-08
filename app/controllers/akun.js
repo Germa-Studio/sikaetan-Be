@@ -26,7 +26,10 @@ const login = async (req, res) => {
 		if (
 			user.peran != "admin" &&
 			user.peran != "super admin" &&
-			user.peran != "admin"
+			user.peran != "penyuluh" &&
+			user.peran != "operator admin" &&
+			user.peran != "operator super admin" &&
+			user.peran != "operator poktan"
 		) {
 			throw new ApiError(403, "Anda tidak memiliki akses");
 		}
