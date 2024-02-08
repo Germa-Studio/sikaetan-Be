@@ -718,6 +718,7 @@ const updatePenyuluh = async (req, res) => {
           alamat,
           desa,
           nama,
+          foto: urlImg,
           kecamatan,
           password: hashedPassword,
           namaProduct,

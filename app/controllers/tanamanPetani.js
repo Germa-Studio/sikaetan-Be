@@ -18,7 +18,7 @@ const getAllTanamanPetani = async (req, res) => {
   const { page, limit, petaniId, isExport } = req.query;
 
   try {
-    if (peran !== "admin" && peran !== "super admin" && peran !== "penyuluh") {
+    if (peran === "petani") {
       throw new ApiError(403, "Anda tidak memiliki akses.");
     }
 
@@ -83,42 +83,12 @@ const getAllTanamanPetani = async (req, res) => {
   }
 };
 
-const getTanamanPetaniById = async (req, res) => {
-  const { id } = req.params;
-  const { peran } = req.user || {};
-
-  try {
-    if (peran !== "admin" && peran !== "super admin" && peran !== "penyuluh") {
-      throw new ApiError(403, "Anda tidak memiliki akses.");
-    }
-
-    const data = await tanamanPetani.findOne({
-      where: { id },
-      include: [
-        {
-          model: dataPetani,
-          as: "dataPetani",
-        },
-      ],
-    });
-
-    res.status(200).json({
-      message: "Data berhasil didapatkan.",
-      data,
-    });
-  } catch (error) {
-    res.status(error.statusCode || 500).json({
-      message: error.message,
-    });
-  }
-};
-
 const tambahDataTanamanPetani = async (req, res) => {
   // Validate request body
   const { peran } = req.user || {};
 
   try {
-    if (peran !== "admin" && peran !== "super admin" && peran !== "penyuluh") {
+    if (peran === "petani") {
       throw new ApiError(403, "Anda tidak memiliki akses.");
     }
     const {
@@ -186,7 +156,7 @@ const deleteDatatanamanPetani = async (req, res) => {
   const { peran } = req.user || {};
 
   try {
-    if (peran !== "admin" && peran !== "super admin" && peran !== "penyuluh") {
+    if (peran !== "operator super admin") {
       throw new ApiError(403, "Anda tidak memiliki akses.");
     }
     const data = await tanamanPetani.destroy({
@@ -262,7 +232,7 @@ const getDetailedDataTanamanPetani = async (req, res) => {
   const { peran } = req.user || {};
 
   try {
-    if (peran !== "admin" && peran !== "super admin" && peran !== "penyuluh") {
+    if (peran === "petani") {
       throw new ApiError(403, "Anda tidak memiliki akses.");
     }
 
@@ -302,7 +272,7 @@ const editDataTanamanPetani = async (req, res) => {
   const { peran } = req.user || {};
 
   try {
-    if (peran !== "admin" && peran !== "super admin" && peran !== "penyuluh") {
+    if (peran === "petani") {
       throw new ApiError(403, "Anda tidak memiliki akses.");
     }
     const {
@@ -372,7 +342,7 @@ const uploadDataTanamanPetani = async (req, res) => {
   const { peran } = req.user || {};
 
   try {
-    if (peran !== "admin" && peran !== "super admin" && peran !== "penyuluh") {
+    if (peran === "petani") {
       throw new ApiError(403, "Anda tidak memiliki akses.");
     }
 

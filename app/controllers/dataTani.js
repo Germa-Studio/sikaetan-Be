@@ -80,7 +80,7 @@ const laporanPenyuluh = async (req, res) => {
 const tambahDaftarTani = async (req, res) => {
   const { peran } = req.user;
   try {
-    if (peran !== "admin" && peran !== "super admin" && peran !== "penyuluh") {
+    if (peran === "petani") {
       throw new ApiError(400, "Anda tidak memiliki akses.");
     } else {
       const {
@@ -319,7 +319,7 @@ const daftarTani = async (req, res) => {
   const { peran } = req.user || {};
   const { page, limit, verified } = req.query;
   try {
-    if (peran !== "admin" && peran !== "super admin" && peran !== "penyuluh") {
+    if (peran === "petani") {
       throw new ApiError(400, "Anda tidak memiliki akses.");
     }
     const limitFilter = Number(limit) || 10;
@@ -449,7 +449,7 @@ const updateTaniDetail = async (req, res) => {
   } = req.body;
 
   try {
-    if (peran !== "admin" && peran !== "super admin" && peran !== "penyuluh") {
+    if (peran !== "operator admin" && peran !== "operator super admin" && peran !== "operator poktan") {
       throw new ApiError(400, "Anda tidak memiliki akses.");
     } else {
       const data = await dataPetani.findOne({
