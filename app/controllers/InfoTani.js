@@ -5,7 +5,7 @@ const auth = require("../../midleware/auth");
 const { postActivity } = require("./logActivity");
 
 const infoTani = async (req, res) => {
-	console.log(req.query);
+	// console.log(req.query);
 	try {
 		const { category } = req.query;
 

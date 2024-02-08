@@ -9,22 +9,27 @@ module.exports = {
 		 * Example:
 		 * await queryInterface.createTable('users', { id: Sequelize.INTEGER });
 		 */
+		// done
 		queryInterface.addColumn("beritatanis", "deletedAt", {
 			type: Sequelize.DATE,
 			allowNull: true,
 		});
+		// done
 		queryInterface.addColumn("eventtanis", "deletedAt", {
 			type: Sequelize.DATE,
 			allowNull: true,
 		});
-		queryInterface.addColumn("dataoperators", "deletedAt", {
+		queryInterface.addC; // done
+		lumn("dataoperators", "deletedAt", {
 			type: Sequelize.DATE,
 			allowNull: true,
 		});
+		// done
 		queryInterface.addColumn("datapenyuluhs", "deletedAt", {
 			type: Sequelize.DATE,
 			allowNull: true,
 		});
+		// done
 		queryInterface.addColumn("datapetanis", "deletedAt", {
 			type: Sequelize.DATE,
 			allowNull: true,
@@ -49,6 +54,7 @@ module.exports = {
 			type: Sequelize.DATE,
 			allowNull: true,
 		});
+		// done
 		queryInterface.addColumn("tbl_akun", "deletedAt", {
 			type: Sequelize.DATE,
 			allowNull: true,

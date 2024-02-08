@@ -1,5 +1,42 @@
 const { where } = require("sequelize");
-const { logactivity, tbl_akun } = require("../models");
+const ApiError = require("../../utils/ApiError");
+// const { logactivity, tbl_akun } = require("../models");
+const {
+	logactivity,
+	eventTani: EventTani,
+	beritaTani,
+	dataPetani,
+	tbl_akun,
+	dataPenyuluh,
+} = require("../models");
+
+const activities = [
+	{
+		txt: "INFO TANI",
+		value: beritaTani,
+		isAccount: false,
+	},
+	{
+		txt: "EVENT TANI",
+		value: EventTani,
+		isAccount: false,
+	},
+	{
+		txt: "DATA PETANI",
+		value: dataPetani,
+		isAccount: true,
+	},
+	{
+		txt: "DATA PENYULUH",
+		value: dataPetani,
+		isAccount: true,
+	},
+	{
+		txt: "DATA OPERATOR",
+		value: dataPetani,
+		isAccount: true,
+	},
+];
 
 const getActivity = async (req, res) => {
 	const { page, limit } = req.query;
@@ -38,7 +75,7 @@ const getActivity = async (req, res) => {
 	}
 };
 
-const getDataSampah = async (req, res) => {
+const getTrashActivity = async (req, res) => {
 	try {
 		const { page, limit } = req.query;
 		const query = {
@@ -99,7 +136,117 @@ const postActivity = async (req, res) => {
 	}
 };
 
+const deleteActivity = async (req, res) => {
+	try {
+		const { id } = req.params;
+		const activity = await logactivity.findByPk(id);
+		if (!activity) {
+			throw new ApiError(500, "Activity Not Found");
+		}
+		const detailActivityArr = activity.detail.split(" ");
+		const detailActivity = detailActivityArr
+			.slice(0, detailActivityArr.length - 1)
+			.join(" ");
+		activities.forEach((act) => {
+			if (act.txt === detailActivity) {
+				act.value
+					.findOne({
+						where: {
+							id: detailActivityArr[detailActivityArr.length - 1],
+						},
+						paranoid: false,
+					})
+					.then(async (data) => {
+						if (data) {
+							try {
+								data.destroy(
+									{
+										where: {
+											id: detailActivityArr[
+												detailActivityArr.length - 1
+											],
+										},
+									},
+									{ force: true }
+								);
+								await activity.destroy();
+								res.status(200).json({
+									message: "Berhasil Menghapus Permanen",
+								});
+							} catch (error) {
+								res.status(error.statusCode || 500).json({
+									message: error.message,
+								});
+							}
+						} else {
+							throw new ApiError(500, "Activity Not Found");
+						}
+					});
+			}
+		});
+	} catch (error) {
+		res.status(error.statusCode || 500).json({
+			message: error.message,
+		});
+	}
+};
+
+const restoreActivity = async (req, res) => {
+	try {
+		const { id } = req.params;
+		const activity = await logactivity.findByPk(id);
+		if (!activity) {
+			throw new ApiError(500, "Activity Not Found");
+		}
+		const detailActivityArr = activity.detail.split(" ");
+		const detailActivity = detailActivityArr
+			.slice(0, detailActivityArr.length - 1)
+			.join(" ");
+		activities.forEach(async (act) => {
+			if (act.txt === detailActivity) {
+				await act.value
+					.findOne({
+						where: {
+							id: detailActivityArr[detailActivityArr.length - 1],
+						},
+						paranoid: false,
+					})
+					.then(async (data) => {
+						if (data) {
+							try {
+								data.restore({
+									where: {
+										id: detailActivityArr[
+											detailActivityArr.length - 1
+										],
+									},
+								});
+								await activity.destroy();
+								res.status(200).json({
+									message: "Berhasil Mengembalikan Data",
+								});
+							} catch (error) {
+								res.status(error.statusCode || 500).json({
+									message: error.message,
+								});
+							}
+						} else {
+							throw new ApiError(500, "Activity Not Found");
+						}
+					});
+			}
+		});
+	} catch (error) {
+		res.status(error.statusCode || 500).json({
+			message: error.message,
+		});
+	}
+};
+
 module.exports = {
 	getActivity,
+	getTrashActivity,
 	postActivity,
+	deleteActivity,
+	restoreActivity,
 };
