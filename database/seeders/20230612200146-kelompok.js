@@ -116,7 +116,7 @@ module.exports = {
       ]
     )
     await queryInterface.bulkInsert(
-      "datapenyuluhs",
+      "dataPenyuluhs",
       [
         {
           nik: "1234567890123456",
@@ -139,7 +139,7 @@ module.exports = {
       {}
     );
     await queryInterface.bulkInsert(
-      "datapetanis",
+      "dataPetanis",
       [
         {
           nik: "1234567890123456",
@@ -162,7 +162,7 @@ module.exports = {
       {}
     );
     await queryInterface.bulkInsert(
-      "tanamanpetanis",
+      "tanamanPetanis",
       [
         {
           statusKepemilikanLahan: "MILIK SENDIRI",
@@ -183,7 +183,7 @@ module.exports = {
       {}
     );
     await queryInterface.bulkInsert(
-      "beritatanis",
+      "beritaTanis",
       [
         {
           judul: "Pemberdayaan Wanita di Dunia Pertanian",
@@ -211,7 +211,7 @@ module.exports = {
       {}
     );
     await queryInterface.bulkInsert(
-      "eventtanis",
+      "eventTanis",
       [
         {
           namaKegiatan: "Webinar Vertical Farming",
