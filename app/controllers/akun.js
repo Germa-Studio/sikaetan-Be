@@ -157,30 +157,33 @@ const loginPetani = async (req, res) => {
 		}
 		if (NIK) {
 			// const user = await dataPerson.findOne({ where: { NIK } });
-			const user = await dataPetani.findOne({ where: { NIK } });
-			if (!user) throw new ApiError(400, "NIK tidak terdaftar.");
+			const userPetani = await dataPetani.findOne({ where: { NIK } });
+			if (!userPetani) throw new ApiError(400, "NIK tidak terdaftar.");
 			// console.log(user);
-			// if (!user.isVerified) {
-			// 	throw new ApiError(
-			// 		400,
-			// 		"Akun belum diverifikasi oleh admin, mohon menunggu"
-			// 	);
-			// }
-			if (!bcrypt.compareSync(password, user.password)) {
+			const user = await tblAkun.findOne({
+				where: { accountID: userPetani.accountID },
+			});
+			if (!user.isVerified) {
+				throw new ApiError(
+					400,
+					"Akun belum diverifikasi oleh admin, mohon menunggu"
+				);
+			}
+			if (!bcrypt.compareSync(password, userPetani.password)) {
 				throw new ApiError(400, "Password salah.");
 			}
-			if (bcrypt.compareSync(password, user.password)) {
+			if (bcrypt.compareSync(password, userPetani.password)) {
 				const token = jwt.sign(
 					{
-						id: user.id,
-						NIK: user.NIK,
+						id: userPetani.id,
+						NIK: userPetani.NIK,
 					},
 					process.env.SECRET_KEY
 				);
 				return res.status(200).json({
 					message: "Login berhasil.",
 					token,
-					user,
+					user: userPetani,
 				});
 			}
 		} else if (NIP) {
@@ -214,20 +217,27 @@ const loginPetani = async (req, res) => {
 const registerPetani = async (req, res) => {
 	try {
 		const {
-			NIK = "",
-			NoWa,
-			alamat,
-			desa,
-			nama,
-			kecamatan,
-			password,
+			NIK = "", // mandatory
+			NKK = "", // not mandatory
+			nama, // mandatory
+			alamat, // mandatory
+			desa, // mandatory
+			kecamatan, // mandatory
+			password, // mandatory
+			NoWa, // mandatory
 		} = req.body;
 		const { file } = req;
 		// validasi
 		if (!NIK) throw new ApiError(400, "NIK tidak boleh kosong");
+		if (!NKK) NKK = NIK;
 		if (!nama) throw new ApiError(400, "nama tidak boleh kosong");
-		const tani = await dataPerson.findOne({ where: { NIK } });
+		if (!password) throw new ApiError(400, "Password tidak boleh kosong.");
+		if (!NoWa) throw new ApiError(400, "no wa tidak boleh kosong.");
+		const tani = await dataPetani.findOne({ where: { NIK } });
 		if (tani) throw new ApiError(400, "NIK sudah digunakan");
+
+		const hashedPassword = bcrypt.hashSync(password, 10);
+		const accountID = crypto.randomUUID();
 		let urlImg = "";
 		if (file) {
 			const validFormat =
@@ -251,24 +261,44 @@ const registerPetani = async (req, res) => {
 			});
 			urlImg = img.url;
 		}
-		const daftarTani = await dataPerson.create({
-			NIK,
-			NoWa,
-			role: "petani",
+		const newUser = await tblAkun.create({
+			email: NIK + "@gmail.com",
+			password: hashedPassword,
+			no_wa: NoWa,
+			nama,
+			pekerjaan: "",
+			peran: "petani",
+			foto: urlImg,
+			accountID,
+		});
+
+		const daftarTani = await dataPetani.create({
+			nik: NIK,
+			nkk: NKK,
+			nama,
+			foto: urlImg,
 			alamat,
 			desa,
-			nama,
 			kecamatan,
-			password,
-			foto: urlImg,
+			password: hashedPassword,
+			noTelp: NoWa,
+			accountID,
 		});
+
 		const token = jwt.sign(
 			{
-				id: daftarTani.id,
-				NIK: daftarTani.NIK,
+				id: newUser.id,
 			},
 			process.env.SECRET_KEY
 		);
+
+		postActivity({
+			user_id: newUser.id,
+			activity: "REGISTER",
+			type: "USER",
+			detail_id: newUser.id,
+		});
+
 		res.status(200).json({
 			message: "Berhasil Registrasi Silahkan Login",
 			user: daftarTani,

@@ -509,7 +509,7 @@ const jurnalKegiatanbyId = async (req, res) => {
 
 const deleteJurnalKegiatan = async (req, res) => {
 	const { id } = req.params;
-	const { nama, peran } = req.user || {};
+	const { nama, peran, id: UserId } = req.user || {};
 	try {
 		if (peran !== "admin" && peran !== "super admin") {
 			throw new ApiError(400, "Anda tidak memiliki akses.");
@@ -525,6 +525,14 @@ const deleteJurnalKegiatan = async (req, res) => {
 					id,
 				},
 			});
+
+			postActivity({
+				user_id: UserId,
+				activity: "DELETE",
+				type: "JURNAL HARIAN",
+				detail_id: id,
+			});
+
 			res.status(200).json({
 				message: "Jurnal Berhasil Di Hapus",
 			});
@@ -538,7 +546,7 @@ const deleteJurnalKegiatan = async (req, res) => {
 
 const updateJurnalKegiatan = async (req, res) => {
 	const { id } = req.params;
-	const { nama, peran } = req.user || {};
+	const { nama, peran, id: UserId } = req.user || {};
 	try {
 		if (
 			peran !== "admin" &&
@@ -599,6 +607,14 @@ const updateJurnalKegiatan = async (req, res) => {
 					},
 				}
 			);
+
+			postActivity({
+				user_id: UserId,
+				activity: "EDIT",
+				type: "JURNAL HARIAN",
+				detail_id: id,
+			});
+
 			res.status(200).json({
 				message: "berhasil merubah data Jurnal",
 				newData,
@@ -612,7 +628,7 @@ const updateJurnalKegiatan = async (req, res) => {
 };
 
 const tambahJurnalKegiatan = async (req, res) => {
-	const { nama, peran } = req.user || {};
+	const { nama, peran, id } = req.user || {};
 	try {
 		if (
 			peran !== "admin" &&
@@ -661,6 +677,14 @@ const tambahJurnalKegiatan = async (req, res) => {
 				pengubah: nama,
 				fk_penyuluhId: penyuluh.id,
 			});
+
+			postActivity({
+				user_id: id,
+				activity: "CREATE",
+				type: "JURNAL HARIAN",
+				detail_id: dataJurnalHarian.id,
+			});
+
 			res.status(200).json({
 				message: "berhasil menambahkan data Jurnal",
 				dataJurnalHarian,

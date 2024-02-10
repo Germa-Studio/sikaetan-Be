@@ -34,22 +34,27 @@ module.exports = {
 			type: Sequelize.DATE,
 			allowNull: true,
 		});
+		// done wait for confirmation
 		queryInterface.addColumn("datatanamans", "deletedAt", {
 			type: Sequelize.DATE,
 			allowNull: true,
 		});
+		// done
 		queryInterface.addColumn("jurnalharians", "deletedAt", {
 			type: Sequelize.DATE,
 			allowNull: true,
 		});
+		// done
 		queryInterface.addColumn("laporantanams", "deletedAt", {
 			type: Sequelize.DATE,
 			allowNull: true,
 		});
+		// done
 		queryInterface.addColumn("penjuals", "deletedAt", {
 			type: Sequelize.DATE,
 			allowNull: true,
 		});
+		// done
 		queryInterface.addColumn("tanamanpetanis", "deletedAt", {
 			type: Sequelize.DATE,
 			allowNull: true,

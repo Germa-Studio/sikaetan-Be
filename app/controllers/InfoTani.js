@@ -40,7 +40,7 @@ const infoTaniById = async (req, res) => {
 };
 const tambahInfoTani = async (req, res) => {
 	// console.log(req.user)
-	const { nama, peran } = req.user;
+	const { nama, peran, id } = req.user;
 	//
 	try {
 		if (

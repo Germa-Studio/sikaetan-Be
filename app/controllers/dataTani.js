@@ -622,15 +622,16 @@ const getLaporanPetani = async (req, res) => {
 const tambahTanamanPetani = async (req, res) => {
 	try {
 		const {} = req.body;
+		const { id: UserId } = req.user;
+
 		for (const key in req.body) {
 			if (!req.body[key] && key != "jenis" && key != "jenisPanen") {
 				throw new ApiError(400, `${key} harus di isi`);
 			}
 		}
-		const data = await dataPerson.findOne({
+		const data = await dataPetani.findOne({
 			where: {
-				role: "petani",
-				id: dataPersonId,
+				id: UserId,
 			},
 		});
 		if (!data) {
@@ -645,10 +646,18 @@ const tambahTanamanPetani = async (req, res) => {
 			jenisPanen,
 			jenis,
 			kategori,
-			dataPersonId,
+			UserId,
 			statusLahan,
 			luasLahan,
 		});
+
+		postActivity({
+			user_id: UserId,
+			activity: "CREATE",
+			type: "TANAMAN PETANI",
+			detail_id: dataTanamanPetani.id,
+		});
+
 		res.status(200).json({
 			message: "Berhasil Menambahkan Tanaman Petani",
 			dataTanamanPetani,
@@ -663,6 +672,7 @@ const tambahTanamanPetani = async (req, res) => {
 const ubahTanamanPetaniById = async (req, res) => {
 	try {
 		const { id } = req.params;
+		const { id: UserId } = req.user;
 		const {
 			statusLahan,
 			luasLahan,
@@ -707,6 +717,14 @@ const ubahTanamanPetaniById = async (req, res) => {
 				where: { id },
 			}
 		);
+
+		postActivity({
+			user_id: UserId,
+			activity: "EDIT",
+			type: "TANAMAN PETANI",
+			detail_id: id,
+		});
+
 		res.status(200).json({
 			message: "Berhasil Merubah Tanaman Petani",
 		});
@@ -763,6 +781,7 @@ const getTanamanPetaniById = async (req, res) => {
 
 const deleteTanamanPetaniById = async (req, res) => {
 	const { id } = req.params;
+	const { peran, id: UserId } = req.user;
 	try {
 		const data = await tanamanPetani.findOne({
 			where: {
@@ -774,6 +793,12 @@ const deleteTanamanPetaniById = async (req, res) => {
 			where: {
 				id,
 			},
+		});
+		postActivity({
+			user_id: UserId,
+			activity: "DELETE",
+			type: "TANAMAN PETANI",
+			detail_id: id,
 		});
 		res.status(200).json({
 			message: "Tanaman Petani Berhasil Di Hapus",

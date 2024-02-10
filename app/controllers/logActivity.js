@@ -8,6 +8,7 @@ const {
 	dataPetani,
 	tbl_akun,
 	dataPenyuluh,
+	dataOperator,
 } = require("../models");
 
 const activities = [
@@ -28,12 +29,12 @@ const activities = [
 	},
 	{
 		txt: "DATA PENYULUH",
-		value: dataPetani,
+		value: dataPenyuluh,
 		isAccount: true,
 	},
 	{
 		txt: "DATA OPERATOR",
-		value: dataPetani,
+		value: dataOperator,
 		isAccount: true,
 	},
 ];
