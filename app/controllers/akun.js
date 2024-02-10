@@ -7,13 +7,13 @@ const {
   dataPetani,
   dataPenyuluh,
   kelompok,
+  dataOperator
 } = require("../models");
 const ApiError = require("../../utils/ApiError");
 const isEmailValid = require("../../utils/emailValidation");
 const imageKit = require("../../midleware/imageKit");
 
 const crypto = require("crypto");
-const { tambahLaporanTani } = require("./dataTani");
 
 dotenv.config();
 
@@ -340,7 +340,7 @@ const getProfile = async (req, res) => {
 const getDetailProfile = async (req, res) => {
   try {
     // console log req.user
-    // console.log(req.user);
+    // console.log({req.user});
     const { accountID, peran } = req.user;
     if (accountID) {
       let data;
@@ -358,6 +358,9 @@ const getDetailProfile = async (req, res) => {
           where: { accountID: accountID },
           include: [
             {
+              model: tblAkun,
+            },
+            {
               model: kelompok,
               attributes: {
                 exclude: ["createdAt", "updatedAt"],
@@ -372,8 +375,13 @@ const getDetailProfile = async (req, res) => {
           ],
         });
       } else {
-        data = await tblAkun.findOne({
+        data = await dataOperator.findOne({
           where: { accountID: accountID },
+          include: [
+            {
+              model: tblAkun
+            }
+          ]
         });
       }
       res.status(200).json({
@@ -390,31 +398,40 @@ const getDetailProfile = async (req, res) => {
 };
 
 const updateDetailProfile = async (req, res) => {
+  const { accountID, peran } = req.user;
   try {
-    const { accountID, peran } = req.user;
+    // console.log(req.user);
     if (peran === "penyuluh") {
       const {
         nik,
         email,
-        NoWa,
+        whatsapp,
         alamat,
         desa,
         nama,
         kecamatan,
-        password,
+        lama,
+        baru,
         namaProduct,
         kecamatanBinaan,
         desaBinaan,
+        fotoProfil,
       } = req.body;
-      const { file } = req;
+      // console.log({req})
+      // console.log({fotoProfil})
       const data = await dataPenyuluh.findOne({
         where: {
-          id,
+          accountID,
         },
       });
       if (!data) throw new ApiError(400, "data tidak ditemukan.");
+      if(lama){
+        if (!bcrypt.compareSync(lama, data.password)) {
+          throw new ApiError(400, "Password salah.");
+        }
+      }
       let urlImg;
-
+      const { file } = req;
       if (file) {
         const validFormat =
           file.mimetype === "image/png" ||
@@ -437,17 +454,18 @@ const updateDetailProfile = async (req, res) => {
         });
         urlImg = img.url;
       }
-      const hashedPassword = bcrypt.hashSync(password, 10);
+      
+      // const hashedPassword = bcrypt.hashSync(password, 10);
       // decrypt password
       const accountUpdate = await tblAkun.update(
         {
-          email,
-          password: hashedPassword,
-          no_wa: NoWa,
-          nama,
-          pekerjaan: "",
-          peran: "petani",
-          foto: urlImg,
+          email: email || data.email,
+          password: baru ? bcrypt.hashSync(baru, 10) : data.password, // Hash password only if provided
+          no_Wa: whatsapp || data.no_wa,
+          nama: nama || data.nama,
+          // pekerjaan: "",
+          // peran: "penyuluh",
+          foto: urlImg || data.foto,
         },
         {
           where: { accountID: accountID },
@@ -455,17 +473,18 @@ const updateDetailProfile = async (req, res) => {
       );
       const newDataPenyuluh = await dataPenyuluh.update(
         {
-          nik,
-          email,
-          noTelp: NoWa,
-          alamat,
-          desa,
-          nama,
-          kecamatan,
-          password: hashedPassword,
-          namaProduct,
-          kecamatanBinaan,
-          desaBinaan,
+          nik: nik || data.nik,
+          email: email || data.email,
+          noTelp: whatsapp || data.noTelp,
+          alamat: alamat || data.alamat,
+          desa: desa || data.desa,
+          nama: nama || data.nama,
+          kecamatan: kecamatan || data.kecamatan,
+          password: baru ? bcrypt.hashSync(baru, 10) : data.password, // Hash password only if provided
+          namaProduct: namaProduct || data.namaProduct,
+          kecamatanBinaan: kecamatanBinaan || data.kecamatanBinaan,
+          desaBinaan: desaBinaan || data.desaBinaan,
+          foto: urlImg || data.foto,
         },
         {
           where: {
@@ -480,32 +499,28 @@ const updateDetailProfile = async (req, res) => {
       });
     } else if (peran === "petani") {
       const {
-        NIK,
+        nik,
         nokk,
         email,
-        NoWa,
+        whatsapp,
         alamat,
         desa,
         nama,
         kecamatan,
-        password,
-        namaKelompok,
-        penyuluh,
-        gapoktan,
+        lama,
+        baru,
         foto,
       } = req.body;
-      const kelompokData = await kelompok.findOne({
+      const data = await dataPetani.findOne({
         where: {
-          gapoktan: gapoktan,
-          namaKelompok: namaKelompok,
-          desa: desa,
+          accountID,
         },
       });
-      const penyuluhData = await dataPenyuluh.findOne({
-        where: {
-          id: penyuluh,
-        },
-      });
+      if(lama){
+        if (!bcrypt.compareSync(lama, data.password)) {
+          throw new ApiError(400, "Password salah.");
+        }
+      }
       let urlImg;
       const { file } = req;
       if (file) {
@@ -535,12 +550,12 @@ const updateDetailProfile = async (req, res) => {
       const accountUpdate = await tblAkun.update(
         {
           email,
-          password: hashedPassword,
-          no_wa: NoWa,
+          password: baru ? bcrypt.hashSync(baru, 10) : data.password, // Hash password only if provided
+          no_wa: no_wa,
           nama,
-          pekerjaan: "",
-          peran: "petani",
-          foto: urlImg,
+          // pekerjaan: "",
+          // peran: "petani",
+          foto: urlImg || data.foto,
         },
         {
           where: { accountID: accountID },
@@ -548,18 +563,15 @@ const updateDetailProfile = async (req, res) => {
       );
       const petaniUpdate = await dataPetani.update(
         {
-          nik: NIK,
-          nkk: nokk,
-          foto: urlImg,
-          nama,
-          alamat,
-          desa,
-          kecamatan,
-          password: hashedPassword,
-          email,
-          noTelp: NoWa,
-          fk_penyuluhId: penyuluhData.id,
-          fk_kelompokId: kelompokData.id,
+          nik: nik || data.nik,
+          nkk: nokk || data.nokk,
+          nama: nama || data.nama,
+          alamat: alamat || data.alamat,
+          desa: desa || data.desa,
+          kecamatan : kecamatan || data.kecamatan,
+          password: baru ? bcrypt.hashSync(baru, 10) : data.password, // Hash password only if provided
+          email: email || data.email,
+          noTelp: whatsapp ||  data.noTelp
         },
         {
           where: { accountID: accountID },

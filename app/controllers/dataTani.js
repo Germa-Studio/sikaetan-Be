@@ -449,7 +449,7 @@ const updateTaniDetail = async (req, res) => {
   } = req.body;
 
   try {
-    if (peran !== "operator admin" && peran !== "operator super admin" && peran !== "operator poktan") {
+    if (peran === "petani") {
       throw new ApiError(400, "Anda tidak memiliki akses.");
     } else {
       const data = await dataPetani.findOne({

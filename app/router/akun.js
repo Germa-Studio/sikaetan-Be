@@ -10,6 +10,7 @@ const {
   verifikasi,
   getProfile,
   getDetailProfile,
+  updateDetailProfile,
   // verifikasiUser,
 } = require("../controllers/akun");
 
@@ -19,6 +20,7 @@ router.post("/petani-login", loginPetani);
 router.post("/petani-register", upload.single("foto"), registerPetani);
 router.get("/profile", getProfile);
 router.get("/detailprofile", auth, getDetailProfile);
+router.put("/updateprofile", auth, upload.single("foto"), updateDetailProfile)
 router.get("/verify", getUserNotVerify);
 router.get("/verify/:id", verifikasi);
 // router.put("/verify/:id", verifikasiUser)
