@@ -20,6 +20,11 @@ module.exports = (sequelize, DataTypes) => {
         sourceKey: "accountID",
         // as: "penyuluh",
       });
+      tbl_akun.hasOne(models.dataOperator, {
+        foreignKey: "accountID",
+        sourceKey: "accountID",
+        // as: "operator",
+      });
       tbl_akun.hasMany(models.penjual, {
         foreignKey: "accountID",
         targetKey: "accountID",

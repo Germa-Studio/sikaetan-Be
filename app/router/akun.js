@@ -11,6 +11,8 @@ const {
   getProfile,
   getDetailProfile,
   updateDetailProfile,
+  getPeran,
+  ubahPeran
   // verifikasiUser,
 } = require("../controllers/akun");
 
@@ -23,6 +25,8 @@ router.get("/detailprofile", auth, getDetailProfile);
 router.put("/updateprofile", auth, upload.single("foto"), updateDetailProfile)
 router.get("/verify", getUserNotVerify);
 router.get("/verify/:id", verifikasi);
+router.get("/peran", auth, getPeran);
+router.put("/peran/:id", auth, ubahPeran);
 // router.put("/verify/:id", verifikasiUser)
 
 module.exports = router;
