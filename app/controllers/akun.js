@@ -325,6 +325,35 @@ const registerPetani = async (req, res) => {
 		});
 	}
 };
+
+const opsiPenyuluh = async (req, res) => {
+	try {
+		const dataDaftarPenyuluh = await dataPenyuluh.findAll();
+		res.status(200).json({
+			message: "Semua Data Penyuluh",
+			dataDaftarPenyuluh,
+		});
+	} catch (error) {
+		res.status(error.statusCode || 500).json({
+			message: error.message,
+		});
+	}
+};
+
+const opsiPoktan = async (req, res) => {
+	try {
+		const kelompokTani = await kelompok.findAll();
+		res.status(200).json({
+			message: "Berhasil Mendapatkan Data Info Tani",
+			kelompokTani,
+		});
+	} catch (error) {
+		res.status(error.statusCode || 500).json({
+			message: error.message,
+		});
+	}
+};
+
 const getUserNotVerify = async (req, res) => {
 	try {
 		const user = await dataPerson.findAll({ where: { verify: false } });
@@ -702,4 +731,6 @@ module.exports = {
 	getProfile,
 	getDetailProfile,
 	updateDetailProfile,
+	opsiPenyuluh,
+	opsiPoktan,
 };
