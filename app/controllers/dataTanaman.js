@@ -13,11 +13,7 @@ const getAllDataTanaman = async (req, res) => {
 	const { limit, page, sortBy, sortType, poktan_id, isExport } = req.query;
 
 	try {
-		if (
-			peran !== "admin" &&
-			peran !== "super admin" &&
-			peran !== "penyuluh"
-		) {
+		if (peran === "petani") {
 			throw new ApiError(403, "Anda tidak memiliki akses.");
 		}
 
@@ -87,11 +83,7 @@ const getDetailedDataTanaman = async (req, res) => {
 	const { peran } = req.user || {};
 
 	try {
-		if (
-			peran !== "admin" &&
-			peran !== "super admin" &&
-			peran !== "penyuluh"
-		) {
+		if (peran === "petani") {
 			throw new ApiError(403, "Anda tidak memiliki akses.");
 		}
 
@@ -120,11 +112,7 @@ const tambahDataTanaman = async (req, res) => {
 	const { peran, id } = req.user || {};
 
 	try {
-		if (
-			peran !== "admin" &&
-			peran !== "super admin" &&
-			peran !== "penyuluh"
-		) {
+		if (peran === "petani") {
 			throw new ApiError(403, "Anda tidak memiliki akses.");
 		}
 		const {
@@ -200,11 +188,11 @@ const editDataTanaman = async (req, res) => {
 
 	try {
 		if (
-			peran !== "admin" &&
-			peran !== "super admin" &&
-			peran !== "penyuluh"
+			peran === "petani" ||
+			peran === "penyuluh" ||
+			peran === "operator poktan"
 		) {
-			throw new ApiError(403, "Anda tidak memiliki akses.");
+			throw new ApiError(400, "Anda tidak memiliki akses.");
 		}
 		const {
 			kategori,
@@ -288,11 +276,11 @@ const hapusDataTanaman = async (req, res) => {
 
 	try {
 		if (
-			peran !== "admin" &&
-			peran !== "super admin" &&
-			peran !== "penyuluh"
+			peran === "petani" ||
+			peran === "penyuluh" ||
+			peran === "operator poktan"
 		) {
-			throw new ApiError(403, "Anda tidak memiliki akses.");
+			throw new ApiError(400, "Anda tidak memiliki akses.");
 		}
 
 		await dataTanaman.destroy({
@@ -320,12 +308,8 @@ const uploadDataTanaman = async (req, res) => {
 	const { peran } = req.user || {};
 
 	try {
-		if (
-			peran !== "admin" &&
-			peran !== "super admin" &&
-			peran !== "penyuluh"
-		) {
-			throw new ApiError(403, "Anda tidak memiliki akses.");
+		if (peran === "petani") {
+			throw new ApiError(400, "Anda tidak memiliki akses.");
 		}
 
 		const { file } = req;

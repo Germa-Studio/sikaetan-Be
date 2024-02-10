@@ -23,14 +23,7 @@ const login = async (req, res) => {
 		const { email = "", password = "" } = req.body;
 		const user = await tblAkun.findOne({ where: { email } });
 		if (!user) throw new ApiError(400, "Email tidak terdaftar.");
-		if (
-			user.peran != "admin" &&
-			user.peran != "super admin" &&
-			user.peran != "penyuluh" &&
-			user.peran != "operator admin" &&
-			user.peran != "operator super admin" &&
-			user.peran != "operator poktan"
-		) {
+		if (user.peran === "petani") {
 			throw new ApiError(403, "Anda tidak memiliki akses");
 		}
 		if (!bcrypt.compareSync(password, user.password)) {
@@ -217,20 +210,26 @@ const loginPetani = async (req, res) => {
 const registerPetani = async (req, res) => {
 	try {
 		const {
-			NIK = "", // mandatory
-			NKK = "", // not mandatory
+			NIK, // mandatory
+			NKK, // not mandatory
 			nama, // mandatory
+			email, // not mandatory
 			alamat, // mandatory
 			desa, // mandatory
 			kecamatan, // mandatory
 			password, // mandatory
 			NoWa, // mandatory
+			gapoktan, // mandatory
+			penyuluh, // mandatory
+			namaKelompok, // mandatory
 		} = req.body;
 		const { file } = req;
 		// validasi
 		if (!NIK) throw new ApiError(400, "NIK tidak boleh kosong");
 		if (!NKK) NKK = NIK;
+		if (!email) email = nama.split(" ")[0] + "@gmail.com";
 		if (!nama) throw new ApiError(400, "nama tidak boleh kosong");
+		if (!penyuluh) throw new ApiError(400, "Penyuluh tidak boleh kosong.");
 		if (!password) throw new ApiError(400, "Password tidak boleh kosong.");
 		if (!NoWa) throw new ApiError(400, "no wa tidak boleh kosong.");
 		const tani = await dataPetani.findOne({ where: { NIK } });
@@ -239,6 +238,19 @@ const registerPetani = async (req, res) => {
 		const hashedPassword = bcrypt.hashSync(password, 10);
 		const accountID = crypto.randomUUID();
 		let urlImg = "";
+
+		const penyuluhData = await dataPenyuluh.findOne({
+			where: { id: penyuluh },
+		});
+
+		const kelompokData = await kelompok.findOne({
+			where: {
+				gapoktan: gapoktan,
+				namaKelompok: namaKelompok,
+				desa: desa,
+			},
+		});
+
 		if (file) {
 			const validFormat =
 				file.mimetype === "image/png" ||
@@ -262,7 +274,7 @@ const registerPetani = async (req, res) => {
 			urlImg = img.url;
 		}
 		const newUser = await tblAkun.create({
-			email: NIK + "@gmail.com",
+			email: email,
 			password: hashedPassword,
 			no_wa: NoWa,
 			nama,
@@ -281,8 +293,11 @@ const registerPetani = async (req, res) => {
 			desa,
 			kecamatan,
 			password: hashedPassword,
+			email: email,
 			noTelp: NoWa,
 			accountID,
+			fk_penyuluhId: penyuluhData.id,
+			fk_kelompokId: kelompokData.id,
 		});
 
 		const token = jwt.sign(

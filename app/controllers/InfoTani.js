@@ -226,7 +226,11 @@ const deleteInfoTani = async (req, res) => {
 	const { nama, peran, id } = req.user;
 	console.log("id user", id);
 	try {
-		if (peran !== "super admin" && peran !== "admin") {
+		if (
+			peran === "petani" ||
+			peran === "penyuluh" ||
+			peran === "operator poktan"
+		) {
 			throw new ApiError(400, "Anda tidak memiliki akses.");
 		} else {
 			const beritaId = req.params.id;
@@ -261,8 +265,12 @@ const deleteInfoTani = async (req, res) => {
 };
 const deleteEventTani = async (req, res) => {
 	try {
-		const { nama, peran, id } = req.user;
-		if (peran !== "super admin" && peran !== "admin") {
+		const { peran, id } = req.user || {};
+		if (
+			peran === "petani" ||
+			peran === "penyuluh" ||
+			peran === "operator poktan"
+		) {
 			throw new ApiError(400, "Anda tidak memiliki akses.");
 		} else {
 			const eventId = req.params.id;
@@ -298,79 +306,70 @@ const updateInfoTani = async (req, res) => {
 		const { nama, peran, id } = req.user;
 		// console.log(peran);
 
-		if (
-			peran !== "admin" &&
-			peran !== "super admin" &&
-			peran !== "PENYULUH"
-		) {
-			throw new ApiError(400, "Anda tidak memiliki akses.");
-		} else {
-			const { judul, tanggal, status, kategori, createdBy, isi } =
-				req.body;
-			const beritaId = req.params.id;
+		const { judul, tanggal, status, kategori, createdBy, isi } = req.body;
+		const beritaId = req.params.id;
 
-			const data = await beritaTani.findOne({
-				where: {
-					id: beritaId,
-				},
-			});
-			if (!data) throw new ApiError(400, "data tidak ditemukan.");
-			const { file } = req;
-			if (file) {
-				const validFormat =
-					file.mimetype === "image/png" ||
-					file.mimetype === "image/jpg" ||
-					file.mimetype === "image/jpeg" ||
-					file.mimetype === "image/gif";
-				if (!validFormat) {
-					return res.status(400).json({
-						status: "failed",
-						message: "Wrong Image Format",
-					});
-				}
-				const split = file.originalname.split(".");
-				const ext = split[split.length - 1];
-
-				// upload file ke imagekit
-				const img = await imageKit.upload({
-					file: file.buffer,
-					fileName: `IMG-${Date.now()}.${ext}`,
-				});
-				await beritaTani.update(
-					{
-						judul,
-						status,
-						kategori,
-						fotoBerita: img.url,
-						isi,
-					},
-					{ where: { id: beritaId } }
-				);
-
-				postActivity({
-					user_id: id,
-					activity: "EDIT",
-					type: "INFO TANI",
-					detail_id: beritaId,
-				});
-
-				return res.status(200).json({
-					message: "Berita Tani Berhasil Di ubah",
+		const data = await beritaTani.findOne({
+			where: {
+				id: beritaId,
+			},
+		});
+		if (!data) throw new ApiError(400, "data tidak ditemukan.");
+		const { file } = req;
+		if (file) {
+			const validFormat =
+				file.mimetype === "image/png" ||
+				file.mimetype === "image/jpg" ||
+				file.mimetype === "image/jpeg" ||
+				file.mimetype === "image/gif";
+			if (!validFormat) {
+				return res.status(400).json({
+					status: "failed",
+					message: "Wrong Image Format",
 				});
 			}
+			const split = file.originalname.split(".");
+			const ext = split[split.length - 1];
+
+			// upload file ke imagekit
+			const img = await imageKit.upload({
+				file: file.buffer,
+				fileName: `IMG-${Date.now()}.${ext}`,
+			});
 			await beritaTani.update(
 				{
 					judul,
 					status,
 					kategori,
+					fotoBerita: img.url,
 					isi,
 				},
 				{ where: { id: beritaId } }
 			);
-			res.status(200).json({
-				message: "Berita Tani Berhasil DI ubah tanpa image",
+
+			postActivity({
+				user_id: id,
+				activity: "EDIT",
+				type: "INFO TANI",
+				detail_id: beritaId,
+			});
+
+			return res.status(200).json({
+				message: "Berita Tani Berhasil Di ubah",
 			});
 		}
+		await beritaTani.update(
+			{
+				judul,
+				status,
+				kategori,
+				isi,
+			},
+			{ where: { id: beritaId } }
+		);
+		res.status(200).json({
+			message: "Berita Tani Berhasil DI ubah tanpa image",
+		});
 	} catch (error) {
 		res.status(error.statusCode || 500).json({
 			message: `gagal menghapus data, ${error.message}`,
@@ -381,76 +380,43 @@ const updateEventTani = async (req, res) => {
 	try {
 		const { nama, peran, id } = req.user;
 		// console.log(peran);
-
-		if (
-			peran !== "admin" &&
-			peran !== "super admin" &&
-			peran !== "PENYULUH"
-		) {
-			throw new ApiError(400, "Anda tidak memiliki akses.");
-		} else {
-			const {
-				namaKegiatan,
-				tanggalAcara,
-				waktuAcara,
-				tempat,
-				peserta,
-				createdBy,
-				isi,
-			} = req.body;
-			const eventId = req.params.id;
-			const data = await EventTani.findOne({
-				where: {
-					id: eventId,
-				},
-			});
-			if (!data) throw new ApiError(400, "data tidak ditemukan.");
-			const { file } = req;
-			if (file) {
-				const validFormat =
-					file.mimetype === "image/png" ||
-					file.mimetype === "image/jpg" ||
-					file.mimetype === "image/jpeg" ||
-					file.mimetype === "image/gif";
-				if (!validFormat) {
-					return res.status(400).json({
-						status: "failed",
-						message: "Wrong Image Format",
-					});
-				}
-				const split = file.originalname.split(".");
-				const ext = split[split.length - 1];
-
-				// upload file ke imagekit
-				const img = await imageKit.upload({
-					file: file.buffer,
-					fileName: `IMG-${Date.now()}.${ext}`,
-				});
-				await EventTani.update(
-					{
-						namaKegiatan,
-						tanggalAcara,
-						waktuAcara,
-						tempat,
-						peserta,
-						fotoKegiatan: img.url,
-						createdBy,
-						isi,
-					},
-					{ where: { id: eventId } }
-				);
-
-				postActivity({
-					user_id: id,
-					activity: "EDIT",
-					type: "EVENT TANI",
-					detail_id: eventId,
-				});
-
-				return res.status(200).json({
-					message: "Event Tani Berhasil Di ubah",
+		const {
+			namaKegiatan,
+			tanggalAcara,
+			waktuAcara,
+			tempat,
+			peserta,
+			createdBy,
+			isi,
+		} = req.body;
+		const eventId = req.params.id;
+		const data = await EventTani.findOne({
+			where: {
+				id: eventId,
+			},
+		});
+		if (!data) throw new ApiError(400, "data tidak ditemukan.");
+		const { file } = req;
+		if (file) {
+			const validFormat =
+				file.mimetype === "image/png" ||
+				file.mimetype === "image/jpg" ||
+				file.mimetype === "image/jpeg" ||
+				file.mimetype === "image/gif";
+			if (!validFormat) {
+				return res.status(400).json({
+					status: "failed",
+					message: "Wrong Image Format",
 				});
 			}
+			const split = file.originalname.split(".");
+			const ext = split[split.length - 1];
+
+			// upload file ke imagekit
+			const img = await imageKit.upload({
+				file: file.buffer,
+				fileName: `IMG-${Date.now()}.${ext}`,
+			});
 			await EventTani.update(
 				{
 					namaKegiatan,
@@ -458,15 +424,39 @@ const updateEventTani = async (req, res) => {
 					waktuAcara,
 					tempat,
 					peserta,
+					fotoKegiatan: img.url,
 					createdBy,
 					isi,
 				},
 				{ where: { id: eventId } }
 			);
-			res.status(200).json({
-				message: "Event Tani Berhasil DI update",
+
+			postActivity({
+				user_id: id,
+				activity: "EDIT",
+				type: "EVENT TANI",
+				detail_id: eventId,
+			});
+
+			return res.status(200).json({
+				message: "Event Tani Berhasil Di ubah",
 			});
 		}
+		await EventTani.update(
+			{
+				namaKegiatan,
+				tanggalAcara,
+				waktuAcara,
+				tempat,
+				peserta,
+				createdBy,
+				isi,
+			},
+			{ where: { id: eventId } }
+		);
+		res.status(200).json({
+			message: "Event Tani Berhasil DI update",
+		});
 	} catch (error) {
 		res.status(error.statusCode || 500).json({
 			message: `gagal menghapus data, ${error.message}`,

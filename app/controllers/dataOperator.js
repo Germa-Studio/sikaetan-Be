@@ -23,7 +23,7 @@ const { postActivity } = require("./logActivity");
 const tambahDataOperator = async (req, res) => {
 	const { peran, id } = req.user || {};
 	try {
-		if (peran !== "super admin") {
+		if (peran !== "operator super admin" && peran !== "operator admin") {
 			throw new ApiError(400, "Anda tidak memiliki akses.");
 		} else {
 			const { nik, nkk, nama, peran, email, notelp, alamat, password } =
@@ -141,7 +141,7 @@ const getDaftarOperator = async (req, res) => {
 
 const deleteDaftarOperator = async (req, res) => {
 	const { id } = req.params;
-	const { peran, id: UserId } = req.user || {};
+	const { peran } = req.user || {};
 	try {
 		if (peran !== "super admin") {
 			throw new ApiError(400, "Anda tidak memiliki akses.");
@@ -163,13 +163,6 @@ const deleteDaftarOperator = async (req, res) => {
 					where: {
 						accountID: data.accountID,
 					},
-				});
-
-				postActivity({
-					user_id: UserId,
-					activity: "DELETE",
-					type: "DATA OPERATOR",
-					detail_id: id,
 				});
 			}
 			res.status(200).json({
@@ -194,7 +187,7 @@ const getOperatorDetail = async (req, res) => {
 			const data = await sequelize.query(
 				`SELECT do.*, ta.peran
                  FROM dataOperators do
-                 INNER JOIN tbl_akun ta ON do.accountID = ta.accountID
+                 LEFT JOIN tbl_akun ta ON do.accountID = ta.accountID
                  WHERE do.id = :id
                  LIMIT 1`,
 				{
@@ -302,14 +295,6 @@ const updateOperatorDetail = async (req, res) => {
 						where: { accountID: data.accountID },
 					}
 				);
-
-				postActivity({
-					user_id: UserId,
-					activity: "EDIT",
-					type: "DATA OPERATOR",
-					detail_id: id,
-				});
-
 				res.status(200).json({
 					message: "Data operator berhasil diupdate",
 					data: updateData,

@@ -24,32 +24,10 @@ const usersAll = async (req, res) => {
 
 const userVerify = async (req, res) => {
   try {
-    // const data = await tbl_akun.findAll({
-    //   attributes: [
-    //     'nama',
-    //     'no_wa',
-    //     'email',
-    //     // [
-    //     //   literal('CASE WHEN datapenyuluhs.nik IS NULL THEN datapetanis.NIK ELSE datapenyuluhs.nik END'),
-    //     //   'NIK',
-    //     // ],
-    //   ],
-    //   where: {
-    //     peran: {
-    //       [Op.ne]: 'super admin',
-    //     },
-    //   },
-    //   include: [
-    //     {
-    //       model: dataPetani,
-    //       as: 'petani',
-    //     },
-    //     {
-    //       model: dataPenyuluh,
-    //       as: 'penyuluh',
-    //     },
-    //   ],
-    // });
+    const { peran } = req.user;
+    // if (peran === "petani" || peran === "penyuluh" || peran === "operator poktan") {
+    //   throw new ApiError(400, "Anda tidak memiliki akses.");
+    // }
     const data = await sequelize.query(
       `SELECT
       a.id
@@ -58,13 +36,9 @@ const userVerify = async (req, res) => {
       , a.no_wa
       , a.email
       , isVerified
-      , CASE WHEN dp.nik IS NOT NULL THEN dp.NIK 
-      WHEN op.nik IS NOT NULL THEN op.NIK
-      ELSE p.nik END AS NIK
+      , p.NIK
       FROM tbl_akun a
-      LEFT JOIN datapenyuluhs dp ON a.accountID = dp.accountID
-      LEFT JOIN datapetanis p ON a.accountID = p.accountID
-      LEFT JOIN dataOperators op ON a.accountID = op.accountID
+      RIGHT JOIN dataPetanis p ON a.accountID = p.accountID
       WHERE a.peran != 'super admin'`,
       {
         replacements: ['active'] ,
