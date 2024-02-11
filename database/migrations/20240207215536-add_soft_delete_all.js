@@ -10,57 +10,57 @@ module.exports = {
 		 * await queryInterface.createTable('users', { id: Sequelize.INTEGER });
 		 */
 		// done
-		queryInterface.addColumn("beritatanis", "deletedAt", {
+		await queryInterface.addColumn("beritatanis", "deletedAt", {
 			type: Sequelize.DATE,
 			allowNull: true,
 		});
 		// done
-		queryInterface.addColumn("eventtanis", "deletedAt", {
+		await queryInterface.addColumn("eventtanis", "deletedAt", {
 			type: Sequelize.DATE,
 			allowNull: true,
 		});
 		// done
-		queryInterface.addColumn("dataoperators", "deletedAt", {
+		await queryInterface.addColumn("dataoperators", "deletedAt", {
 			type: Sequelize.DATE,
 			allowNull: true,
 		});
 		// done
-		queryInterface.addColumn("datapenyuluhs", "deletedAt", {
+		await queryInterface.addColumn("datapenyuluhs", "deletedAt", {
 			type: Sequelize.DATE,
 			allowNull: true,
 		});
 		// done
-		queryInterface.addColumn("datapetanis", "deletedAt", {
+		await queryInterface.addColumn("datapetanis", "deletedAt", {
 			type: Sequelize.DATE,
 			allowNull: true,
 		});
 		// done wait for confirmation
-		queryInterface.addColumn("datatanamans", "deletedAt", {
+		await queryInterface.addColumn("datatanamans", "deletedAt", {
 			type: Sequelize.DATE,
 			allowNull: true,
 		});
 		// done
-		queryInterface.addColumn("jurnalharians", "deletedAt", {
+		await queryInterface.addColumn("jurnalharians", "deletedAt", {
 			type: Sequelize.DATE,
 			allowNull: true,
 		});
 		// done
-		queryInterface.addColumn("laporantanams", "deletedAt", {
+		await queryInterface.addColumn("laporantanams", "deletedAt", {
 			type: Sequelize.DATE,
 			allowNull: true,
 		});
 		// done
-		queryInterface.addColumn("penjuals", "deletedAt", {
+		await queryInterface.addColumn("penjuals", "deletedAt", {
 			type: Sequelize.DATE,
 			allowNull: true,
 		});
 		// done
-		queryInterface.addColumn("tanamanpetanis", "deletedAt", {
+		await queryInterface.addColumn("tanamanpetanis", "deletedAt", {
 			type: Sequelize.DATE,
 			allowNull: true,
 		});
 		// done
-		queryInterface.addColumn("tbl_akun", "deletedAt", {
+		await queryInterface.addColumn("tbl_akun", "deletedAt", {
 			type: Sequelize.DATE,
 			allowNull: true,
 		});
