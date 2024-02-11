@@ -82,6 +82,8 @@ const getActivity = async (req, res) => {
 
 const getTrashActivity = async (req, res) => {
 	try {
+		const { peran } = req.user || {};
+
 		if (peran === "petani") {
 			throw new ApiError(400, "Anda tidak memiliki akses.");
 		}
