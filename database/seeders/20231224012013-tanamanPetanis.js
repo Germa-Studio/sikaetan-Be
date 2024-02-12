@@ -13,6 +13,100 @@ module.exports = {
      *   isBetaMember: false
      * }], {});
      */
+    const tanamanDatas = Array.from({ length: 50 }).map((_) => {
+      const submitDate = faker.date.between({
+        from: new Date(2023, 1, 1),
+        to: new Date(),
+      });
+      return {
+        kategori: faker.helpers
+          .arrayElement([
+            "Tanaman Pangan",
+          ]).toUpperCase(),
+        komoditas: faker.helpers
+        .arrayElement([
+          "Padi Konvensional",
+          "Padi Ramah Lingkungan",
+          "Padi Organik",
+          "Jagung",
+          "Kedelai",
+          "Ubi Jalar",
+          "Ubi Kayu",
+          "Kacang Tanah",
+          "Kacang Hijau",
+        ]),
+        periodeTanam: faker.helpers
+          .arrayElement([
+            "Januari",
+            "Februari",
+            "Maret",
+            "April",
+            "Mei",
+            "Juni",
+            "Juli",
+            "Agustus",
+            "September",
+            "Oktober",
+            "November",
+            "Desember",
+          ]),
+        luasLahan: faker.number.int({
+        min: 100,
+        max: 500,
+        }),
+        // jenis: faker.helpers.arrayElement(["buah", "sayur"]).toUpperCase(),
+        prakiraanLuasPanen: faker.number.int({
+          min: 100,
+          max: 500,
+        }),
+        realisasiLuasPanen: faker.number.int({
+          min: 100,
+          max: 500,
+        }),
+        prakiraanHasilPanen: faker.number.int({
+          min: 0,
+          max: 500,
+        }),
+        realisasiHasilPanen: faker.number.int({
+          min: 0,
+          max: 500,
+        }),
+        prakiraanBulanPanen: faker.helpers
+          .arrayElement([
+            "Januari",
+            "Februari",
+            "Maret",
+            "April",
+            "Mei",
+            "Juni",
+            "Juli",
+            "Agustus",
+            "September",
+            "Oktober",
+            "November",
+            "Desember",
+          ]),
+        realisasiBulanPanen: faker.helpers
+          .arrayElement([
+            "Januari",
+            "Februari",
+            "Maret",
+            "April",
+            "Mei",
+            "Juni",
+            "Juli",
+            "Agustus",
+            "September",
+            "Oktober",
+            "November",
+            "Desember",
+          ]),
+        fk_kelompokId: 1,
+        createdAt: submitDate,
+        updatedAt: submitDate,
+      };
+    });
+    await queryInterface.bulkInsert("dataTanamans", tanamanDatas, {});
     const datas = Array.from({ length: 50 }).map((_) => {
       const submitDate = faker.date.between({
         from: new Date(2023, 1, 1),

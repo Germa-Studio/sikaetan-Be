@@ -3,6 +3,7 @@ const {
   kelompok,
   dataPetani,
   dataPenyuluh,
+  dataTanaman,
 } = require("../models");
 const ApiError = require("../../utils/ApiError");
 const imageKit = require("../../midleware/imageKit");
@@ -182,7 +183,7 @@ const getTanamanPetaniStatistically = async (req, res) => {
     const date_starts = new Date(`${year}-${month}-01`);
     let date_ends = new Date(`${year}-${month}-31`);
     date_ends = new Date(date_ends.setDate(date_ends.getDate() + 1));
-    const lineChart = await tanamanPetani.findAll({
+    const lineChart = await dataTanaman.findAll({
       attributes: [
         [Sequelize.fn("DATE", Sequelize.col("createdAt")), "date"],
         lineChartType,
@@ -196,7 +197,7 @@ const getTanamanPetaniStatistically = async (req, res) => {
       },
       order: [[Sequelize.col("createdAt"), "ASC"]],
     });
-    const pieChart = await tanamanPetani.findAll({
+    const pieChart = await dataTanaman.findAll({
       attributes: [
         pieChartType,
         [Sequelize.fn("COUNT", Sequelize.col(pieChartType)), "count"],
@@ -208,7 +209,7 @@ const getTanamanPetaniStatistically = async (req, res) => {
         },
       },
     });
-    const latest = await tanamanPetani.findAll({
+    const latest = await dataTanaman.findAll({
       order: [[Sequelize.col("createdAt"), "DESC"]],
       limit: 5,
     });

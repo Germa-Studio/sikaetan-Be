@@ -12,7 +12,9 @@ const {
   getDetailProfile,
   updateDetailProfile,
   getPeran,
-  ubahPeran
+  ubahPeran,
+  opsiPenyuluh,
+  opsiPoktan
   // verifikasiUser,
 } = require("../controllers/akun");
 

@@ -201,9 +201,7 @@ const uploadDataPetani = async (req, res) => {
 
 	try {
 		if (
-			peran !== "admin" &&
-			peran !== "super admin" &&
-			peran !== "penyuluh"
+			peran === "petani"
 		) {
 			throw new ApiError(403, "Anda tidak memiliki akses.");
 		}
@@ -397,7 +395,7 @@ const deleteDaftarTani = async (req, res) => {
 	const { id } = req.params;
 	const { peran, id: UserId } = req.user;
 	try {
-		if (peran !== "super admin") {
+		if (peran !== "operator super admin") {
 			throw new ApiError(400, "Anda tidak memiliki akses.");
 		} else {
 			const data = await dataPetani.findOne({

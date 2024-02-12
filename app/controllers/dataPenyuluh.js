@@ -265,9 +265,7 @@ const deleteDaftarPenyuluh = async (req, res) => {
 	const { nama, peran, id: UserId } = req.user || {};
 	try {
 		if (
-			peran === "petani" ||
-			peran === "penyuluh" ||
-			peran === "operator admin"
+			peran !== "operator potan"
 		) {
 			throw new ApiError(400, "Anda tidak memiliki akses.");
 		} else {
@@ -464,7 +462,7 @@ const jurnalKegiatan = async (req, res) => {
 const jurnalKegiatanbyId = async (req, res) => {
 	const { peran } = req.user || {};
 	const { id } = req.params;
-	console.log("this is id..", id);
+	// console.log("this is id..", id);
 	try {
 		if (peran === "petani") {
 			throw new ApiError(400, "Anda tidak memiliki akses.");
@@ -741,6 +739,7 @@ const updatePenyuluh = async (req, res) => {
 				desaBinaan,
 			} = req.body;
 			const { file } = req;
+			console.log(file)
 			const data = await dataPenyuluh.findOne({
 				where: {
 					id,

@@ -878,5 +878,7 @@ module.exports = {
   getDetailProfile,
   updateDetailProfile,
   getPeran,
-  ubahPeran
+  ubahPeran,
+  opsiPenyuluh,
+  opsiPoktan
 };

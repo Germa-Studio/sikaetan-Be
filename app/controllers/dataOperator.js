@@ -106,7 +106,7 @@ const getDaftarOperator = async (req, res) => {
 	const { peran } = req.user || {};
 	const { page, limit } = req.query;
 	try {
-		if (peran !== "super admin") {
+		if (peran !== "operator super admin" && peran !== "operator admin") {
 			throw new ApiError(400, "Anda tidak memiliki akses.");
 		} else {
 			const limitFilter = Number(limit) || 10;
@@ -143,7 +143,7 @@ const deleteDaftarOperator = async (req, res) => {
 	const { id } = req.params;
 	const { peran } = req.user || {};
 	try {
-		if (peran !== "super admin") {
+		if (peran !== "operator super admin") {
 			throw new ApiError(400, "Anda tidak memiliki akses.");
 		} else {
 			const data = await dataOperator.findOne({
@@ -181,7 +181,7 @@ const getOperatorDetail = async (req, res) => {
 	const { id } = req.params;
 	const { peran } = req.user || {};
 	try {
-		if (peran !== "super admin") {
+		if (peran !== "operator super admin" && peran !== "operator admin") {
 			throw new ApiError(400, "Anda tidak memiliki akses.");
 		} else {
 			const data = await sequelize.query(
@@ -222,7 +222,7 @@ const updateOperatorDetail = async (req, res) => {
 	const { peran, id: UserId } = req.user || {};
 
 	try {
-		if (peran !== "super admin") {
+		if (peran !== "operator super admin" && peran !== "operator admin") {
 			throw new ApiError(400, "Anda tidak memiliki akses.");
 		} else {
 			const { nik, nkk, nama, peran, email, notelp, alamat, password } =
