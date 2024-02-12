@@ -38,7 +38,7 @@ const userVerify = async (req, res) => {
       , isVerified
       , p.NIK
       FROM tbl_akun a
-      RIGHT JOIN datapetanis p ON a.accountID = p.accountID
+      RIGHT JOIN dataPetanis p ON a.accountID = p.accountID
       WHERE a.peran != 'super admin'`,
       {
         replacements: ['active'] ,
