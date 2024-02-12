@@ -29,7 +29,7 @@ router.post(
 router.put(
     '/daftar-operator/:id'
     , auth
-    , upload.none()
+    , upload.single("foto")
     , updateOperatorDetail
 );
 router.delete(

@@ -201,9 +201,7 @@ const uploadDataPetani = async (req, res) => {
 
 	try {
 		if (
-			peran !== "admin" &&
-			peran !== "super admin" &&
-			peran !== "penyuluh"
+			peran === "petani"
 		) {
 			throw new ApiError(403, "Anda tidak memiliki akses.");
 		}
@@ -397,7 +395,7 @@ const deleteDaftarTani = async (req, res) => {
 	const { id } = req.params;
 	const { peran, id: UserId } = req.user;
 	try {
-		if (peran !== "super admin") {
+		if (peran !== "operator super admin") {
 			throw new ApiError(400, "Anda tidak memiliki akses.");
 		} else {
 			const data = await dataPetani.findOne({
@@ -479,48 +477,44 @@ const updateTaniDetail = async (req, res) => {
 		foto,
 	} = req.body;
 
-	try {
-		if (
-			peran !== "operator admin" &&
-			peran !== "operator super admin" &&
-			peran !== "operator poktan"
-		) {
-			throw new ApiError(400, "Anda tidak memiliki akses.");
-		} else {
-			const data = await dataPetani.findOne({
-				where: {
-					id,
-				},
-			});
-			if (!data) throw new ApiError(400, "data tidak ditemukan.");
-			const kelompokData = await kelompok.findOne({
-				where: {
-					gapoktan: gapoktan,
-					namaKelompok: namaKelompok,
-					desa: desa,
-				},
-			});
-			const penyuluhData = await dataPenyuluh.findOne({
-				where: {
-					id: penyuluh,
-				},
-			});
-			let urlImg;
-			const { file } = req;
-			if (file) {
-				const validFormat =
-					file.mimetype === "image/png" ||
-					file.mimetype === "image/jpg" ||
-					file.mimetype === "image/jpeg" ||
-					file.mimetype === "image/gif";
-				if (!validFormat) {
-					return res.status(400).json({
-						status: "failed",
-						message: "Wrong Image Format",
-					});
-				}
-				const split = file.originalname.split(".");
-				const ext = split[split.length - 1];
+  try {
+    if (peran === "petani") {
+      throw new ApiError(400, "Anda tidak memiliki akses.");
+    } else {
+      const data = await dataPetani.findOne({
+        where: {
+          id,
+        },
+      });
+      if (!data) throw new ApiError(400, "data tidak ditemukan.");
+      const kelompokData = await kelompok.findOne({
+        where: {
+          gapoktan: gapoktan,
+          namaKelompok: namaKelompok,
+          desa: desa,
+        },
+      });
+      const penyuluhData = await dataPenyuluh.findOne({
+        where: {
+          id: penyuluh,
+        },
+      });
+      let urlImg;
+      const { file } = req;
+      if (file) {
+        const validFormat =
+          file.mimetype === "image/png" ||
+          file.mimetype === "image/jpg" ||
+          file.mimetype === "image/jpeg" ||
+          file.mimetype === "image/gif";
+        if (!validFormat) {
+          return res.status(400).json({
+            status: "failed",
+            message: "Wrong Image Format",
+          });
+        }
+        const split = file.originalname.split(".");
+        const ext = split[split.length - 1];
 
 				// upload file ke imagekit
 				const img = await imageKit.upload({
