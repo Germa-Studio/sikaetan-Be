@@ -16,6 +16,7 @@ module.exports = (sequelize, DataTypes) => {
 				// as: "akun",
 			});
 			this.hasMany(models.dataPetani, { foreignKey: "fk_penyuluhId" });
+			this.hasMany(models.kelompok, { foreignKey: "penyuluh", as: "kelompoks" });
 			// this.hasMany(models.dataOperator, { foreignKey: "fk_penyuluhId" });
 		}
 	}
