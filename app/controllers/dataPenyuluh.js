@@ -5,6 +5,7 @@ const {
 	jurnalHarian,
 	riwayatChat,
 	tbl_akun,
+	kelompok
 } = require("../models");
 const ApiError = require("../../utils/ApiError");
 const imageKit = require("../../midleware/imageKit");
@@ -35,7 +36,8 @@ const tambahDataPenyuluh = async (req, res) => {
 				desaBinaan,
 				pekerjaan = "",
 			} = req.body;
-
+			console.log({desaBinaan})
+			const desaBinaanArray = desaBinaan.split(",");
 			const hashedPassword = bcrypt.hashSync(password, 10);
 			const accountID = crypto.randomUUID();
 			const { file } = req;
@@ -119,7 +121,21 @@ const tambahDataPenyuluh = async (req, res) => {
 				kecamatanBinaan,
 				accountID: accountID,
 			});
-
+			console.log({kecamatanBinaan});
+			// how to loop through desaBinaan
+			desaBinaanArray.forEach(async (desa) => {
+                // Do something with each desa in the array
+                const dataKelompok = await kelompok.findAll({where:{ desa, kecamatan: newPenyuluh.kecamatanBinaan}})
+				if(dataKelompok){
+					await kelompok.update({
+						penyuluh: newPenyuluh.id
+					},{
+						where: {
+							id: dataKelompok.id
+						}
+					})
+				}
+            });
 			postActivity({
 				user_id: id,
 				activity: "CREATE",
