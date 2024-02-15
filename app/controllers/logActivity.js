@@ -52,6 +52,7 @@ const getActivity = async (req, res) => {
 					model: tbl_akun,
 				},
 			],
+			order: [["createdAt", "DESC"]],
 			limit: Number(limit),
 			offset: (Number(page) - 1) * Number(limit),
 		};
@@ -94,6 +95,7 @@ const getTrashActivity = async (req, res) => {
 					model: tbl_akun,
 				},
 			],
+			order: [["createdAt", "DESC"]],
 			where: {
 				activity: "DELETE",
 			},
@@ -169,17 +171,24 @@ const deleteActivity = async (req, res) => {
 					.then(async (data) => {
 						if (data) {
 							try {
-								data.destroy(
-									{
-										where: {
-											id: detailActivityArr[
-												detailActivityArr.length - 1
-											],
-										},
+								data.destroy({
+									where: {
+										id: detailActivityArr[
+											detailActivityArr.length - 1
+										],
 									},
-									{ force: true }
-								);
-								await activity.destroy();
+									force: true,
+								});
+								postActivity({
+									user_id: req.user.id,
+									activity: "DELETE PERMANENT",
+									type: detailActivity,
+									detail_id:
+										detailActivityArr[
+											detailActivityArr.length - 1
+										],
+								});
+								// await activity.destroy();
 								res.status(200).json({
 									message: "Berhasil Menghapus Permanen",
 								});
@@ -190,6 +199,20 @@ const deleteActivity = async (req, res) => {
 							}
 						} else {
 							throw new ApiError(500, "Activity Not Found");
+						}
+					})
+					.catch(async (err) => {
+						const userInAction = await tbl_akun.findByPk(
+							activity.user_id
+						);
+						if (userInAction) {
+							res.status(500).json({
+								message: `Activity has already been deleted permanently by ${userInAction.nama} as ${userInAction.peran}`,
+							});
+						} else {
+							res.status(500).json({
+								message: `Activity has already been deleted permanently by unknown user`,
+							});
 						}
 					});
 			}
