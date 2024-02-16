@@ -5,7 +5,7 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       // define association here
       //   this.belongsTo(models.tbl_akun, {foreignKey: "fk_accountID"});
-      this.belongsTo(models.kelompok, { foreignKey: "fk_kelompokID" });
+      // this.belongsTo(models.kelompok, { foreignKey: "fk_kelompokID" });
       dataOperator.belongsTo(models.tbl_akun, {
         foreignKey: "accountID",
         targetKey: "accountID",
