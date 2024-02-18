@@ -19,6 +19,7 @@ module.exports = {
      */
     const uuidPenyuluh = crypto.randomUUID();
     const uuidPetani = crypto.randomUUID();
+    const uuidOperator = crypto.randomUUID();
     const datas = Array.from({ length: 5 }).map((_) => {
       const submitDate = faker.date.between({
         from: new Date(2023, 12, 1),
@@ -60,7 +61,7 @@ module.exports = {
           pekerjaan: "admin",
           peran: "operator super admin",
           foto: "https://cdn.iconscout.com/icon/free/png-512/avatar-370-456322.png",
-          accountID: crypto.randomUUID(),
+          accountID: uuidOperator,
           isVerified: true,
           createdAt: new Date(),
           updatedAt: new Date(),
@@ -108,7 +109,7 @@ module.exports = {
             // pekerjaan: "admin",
             // peran: "operator super admin",
             foto: "https://cdn.iconscout.com/icon/free/png-512/avatar-370-456322.png",
-            accountID: crypto.randomUUID(),
+            accountID: uuidOperator,
             // isVerified: true,
             createdAt: new Date(),
             updatedAt: new Date(),

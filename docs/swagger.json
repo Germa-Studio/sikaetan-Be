@@ -4548,7 +4548,7 @@
           },
           "kategori": {
             "type": "string",
-            "example": "HOLTIKULTURA"
+            "example": "HORTIKULTURA"
           },
           "count": {
             "type": "integer",
@@ -4565,7 +4565,7 @@
           },
           "kategori": {
             "type": "string",
-            "example": "HOLTIKULTURA"
+            "example": "HORTIKULTURA"
           },
           "count": {
             "type": "integer",

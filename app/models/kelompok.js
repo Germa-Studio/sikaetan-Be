@@ -11,7 +11,11 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
       // this.hasOne(models.dataPerson, { foreignKey: 'kelompokId' });
       this.hasMany(models.dataPetani, { foreignKey: "fk_kelompokId" });
-      this.hasMany(models.dataOperator, { foreignKey: "fk_kelompokID" });
+      
+			this.belongsTo(models.dataPenyuluh, {
+				foreignKey: "penyuluh",
+			});
+      // this.hasMany(models.dataOperator, { foreignKey: "fk_kelompokID" });
     }
   }
   kelompok.init(

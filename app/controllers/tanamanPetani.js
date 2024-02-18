@@ -183,7 +183,7 @@ const getTanamanPetaniStatistically = async (req, res) => {
     const date_starts = new Date(`${year}-${month}-01`);
     let date_ends = new Date(`${year}-${month}-31`);
     date_ends = new Date(date_ends.setDate(date_ends.getDate() + 1));
-    const lineChart = await dataTanaman.findAll({
+    const lineChart = await tanamanPetani.findAll({
       attributes: [
         [Sequelize.fn("DATE", Sequelize.col("createdAt")), "date"],
         lineChartType,
@@ -197,7 +197,7 @@ const getTanamanPetaniStatistically = async (req, res) => {
       },
       order: [[Sequelize.col("createdAt"), "ASC"]],
     });
-    const pieChart = await dataTanaman.findAll({
+    const pieChart = await tanamanPetani.findAll({
       attributes: [
         pieChartType,
         [Sequelize.fn("COUNT", Sequelize.col(pieChartType)), "count"],
@@ -209,7 +209,7 @@ const getTanamanPetaniStatistically = async (req, res) => {
         },
       },
     });
-    const latest = await dataTanaman.findAll({
+    const latest = await tanamanPetani.findAll({
       order: [[Sequelize.col("createdAt"), "DESC"]],
       limit: 5,
     });

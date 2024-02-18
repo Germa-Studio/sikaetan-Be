@@ -777,6 +777,7 @@ const updateDetailProfile = async (req, res) => {
 const getPeran = async (req, res) => {
 	const { peran } = req.user || {};
 	const { page, limit } = req.query;
+	console.log("test");
 	try {
 		const limitFilter = Number(limit) || 10;
 		const pageFilter = Number(page) || 1;
@@ -786,6 +787,7 @@ const getPeran = async (req, res) => {
 			limit: parseInt(limit),
 		};
 		const data = await tblAkun.findAll({ ...query });
+		// console.log(data);
 		const total = await tblAkun.count({ ...query });
 		res.status(200).json({
 			message: "berhasil",
@@ -809,17 +811,22 @@ const getPeran = async (req, res) => {
 const ubahPeran = async (req, res) => {
 	// const {accountID, peran} = req.user;
 	const { id, roles } = req.body;
+	// const {id}  = req.query
+	console.log({ id });
+	console.log({ roles });
 	// const { id, peran } = req.body;
+	console.log("Halo");
 	try {
-		const user = await tblAkun.findOne({ where: { id } });
+		const user = await tblAkun.findOne({ where: { id: id } });
+		let detailUser;
 		if (!user) throw new ApiError(400, "user tidak ditemukan");
 		if (user.peran === "petani") {
-			const detailUser = await dataPetani.findOne({
+			detailUser = await dataPetani.findOne({
 				where: { accountID: user.accountID },
 			});
 			await dataPetani.destroy({ where: { accountID: user.accountID } });
 		} else if (user.peran === "penyuluh") {
-			const detailUser = await dataPenyuluh.findOne({
+			detailUser = await dataPenyuluh.findOne({
 				where: { accountID: user.accountID },
 			});
 			await dataPenyuluh.destroy({
@@ -830,13 +837,14 @@ const ubahPeran = async (req, res) => {
 			user.peran === "operator admin" ||
 			user.peran === "operator poktan"
 		) {
-			const detailUser = await dataOperator.findOne({
+			detailUser = await dataOperator.findOne({
 				where: { accountID: user.accountID },
 			});
 			await dataOperator.destroy({
 				where: { accountID: user.accountID },
 			});
 		}
+		console.log({ detailUser });
 		if (roles === "petani") {
 			await dataPetani.create({
 				nik: detailUser.nik,
@@ -859,11 +867,7 @@ const ubahPeran = async (req, res) => {
 				password: detailUser.password,
 				accountID: detailUser.accountID,
 			});
-		} else if (
-			roles === "operator super admin" ||
-			roles === "operator admin" ||
-			roles === "operator poktan"
-		) {
+		} else {
 			await dataOperator.create({
 				nik: detailUser.nik,
 				nama: detailUser.nama,

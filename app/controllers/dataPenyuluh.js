@@ -5,6 +5,7 @@ const {
 	jurnalHarian,
 	riwayatChat,
 	tbl_akun,
+	kelompok
 } = require("../models");
 const ApiError = require("../../utils/ApiError");
 const imageKit = require("../../midleware/imageKit");
@@ -33,9 +34,11 @@ const tambahDataPenyuluh = async (req, res) => {
 				namaProduct,
 				kecamatanBinaan,
 				desaBinaan,
+				selectedKelompokIds,
 				pekerjaan = "",
 			} = req.body;
-
+			console.log({desaBinaan})
+			const kelompokArray = selectedKelompokIds.split(",");
 			const hashedPassword = bcrypt.hashSync(password, 10);
 			const accountID = crypto.randomUUID();
 			const { file } = req;
@@ -118,6 +121,23 @@ const tambahDataPenyuluh = async (req, res) => {
 				desaBinaan: desaBinaan,
 				kecamatanBinaan,
 				accountID: accountID,
+			});
+			// Convert each element of kelompokArray to an integer
+			const integerKelompokArray = kelompokArray.map((kelompokId) => parseInt(kelompokId, 10));
+
+			// Loop through the integerKelompokArray
+			integerKelompokArray.forEach(async (kelompokId) => {
+				// Do something with each kelompokId
+				const dataKelompok = await kelompok.findOne({ where: { id: kelompokId } });
+				if (dataKelompok) {
+					await kelompok.update({
+						penyuluh: newPenyuluh.id
+					}, {
+						where: {
+							id: dataKelompok.id
+						}
+					});
+				}
 			});
 
 			postActivity({
@@ -698,25 +718,26 @@ const RiwayatChat = async (req, res) => {
 	}
 };
 const daftarPenyuluhById = async (req, res) => {
-	const { id } = req.params;
-	const { nama, peran } = req.user || {};
-	try {
-		if (peran === "petani" || peran === "penyuluh") {
-			throw new ApiError(400, "Anda tidak memiliki akses.");
-		} else {
-			const dataDaftarPenyuluh = await dataPenyuluh.findOne({
-				where: { id: id },
-			});
-			res.status(200).json({
-				message: "Semua Data penyuluh",
-				dataDaftarPenyuluh,
-			});
-		}
-	} catch (error) {
-		res.status(error.statusCode || 500).json({
-			message: error.message,
-		});
-	}
+    const { id } = req.params;
+    const { nama, peran } = req.user || {};
+    try {
+        if (peran === "petani" || peran === "penyuluh") {
+            throw new ApiError(400, "Anda tidak memiliki akses.");
+        } else {
+            const dataDaftarPenyuluh = await dataPenyuluh.findOne({
+                where: { id: id },
+                include: [{ model: kelompok, as: "kelompoks" }],// Assuming the association is named 'kelompok'
+            });
+            res.status(200).json({
+                message: "Detail Penyuluh",
+                dataDaftarPenyuluh,
+            });
+        }
+    } catch (error) {
+        res.status(error.statusCode || 500).json({
+            message: error.message,
+        });
+    }
 };
 const updatePenyuluh = async (req, res) => {
 	const { id } = req.params;
@@ -828,6 +849,30 @@ const updatePenyuluh = async (req, res) => {
 	}
 };
 
+const getKelompok = async (req, res) => {
+    const { peran } = req.user || {};
+    try {
+        if (peran === "petani") {
+            throw new ApiError(400, "Anda tidak memiliki akses.");
+        } else {
+            const dataKelompok = await kelompok.findAll();
+            // Convert array to object
+            const formattedKelompok = dataKelompok.reduce((acc, curr) => {
+                acc[curr.id] = curr; // Assuming 'id' is a unique identifier for each kelompok
+                return acc;
+            }, {});
+            res.status(200).json({
+                message: "Semua Data Kelompok",
+                dataKelompok: formattedKelompok,
+            });
+        }
+    } catch (error) {
+        res.status(error.statusCode || 500).json({
+            message: error.message,
+        });
+    }
+};
+
 module.exports = {
 	tambahDataPenyuluh,
 	presensiKehadiran,
@@ -845,4 +890,5 @@ module.exports = {
 	deleteJurnalKegiatan,
 	updateJurnalKegiatan,
 	opsiPenyuluh,
+	getKelompok
 };
