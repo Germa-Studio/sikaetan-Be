@@ -228,6 +228,67 @@ const getTanamanPetaniStatistically = async (req, res) => {
   }
 };
 
+const getTanamanbyPetani = async (req, res) => {
+  const { id } = req.params;
+  const { peran } = req.user || {};
+  const { jenis, musim, tipe, startDate, endDate } = req.query;
+
+  try {
+    if (peran !== "petani" && peran !== "operator super admin") {
+      throw new ApiError(403, "Anda tidak memiliki akses.");
+    }
+
+    const filter = {
+      fk_petaniId: id,
+    };
+
+    if (jenis) {
+      filter.jenis = {
+        [Op.like]: `%${jenis}%`,
+      };
+    }
+
+    if (musim) {
+      filter.periodeMusimTanam = {
+        [Op.like]: `%${musim}%`,
+      };
+    }
+
+    if (tipe) {
+      filter.kategori = {
+        [Op.like]: `%${tipe}%`,
+      };
+    }
+
+    if (startDate && endDate) {
+      filter.createdAt = {
+        [Op.between]: [new Date(startDate), new Date(endDate)],
+      };
+    }
+
+    const data = await tanamanPetani.findAll({
+      attributes: [
+        "komoditas",
+        "periodeMusimTanam",
+        "jenis",
+        "kategori",
+        [Sequelize.fn("COUNT", Sequelize.col("komoditas")), "count"],
+      ],
+      where: filter,
+      group: ["komoditas"],
+    });
+
+    res.status(200).json({
+      message: "Data berhasil didapatkan.",
+      data,
+    });
+  } catch (error) {
+    res.status(error.statusCode || 500).json({
+      message: error.message,
+    });
+  }
+};
+
 const getDetailedDataTanamanPetani = async (req, res) => {
   const { id } = req.params;
   const { peran } = req.user || {};
@@ -394,6 +455,7 @@ module.exports = {
   getAllTanamanPetani,
   tambahDataTanamanPetani,
   getTanamanPetaniStatistically,
+  getTanamanbyPetani,
   editDataTanamanPetani,
   deleteDatatanamanPetani,
   getDetailedDataTanamanPetani,
