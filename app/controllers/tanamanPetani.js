@@ -86,12 +86,9 @@ const getAllTanamanPetani = async (req, res) => {
 
 const tambahDataTanamanPetani = async (req, res) => {
   // Validate request body
-  const { peran } = req.user || {};
+  // const { peran } = req.user || {};
 
   try {
-    if (peran === "petani") {
-      throw new ApiError(403, "Anda tidak memiliki akses.");
-    }
     const {
       statusKepemilikanLahan,
       luasLahan,
