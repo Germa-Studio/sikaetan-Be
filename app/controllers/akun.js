@@ -2,12 +2,12 @@ const dotenv = require("dotenv");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const {
-  tbl_akun: tblAkun,
-  dataPerson,
-  dataPetani,
-  dataPenyuluh,
-  kelompok,
-  dataOperator
+	tbl_akun: tblAkun,
+	dataPerson,
+	dataPetani,
+	dataPenyuluh,
+	kelompok,
+	dataOperator,
 } = require("../models");
 const ApiError = require("../../utils/ApiError");
 const isEmailValid = require("../../utils/emailValidation");
@@ -210,7 +210,7 @@ const loginPetani = async (req, res) => {
 
 const registerPetani = async (req, res) => {
 	try {
-		const {
+		let {
 			NIK, // mandatory
 			NKK, // not mandatory
 			nama, // mandatory
@@ -228,11 +228,18 @@ const registerPetani = async (req, res) => {
 		// validasi
 		if (!NIK) throw new ApiError(400, "NIK tidak boleh kosong");
 		if (!NKK) NKK = NIK;
-		if (!email) email = nama.split(" ")[0] + "@gmail.com";
 		if (!nama) throw new ApiError(400, "nama tidak boleh kosong");
-		if (!penyuluh) throw new ApiError(400, "Penyuluh tidak boleh kosong.");
+		if (!email) email = nama.split(" ")[0] + "@gmail.com";
+		if (!alamat) throw new ApiError(400, "Alamat tidak boleh kosong.");
+		if (!desa) throw new ApiError(400, "Desa tidak boleh kosong.");
+		if (!kecamatan)
+			throw new ApiError(400, "Kecamatan tidak boleh kosong.");
 		if (!password) throw new ApiError(400, "Password tidak boleh kosong.");
 		if (!NoWa) throw new ApiError(400, "no wa tidak boleh kosong.");
+		if (!gapoktan) throw new ApiError(400, "Gapoktan tidak boleh kosong.");
+		if (!penyuluh) throw new ApiError(400, "Penyuluh tidak boleh kosong.");
+		if (!namaKelompok)
+			throw new ApiError(400, "nama kelompok tidak boleh kosong.");
 		const tani = await dataPetani.findOne({ where: { NIK } });
 		if (tani) throw new ApiError(400, "NIK sudah digunakan");
 
@@ -251,6 +258,9 @@ const registerPetani = async (req, res) => {
 				desa: desa,
 			},
 		});
+
+		if (!kelompokData)
+			throw new ApiError(400, "Kelompok tani tidak ditemukan");
 
 		if (file) {
 			const validFormat =
@@ -428,457 +438,473 @@ const getProfile = async (req, res) => {
 };
 
 const getDetailProfile = async (req, res) => {
-  try {
-    // console log req.user
-    // console.log({req.user});
-    const { accountID, peran } = req.user;
-    if (accountID) {
-      let data;
-      if (peran === "penyuluh") {
-        data = await dataPenyuluh.findOne({
-          where: { accountID: accountID },
-          include: [
-            {
-              model: tblAkun,
-            },
-          ],
-        });
-      } else if (peran === "petani") {
-        data = await dataPetani.findOne({
-          where: { accountID: accountID },
-          include: [
-            {
-              model: tblAkun,
-            },
-            {
-              model: kelompok,
-              attributes: {
-                exclude: ["createdAt", "updatedAt"],
-              },
-            },
-            {
-              model: dataPenyuluh,
-              attributes: {
-                exclude: ["createdAt", "updatedAt"],
-              },
-            },
-          ],
-        });
-      } else {
-        data = await dataOperator.findOne({
-          where: { accountID: accountID },
-          include: [
-            {
-              model: tblAkun
-            }
-          ]
-        });
-      }
-      res.status(200).json({
-        message: "berhasil",
-        data,
-      });
-    }
-  } catch (error) {
-    console.error(error); // Log the error for debugging
-    res.status(error.statusCode || 500).json({
-      message: error.message,
-    });
-  }
+	try {
+		// console log req.user
+		// console.log({req.user});
+		const { accountID, peran } = req.user;
+		if (accountID) {
+			let data;
+			if (peran === "penyuluh") {
+				data = await dataPenyuluh.findOne({
+					where: { accountID: accountID },
+					include: [
+						{
+							model: tblAkun,
+						},
+					],
+				});
+			} else if (peran === "petani") {
+				data = await dataPetani.findOne({
+					where: { accountID: accountID },
+					include: [
+						{
+							model: tblAkun,
+						},
+						{
+							model: kelompok,
+							attributes: {
+								exclude: ["createdAt", "updatedAt"],
+							},
+						},
+						{
+							model: dataPenyuluh,
+							attributes: {
+								exclude: ["createdAt", "updatedAt"],
+							},
+						},
+					],
+				});
+			} else {
+				data = await dataOperator.findOne({
+					where: { accountID: accountID },
+					include: [
+						{
+							model: tblAkun,
+						},
+					],
+				});
+			}
+			res.status(200).json({
+				message: "berhasil",
+				data,
+			});
+		}
+	} catch (error) {
+		console.error(error); // Log the error for debugging
+		res.status(error.statusCode || 500).json({
+			message: error.message,
+		});
+	}
 };
 
 const updateDetailProfile = async (req, res) => {
-  const { accountID, peran } = req.user;
-  try {
-    // console.log(req.user);
-    if (peran === "penyuluh") {
-      const {
-        nik,
-        email,
-        whatsapp,
-        alamat,
-        desa,
-        nama,
-        kecamatan,
-        lama,
-        baru,
-        namaProduct,
-        kecamatanBinaan,
-        desaBinaan,
-        fotoProfil,
-      } = req.body;
-      // console.log({req})
-      // console.log({fotoProfil})
-      const data = await dataPenyuluh.findOne({
-        where: {
-          accountID,
-        },
-      });
-      if (!data) throw new ApiError(400, "data tidak ditemukan.");
-      if(lama){
-        if (!bcrypt.compareSync(lama, data.password)) {
-          throw new ApiError(400, "Password salah.");
-        }
-      }
-      let urlImg;
-      const { file } = req;
-      if (file) {
-        const validFormat =
-          file.mimetype === "image/png" ||
-          file.mimetype === "image/jpg" ||
-          file.mimetype === "image/jpeg" ||
-          file.mimetype === "image/gif";
-        if (!validFormat) {
-          return res.status(400).json({
-            status: "failed",
-            message: "Wrong Image Format",
-          });
-        }
-        const split = file.originalname.split(".");
-        const ext = split[split.length - 1];
+	const { accountID, peran } = req.user;
+	try {
+		// console.log(req.user);
+		if (peran === "penyuluh") {
+			const {
+				nik,
+				email,
+				whatsapp,
+				alamat,
+				desa,
+				nama,
+				kecamatan,
+				lama,
+				baru,
+				namaProduct,
+				kecamatanBinaan,
+				desaBinaan,
+				fotoProfil,
+			} = req.body;
+			// console.log({req})
+			// console.log({fotoProfil})
+			const data = await dataPenyuluh.findOne({
+				where: {
+					accountID,
+				},
+			});
+			if (!data) throw new ApiError(400, "data tidak ditemukan.");
+			if (lama) {
+				if (!bcrypt.compareSync(lama, data.password)) {
+					throw new ApiError(400, "Password salah.");
+				}
+			}
+			let urlImg;
+			const { file } = req;
+			if (file) {
+				const validFormat =
+					file.mimetype === "image/png" ||
+					file.mimetype === "image/jpg" ||
+					file.mimetype === "image/jpeg" ||
+					file.mimetype === "image/gif";
+				if (!validFormat) {
+					return res.status(400).json({
+						status: "failed",
+						message: "Wrong Image Format",
+					});
+				}
+				const split = file.originalname.split(".");
+				const ext = split[split.length - 1];
 
-        // upload file ke imagekit
-        const img = await imageKit.upload({
-          file: file.buffer,
-          fileName: `IMG-${Date.now()}.${ext}`,
-        });
-        urlImg = img.url;
-      }
-      
-      // const hashedPassword = bcrypt.hashSync(password, 10);
-      // decrypt password
-      const accountUpdate = await tblAkun.update(
-        {
-          email: email || data.email,
-          password: baru ? bcrypt.hashSync(baru, 10) : data.password, // Hash password only if provided
-          no_wa: whatsapp || data.no_wa,
-          nama: nama || data.nama,
-          // pekerjaan: "",
-          // peran: "penyuluh",
-          foto: urlImg || data.foto,
-        },
-        {
-          where: { accountID: accountID },
-        }
-      );
-      const newDataPenyuluh = await dataPenyuluh.update(
-        {
-          nik: nik || data.nik,
-          email: email || data.email,
-          noTelp: whatsapp || data.noTelp,
-          alamat: alamat || data.alamat,
-          desa: desa || data.desa,
-          nama: nama || data.nama,
-          kecamatan: kecamatan || data.kecamatan,
-          password: baru ? bcrypt.hashSync(baru, 10) : data.password, // Hash password only if provided
-          namaProduct: namaProduct || data.namaProduct,
-          kecamatanBinaan: kecamatanBinaan || data.kecamatanBinaan,
-          desaBinaan: desaBinaan || data.desaBinaan,
-          foto: urlImg || data.foto,
-        },
-        {
-          where: {
-            accountID: accountID,
-          },
-        }
-      );
-      res.status(200).json({
-        message: "Berhasil Mengubah Profil",
-        newDataPenyuluh,
-        accountUpdate,
-      });
-    } else if (peran === "petani") {
-      const {
-        nik,
-        nokk,
-        email,
-        whatsapp,
-        alamat,
-        desa,
-        nama,
-        kecamatan,
-        lama,
-        baru,
-        foto,
-      } = req.body;
-      const data = await dataPetani.findOne({
-        where: {
-          accountID,
-        },
-      });
-      if(lama){
-        if (!bcrypt.compareSync(lama, data.password)) {
-          throw new ApiError(400, "Password salah.");
-        }
-      }
-      let urlImg;
-      const { file } = req;
-      if (file) {
-        const validFormat =
-          file.mimetype === "image/png" ||
-          file.mimetype === "image/jpg" ||
-          file.mimetype === "image/jpeg" ||
-          file.mimetype === "image/gif";
-        if (!validFormat) {
-          return res.status(400).json({
-            status: "failed",
-            message: "Wrong Image Format",
-          });
-        }
-        const split = file.originalname.split(".");
-        const ext = split[split.length - 1];
+				// upload file ke imagekit
+				const img = await imageKit.upload({
+					file: file.buffer,
+					fileName: `IMG-${Date.now()}.${ext}`,
+				});
+				urlImg = img.url;
+			}
 
-        // upload file ke imagekit
-        const img = await imageKit.upload({
-          file: file.buffer,
-          fileName: `IMG-${Date.now()}.${ext}`,
-        });
-        img.url;
-        urlImg = img.url;
-      }
-      const hashedPassword = bcrypt.hashSync(password, 10);
-      const accountUpdate = await tblAkun.update(
-        {
-          email,
-          password: baru ? bcrypt.hashSync(baru, 10) : data.password, // Hash password only if provided
-          no_wa: whatsapp || data.no_wa,
-          nama,
-          // pekerjaan: "",
-          // peran: "petani",
-          foto: urlImg || data.foto,
-        },
-        {
-          where: { accountID: accountID },
-        }
-      );
-      const petaniUpdate = await dataPetani.update(
-        {
-          nik: nik || data.nik,
-          nkk: nokk || data.nkk,
-          nama: nama || data.nama,
-          alamat: alamat || data.alamat,
-          desa: desa || data.desa,
-          kecamatan : kecamatan || data.kecamatan,
-          password: baru ? bcrypt.hashSync(baru, 10) : data.password, // Hash password only if provided
-          email: email || data.email,
-          noTelp: whatsapp ||  data.noTelp
-        },
-        {
-          where: { accountID: accountID },
-        }
-      );
-      res.status(200).json({
-        message: "Berhasil Mengubah Profil",
-        petaniUpdate,
-        accountUpdate,
-      });
-    } else {
-      const {
-        nik,
-        email,
-        whatsapp,
-        alamat,
-        desa,
-        nama,
-        kecamatan,
-        lama,
-        baru,
-        namaProduct,
-        kecamatanBinaan,
-        desaBinaan,
-        fotoProfil,
-      } = req.body;
-      const data = await dataOperator.findOne({
-        where: {
-          accountID,
-        },
-      });
-      let urlImg;
-      const { file } = req;
-      if (file) {
-        const validFormat =
-          file.mimetype === "image/png" ||
-          file.mimetype === "image/jpg" ||
-          file.mimetype === "image/jpeg" ||
-          file.mimetype === "image/gif";
-        if (!validFormat) {
-          return res.status(400).json({
-            status: "failed",
-            message: "Wrong Image Format",
-          });
-        }
-        const split = file.originalname.split(".");
-        const ext = split[split.length - 1];
+			// const hashedPassword = bcrypt.hashSync(password, 10);
+			// decrypt password
+			const accountUpdate = await tblAkun.update(
+				{
+					email: email || data.email,
+					password: baru ? bcrypt.hashSync(baru, 10) : data.password, // Hash password only if provided
+					no_wa: whatsapp || data.no_wa,
+					nama: nama || data.nama,
+					// pekerjaan: "",
+					// peran: "penyuluh",
+					foto: urlImg || data.foto,
+				},
+				{
+					where: { accountID: accountID },
+				}
+			);
+			const newDataPenyuluh = await dataPenyuluh.update(
+				{
+					nik: nik || data.nik,
+					email: email || data.email,
+					noTelp: whatsapp || data.noTelp,
+					alamat: alamat || data.alamat,
+					desa: desa || data.desa,
+					nama: nama || data.nama,
+					kecamatan: kecamatan || data.kecamatan,
+					password: baru ? bcrypt.hashSync(baru, 10) : data.password, // Hash password only if provided
+					namaProduct: namaProduct || data.namaProduct,
+					kecamatanBinaan: kecamatanBinaan || data.kecamatanBinaan,
+					desaBinaan: desaBinaan || data.desaBinaan,
+					foto: urlImg || data.foto,
+				},
+				{
+					where: {
+						accountID: accountID,
+					},
+				}
+			);
+			res.status(200).json({
+				message: "Berhasil Mengubah Profil",
+				newDataPenyuluh,
+				accountUpdate,
+			});
+		} else if (peran === "petani") {
+			const {
+				nik,
+				nokk,
+				email,
+				whatsapp,
+				alamat,
+				desa,
+				nama,
+				kecamatan,
+				lama,
+				baru,
+				foto,
+			} = req.body;
+			const data = await dataPetani.findOne({
+				where: {
+					accountID,
+				},
+			});
+			if (lama) {
+				if (!bcrypt.compareSync(lama, data.password)) {
+					throw new ApiError(400, "Password salah.");
+				}
+			}
+			let urlImg;
+			const { file } = req;
+			if (file) {
+				const validFormat =
+					file.mimetype === "image/png" ||
+					file.mimetype === "image/jpg" ||
+					file.mimetype === "image/jpeg" ||
+					file.mimetype === "image/gif";
+				if (!validFormat) {
+					return res.status(400).json({
+						status: "failed",
+						message: "Wrong Image Format",
+					});
+				}
+				const split = file.originalname.split(".");
+				const ext = split[split.length - 1];
 
-        // upload file ke imagekit
-        const img = await imageKit.upload({
-          file: file.buffer,
-          fileName: `IMG-${Date.now()}.${ext}`,
-        });
-        img.url;
-        urlImg = img.url;
-      }
-      const accountUpdate = await tblAkun.update(
-        {
-          email,
-          password: baru ? bcrypt.hashSync(baru, 10) : data.password, // Hash password only if provided
-          no_wa: whatsapp || data.no_wa,
-          nama,
-          // pekerjaan: "",
-          // peran: "petani",
-          foto: urlImg || data.foto,
-        },
-        {
-          where: { accountID: accountID },
-        }
-      );
-      const operatorUpdate = await dataOperator.update(
-        {
-          nik: nik || data.nik,
-          email: email || data.email,
-          noTelp: whatsapp || data.noTelp,
-          alamat: alamat || data.alamat,
-          desa: desa || data.desa,
-          nama: nama || data.nama,
-          kecamatan: kecamatan || data.kecamatan,
-          password: baru ? bcrypt.hashSync(baru, 10) : data.password, // Hash password only if provided
-          foto: urlImg || data.foto,
-        },
-        {
-          where: {
-            accountID: accountID,
-          },
-        }
-      );
-      res.status(200).json({
-        message: "Berhasil Mengubah Profil",
-        operatorUpdate,
-        accountUpdate,
-      });
-    }
-  } catch (error) {
-    console.error(error); // Log the error for debugging
-    res.status(error.statusCode || 500).json({
-      message: error.message,
-    });
-  }
+				// upload file ke imagekit
+				const img = await imageKit.upload({
+					file: file.buffer,
+					fileName: `IMG-${Date.now()}.${ext}`,
+				});
+				img.url;
+				urlImg = img.url;
+			}
+			const hashedPassword = bcrypt.hashSync(password, 10);
+			const accountUpdate = await tblAkun.update(
+				{
+					email,
+					password: baru ? bcrypt.hashSync(baru, 10) : data.password, // Hash password only if provided
+					no_wa: whatsapp || data.no_wa,
+					nama,
+					// pekerjaan: "",
+					// peran: "petani",
+					foto: urlImg || data.foto,
+				},
+				{
+					where: { accountID: accountID },
+				}
+			);
+			const petaniUpdate = await dataPetani.update(
+				{
+					nik: nik || data.nik,
+					nkk: nokk || data.nkk,
+					nama: nama || data.nama,
+					alamat: alamat || data.alamat,
+					desa: desa || data.desa,
+					kecamatan: kecamatan || data.kecamatan,
+					password: baru ? bcrypt.hashSync(baru, 10) : data.password, // Hash password only if provided
+					email: email || data.email,
+					noTelp: whatsapp || data.noTelp,
+				},
+				{
+					where: { accountID: accountID },
+				}
+			);
+			res.status(200).json({
+				message: "Berhasil Mengubah Profil",
+				petaniUpdate,
+				accountUpdate,
+			});
+		} else {
+			const {
+				nik,
+				email,
+				whatsapp,
+				alamat,
+				desa,
+				nama,
+				kecamatan,
+				lama,
+				baru,
+				namaProduct,
+				kecamatanBinaan,
+				desaBinaan,
+				fotoProfil,
+			} = req.body;
+			const data = await dataOperator.findOne({
+				where: {
+					accountID,
+				},
+			});
+			let urlImg;
+			const { file } = req;
+			if (file) {
+				const validFormat =
+					file.mimetype === "image/png" ||
+					file.mimetype === "image/jpg" ||
+					file.mimetype === "image/jpeg" ||
+					file.mimetype === "image/gif";
+				if (!validFormat) {
+					return res.status(400).json({
+						status: "failed",
+						message: "Wrong Image Format",
+					});
+				}
+				const split = file.originalname.split(".");
+				const ext = split[split.length - 1];
+
+				// upload file ke imagekit
+				const img = await imageKit.upload({
+					file: file.buffer,
+					fileName: `IMG-${Date.now()}.${ext}`,
+				});
+				img.url;
+				urlImg = img.url;
+			}
+			const accountUpdate = await tblAkun.update(
+				{
+					email,
+					password: baru ? bcrypt.hashSync(baru, 10) : data.password, // Hash password only if provided
+					no_wa: whatsapp || data.no_wa,
+					nama,
+					// pekerjaan: "",
+					// peran: "petani",
+					foto: urlImg || data.foto,
+				},
+				{
+					where: { accountID: accountID },
+				}
+			);
+			const operatorUpdate = await dataOperator.update(
+				{
+					nik: nik || data.nik,
+					email: email || data.email,
+					noTelp: whatsapp || data.noTelp,
+					alamat: alamat || data.alamat,
+					desa: desa || data.desa,
+					nama: nama || data.nama,
+					kecamatan: kecamatan || data.kecamatan,
+					password: baru ? bcrypt.hashSync(baru, 10) : data.password, // Hash password only if provided
+					foto: urlImg || data.foto,
+				},
+				{
+					where: {
+						accountID: accountID,
+					},
+				}
+			);
+			res.status(200).json({
+				message: "Berhasil Mengubah Profil",
+				operatorUpdate,
+				accountUpdate,
+			});
+		}
+	} catch (error) {
+		console.error(error); // Log the error for debugging
+		res.status(error.statusCode || 500).json({
+			message: error.message,
+		});
+	}
 };
 
-const getPeran = async(req, res) => {
-  const { peran } = req.user || {};
-  const { page, limit } = req.query;
-  try{
-    const limitFilter = Number(limit) || 10;
-    const pageFilter = Number(page) || 1;
-    const query = {
-      limit: limitFilter,
-      offset: (pageFilter - 1) * limitFilter,
-      limit: parseInt(limit),
-    }
-    const data = await tblAkun.findAll({...query});
-    const total = await tblAkun.count({...query});
-    res.status(200).json({
-      message: "berhasil",
-      data,
-      total,
-      currentPages: page,
-      limit: Number(limit),
-      maxPages: Math.ceil(total / (Number(limit) || 10)),
-      from: Number(page) ? (Number(page) - 1) * Number(limit) + 1 : 1,
-      to: Number(page)
-        ? (Number(page) - 1) * Number(limit) + data.length
-        : data.length,
-    });
-  } catch (error) {
-    res.status(error.statusCode || 500).json({
-      message: error.message,
-    });
-  }
+const getPeran = async (req, res) => {
+	const { peran } = req.user || {};
+	const { page, limit } = req.query;
+	try {
+		const limitFilter = Number(limit) || 10;
+		const pageFilter = Number(page) || 1;
+		const query = {
+			limit: limitFilter,
+			offset: (pageFilter - 1) * limitFilter,
+			limit: parseInt(limit),
+		};
+		const data = await tblAkun.findAll({ ...query });
+		const total = await tblAkun.count({ ...query });
+		res.status(200).json({
+			message: "berhasil",
+			data,
+			total,
+			currentPages: page,
+			limit: Number(limit),
+			maxPages: Math.ceil(total / (Number(limit) || 10)),
+			from: Number(page) ? (Number(page) - 1) * Number(limit) + 1 : 1,
+			to: Number(page)
+				? (Number(page) - 1) * Number(limit) + data.length
+				: data.length,
+		});
+	} catch (error) {
+		res.status(error.statusCode || 500).json({
+			message: error.message,
+		});
+	}
 };
 
-const ubahPeran = async(req, res) => {
-  // const {accountID, peran} = req.user;
-  const {id, roles} = req.body;
-  // const { id, peran } = req.body;
-  try {
-    const user = await tblAkun.findOne({ where: { id } });
-    if (!user) throw new ApiError(400, "user tidak ditemukan");
-    if (user.peran === 'petani'){
-      const detailUser = await dataPetani.findOne({where: {accountID: user.accountID}});
-      await dataPetani.destroy({where: {accountID: user.accountID}})
-    }
-    else if (user.peran === 'penyuluh'){
-      const detailUser = await dataPenyuluh.findOne({where: {accountID: user.accountID}});
-      await dataPenyuluh.destroy({where: {accountID: user.accountID}})
-    }
-    else if (user.peran === 'operator super admin' || user.peran === 'operator admin' || user.peran === 'operator poktan'){
-      const detailUser = await dataOperator.findOne({where: {accountID: user.accountID}});
-      await dataOperator.destroy({where: {accountID: user.accountID}})
-    }
-    if (roles === 'petani'){
-      await dataPetani.create({
-        nik: detailUser.nik,
-        nama: detailUser.nama,
-        email: detailUser.email,
-        noTelp: detailUser.noTelp,
-        foto: detailUser.foto,
-        alamat: detailUser.alamat,
-        password: detailUser.password,
-        accountID: detailUser.accountID
-      });
-    } else if(roles === 'penyuluh'){
-      await dataPenyuluh.create({
-        nik: detailUser.nik,
-        nama: detailUser.nama,
-        email: detailUser.email,
-        noTelp: detailUser.noTelp,
-        foto: detailUser.foto,
-        alamat: detailUser.alamat,
-        password: detailUser.password,
-        accountID: detailUser.accountID
-      })
-    } else if(roles === 'operator super admin' || roles === 'operator admin' || roles === 'operator poktan'){
-      await dataOperator.create({
-        nik: detailUser.nik,
-        nama: detailUser.nama,
-        email: detailUser.email,
-        noTelp: detailUser.noTelp,
-        foto: detailUser.foto,
-        alamat: detailUser.alamat,
-        password: detailUser.password,
-        accountID: detailUser.accountID
-      })
-    }
-    await tblAkun.update(
-      { peran: roles },
-      {
-        where: {
-          id,
-        },
-      }
-    );
-    return res.status(200).json({
-      message: "Peran berhasil diubah",
-    });
-  } catch (error) {
-    res.status(error.statusCode || 500).json({
-      message: error.message,
-    });
-  }
+const ubahPeran = async (req, res) => {
+	// const {accountID, peran} = req.user;
+	const { id, roles } = req.body;
+	// const { id, peran } = req.body;
+	try {
+		const user = await tblAkun.findOne({ where: { id } });
+		if (!user) throw new ApiError(400, "user tidak ditemukan");
+		if (user.peran === "petani") {
+			const detailUser = await dataPetani.findOne({
+				where: { accountID: user.accountID },
+			});
+			await dataPetani.destroy({ where: { accountID: user.accountID } });
+		} else if (user.peran === "penyuluh") {
+			const detailUser = await dataPenyuluh.findOne({
+				where: { accountID: user.accountID },
+			});
+			await dataPenyuluh.destroy({
+				where: { accountID: user.accountID },
+			});
+		} else if (
+			user.peran === "operator super admin" ||
+			user.peran === "operator admin" ||
+			user.peran === "operator poktan"
+		) {
+			const detailUser = await dataOperator.findOne({
+				where: { accountID: user.accountID },
+			});
+			await dataOperator.destroy({
+				where: { accountID: user.accountID },
+			});
+		}
+		if (roles === "petani") {
+			await dataPetani.create({
+				nik: detailUser.nik,
+				nama: detailUser.nama,
+				email: detailUser.email,
+				noTelp: detailUser.noTelp,
+				foto: detailUser.foto,
+				alamat: detailUser.alamat,
+				password: detailUser.password,
+				accountID: detailUser.accountID,
+			});
+		} else if (roles === "penyuluh") {
+			await dataPenyuluh.create({
+				nik: detailUser.nik,
+				nama: detailUser.nama,
+				email: detailUser.email,
+				noTelp: detailUser.noTelp,
+				foto: detailUser.foto,
+				alamat: detailUser.alamat,
+				password: detailUser.password,
+				accountID: detailUser.accountID,
+			});
+		} else if (
+			roles === "operator super admin" ||
+			roles === "operator admin" ||
+			roles === "operator poktan"
+		) {
+			await dataOperator.create({
+				nik: detailUser.nik,
+				nama: detailUser.nama,
+				email: detailUser.email,
+				noTelp: detailUser.noTelp,
+				foto: detailUser.foto,
+				alamat: detailUser.alamat,
+				password: detailUser.password,
+				accountID: detailUser.accountID,
+			});
+		}
+		await tblAkun.update(
+			{ peran: roles },
+			{
+				where: {
+					id,
+				},
+			}
+		);
+		return res.status(200).json({
+			message: "Peran berhasil diubah",
+		});
+	} catch (error) {
+		res.status(error.statusCode || 500).json({
+			message: error.message,
+		});
+	}
 };
 
 module.exports = {
-  login,
-  register,
-  loginPetani,
-  registerPetani,
-  getUserNotVerify,
-  verifikasi,
-  getProfile,
-  getDetailProfile,
-  updateDetailProfile,
-  getPeran,
-  ubahPeran,
-  opsiPenyuluh,
-  opsiPoktan
+	login,
+	register,
+	loginPetani,
+	registerPetani,
+	getUserNotVerify,
+	verifikasi,
+	getProfile,
+	getDetailProfile,
+	updateDetailProfile,
+	getPeran,
+	ubahPeran,
+	opsiPenyuluh,
+	opsiPoktan,
 };
