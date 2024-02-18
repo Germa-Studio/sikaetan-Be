@@ -10,42 +10,42 @@ module.exports = {
 		 * await queryInterface.createTable('users', { id: Sequelize.INTEGER });
 		 */
 		// done
-		await queryInterface.addColumn("beritatanis", "deletedAt", {
+		await queryInterface.addColumn("beritaTanis", "deletedAt", {
 			type: Sequelize.DATE,
 			allowNull: true,
 		});
 		// done
-		await queryInterface.addColumn("eventtanis", "deletedAt", {
+		await queryInterface.addColumn("eventTanis", "deletedAt", {
 			type: Sequelize.DATE,
 			allowNull: true,
 		});
 		// done
-		await queryInterface.addColumn("dataoperators", "deletedAt", {
+		await queryInterface.addColumn("dataOperators", "deletedAt", {
 			type: Sequelize.DATE,
 			allowNull: true,
 		});
 		// done
-		await queryInterface.addColumn("datapenyuluhs", "deletedAt", {
+		await queryInterface.addColumn("dataPenyuluhs", "deletedAt", {
 			type: Sequelize.DATE,
 			allowNull: true,
 		});
 		// done
-		await queryInterface.addColumn("datapetanis", "deletedAt", {
+		await queryInterface.addColumn("dataPetanis", "deletedAt", {
 			type: Sequelize.DATE,
 			allowNull: true,
 		});
 		// done wait for confirmation
-		await queryInterface.addColumn("datatanamans", "deletedAt", {
+		await queryInterface.addColumn("dataTanamans", "deletedAt", {
 			type: Sequelize.DATE,
 			allowNull: true,
 		});
 		// done
-		await queryInterface.addColumn("jurnalharians", "deletedAt", {
+		await queryInterface.addColumn("jurnalHarians", "deletedAt", {
 			type: Sequelize.DATE,
 			allowNull: true,
 		});
 		// done
-		await queryInterface.addColumn("laporantanams", "deletedAt", {
+		await queryInterface.addColumn("laporanTanams", "deletedAt", {
 			type: Sequelize.DATE,
 			allowNull: true,
 		});
@@ -55,7 +55,7 @@ module.exports = {
 			allowNull: true,
 		});
 		// done
-		await queryInterface.addColumn("tanamanpetanis", "deletedAt", {
+		await queryInterface.addColumn("tanamanPetanis", "deletedAt", {
 			type: Sequelize.DATE,
 			allowNull: true,
 		});
@@ -74,16 +74,16 @@ module.exports = {
 		 * await queryInterface.dropTable('users');
 		 */
 
-		await queryInterface.removeColumn("beritatanis", "deletedAt");
-		await queryInterface.removeColumn("eventtanis", "deletedAt");
-		await queryInterface.removeColumn("dataoperators", "deletedAt");
-		await queryInterface.removeColumn("datapenyuluhs", "deletedAt");
-		await queryInterface.removeColumn("datapetanis", "deletedAt");
-		await queryInterface.removeColumn("datatanamans", "deletedAt");
-		await queryInterface.removeColumn("jurnalharians", "deletedAt");
-		await queryInterface.removeColumn("laporantanams", "deletedAt");
+		await queryInterface.removeColumn("beritaTanis", "deletedAt");
+		await queryInterface.removeColumn("eventTanis", "deletedAt");
+		await queryInterface.removeColumn("dataOperators", "deletedAt");
+		await queryInterface.removeColumn("dataPenyuluhs", "deletedAt");
+		await queryInterface.removeColumn("dataPetanis", "deletedAt");
+		await queryInterface.removeColumn("dataTanamans", "deletedAt");
+		await queryInterface.removeColumn("jurnalHarians", "deletedAt");
+		await queryInterface.removeColumn("laporanTanams", "deletedAt");
 		await queryInterface.removeColumn("penjuals", "deletedAt");
-		await queryInterface.removeColumn("tanamanpetanis", "deletedAt");
+		await queryInterface.removeColumn("tanamanPetanis", "deletedAt");
 		await queryInterface.removeColumn("tbl_akun", "deletedAt");
 	},
 };
