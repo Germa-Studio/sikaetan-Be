@@ -309,7 +309,64 @@ const updateOperatorDetail = async (req, res) => {
 	}
 };
 
-const uploadDataOperator = async (req, res) => {};
+const uploadDataOperator = async (req, res) => {
+	const { peran, id } = req.user || {};
+	try {
+		if (peran !== "operator super admin") {
+			throw new ApiError(400, "Anda tidak memiliki akses.");
+		} else {
+			// const { file } = req;
+			// if (!file) throw new ApiError(400, "File tidak ditemukan.");
+			const { file } = req;
+			const workbook = new ExcelJS.Workbook();
+			await workbook.xlsx.load(file.buffer);
+			const worksheet = workbook.getWorksheet(1);
+			const dataOpt = [];
+			const dataAkun = [];
+			worksheet.eachRow((row, rowNumber) => {
+				if (rowNumber !== 1) {
+					const accountID = crypto.randomUUID();
+					const password = row.getCell(7).value.toString();
+					const hashedPassword = bcrypt.hashSync(password, 10);
+					const urlImg =
+						"https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/images/bg-7.png";
+
+					dataOpt.push({
+						nik: row.values[1],
+						nkk: row.values[2],
+						nama: row.values[3],
+						email: row.values[4],
+						noTelp: row.values[5],
+						alamat: row.values[6],
+						password: hashedPassword,
+						peran: row.values[8],
+						accountID: accountID,
+						foto: urlImg,
+					});
+					dataAkun.push({
+						email: row.values[4],
+						password: hashedPassword,
+						no_wa: row.values[5],
+						nama: row.values[3],
+						pekerjaan: "",
+						peran: row.values[8],
+						foto: urlImg,
+						accountID: accountID,
+					});
+				}
+			});
+			await dataOperator.bulkCreate(dataOpt);
+			await tbl_akun.bulkCreate(dataAkun);
+			res.status(200).json({
+				message: "Data operator berhasil diupload",
+			});
+		}
+	} catch (error) {
+		res.status(error.statusCode || 500).json({
+			message: error.message,
+		});
+	}
+};
 
 module.exports = {
 	tambahDataOperator,
