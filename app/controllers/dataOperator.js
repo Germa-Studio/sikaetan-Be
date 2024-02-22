@@ -360,6 +360,8 @@ const uploadDataOperator = async (req, res) => {
 			res.status(200).json({
 				message: "Data operator berhasil diupload",
 			});
+
+			
 		}
 	} catch (error) {
 		res.status(error.statusCode || 500).json({
