@@ -36,6 +36,6 @@ router.get('/daftar-penyuluh/:id', auth, daftarPenyuluhById);
 router.put('/daftar-penyuluh/:id', auth, upload.single('foto') ,updatePenyuluh);
 router.delete('/daftar-penyuluh/:id', auth, deleteDaftarPenyuluh);
 router.post('/upload-data-penyuluh',auth, upload.single("file"), uploadDataPenyuluh)
-router.get('/opsi-penyuluh', auth, opsiPenyuluh);
+router.get('/opsi-penyuluh', opsiPenyuluh);
 router.get('/kelompok', auth, getKelompok);
 module.exports = router;

@@ -79,11 +79,10 @@ const laporanPenyuluh = async (req, res) => {
 };
 
 const tambahDaftarTani = async (req, res) => {
-	const { peran, id } = req.user;
 	try {
-		if (peran === "petani") {
-			throw new ApiError(400, "Anda tidak memiliki akses.");
-		} else {
+		// if (peran === "petani") {
+		// 	throw new ApiError(400, "Anda tidak memiliki akses.");
+		// } else {
 			const {
 				NIK,
 				nokk,
@@ -188,7 +187,7 @@ const tambahDaftarTani = async (req, res) => {
 				daftarPetani,
 				newAccount,
 			});
-		}
+		// }
 	} catch (error) {
 		res.status(error.statusCode || 500).json({
 			message: error.message,

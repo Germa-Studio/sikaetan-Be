@@ -227,17 +227,16 @@ const uploadDataPenyuluh = async (req, res) => {
 };
 
 const opsiPenyuluh = async (req, res) => {
-	const { nama, peran } = req.user || {};
 	try {
-		if (peran === "petani") {
-			throw new ApiError(400, "Anda tidak memiliki akses.");
-		} else {
+		// if (peran === "petani") {
+		// 	throw new ApiError(400, "Anda tidak memiliki akses.");
+		// } else {
 			const dataDaftarPenyuluh = await dataPenyuluh.findAll();
 			res.status(200).json({
 				message: "Semua Data Penyuluh",
 				dataDaftarPenyuluh,
 			});
-		}
+		// }
 	} catch (error) {
 		res.status(error.statusCode || 500).json({
 			message: error.message,

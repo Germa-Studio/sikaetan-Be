@@ -22,7 +22,7 @@ const {
   getAllDataTanaman,
 } = require("../controllers/dataTanaman")
 
-router.post("/daftar-tani/add", auth, upload.single("foto"), tambahDaftarTani);
+router.post("/daftar-tani/add", upload.single("foto"), tambahDaftarTani);
 router.post(
   "/laporan-tani/add",
   auth,
