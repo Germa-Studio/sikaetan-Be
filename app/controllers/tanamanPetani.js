@@ -225,6 +225,50 @@ const getTanamanPetaniStatistically = async (req, res) => {
   }
 };
 
+const getAllTanamanPetaniByPetani = async (req, res) => {
+  const { id } = req.params;
+  const { peran } = req.user || {};
+  const { page, limit } = req.query;
+
+  try {
+    if (peran !== "petani" && peran !== "operator super admin") {
+      throw new ApiError(403, "Anda tidak memiliki akses.");
+    }
+
+    const limitFilter = limit ? Number(limit) : 10;
+    const pageFilter = page ? Number(page) : 1;
+
+    const query = {
+      where: { fk_petaniId: id },
+      limit: limitFilter,
+      offset: (pageFilter - 1) * limitFilter,
+    };
+
+    const data = await tanamanPetani.findAll({
+      ...query,
+      order: [["createdAt", "DESC"]],
+    });
+    const total = await tanamanPetani.count({ ...query });
+
+    res.status(200).json({
+      message: "Data berhasil didapatkan.",
+      data,
+      total,
+      currentPages: pageFilter,
+      limit: limitFilter,
+      maxPages: Math.ceil(total / limitFilter),
+      from: pageFilter ? (pageFilter - 1) * limitFilter + 1 : 1,
+      to: pageFilter
+        ? (pageFilter - 1) * limitFilter + data.length
+        : data.length,
+    });
+  } catch (error) {
+    res.status(error.statusCode || 500).json({
+      message: error.message,
+    });
+  }
+};
+
 const getTanamanbyPetani = async (req, res) => {
   const { id } = req.params;
   const { peran } = req.user || {};
@@ -452,6 +496,7 @@ module.exports = {
   getAllTanamanPetani,
   tambahDataTanamanPetani,
   getTanamanPetaniStatistically,
+  getAllTanamanPetaniByPetani,
   getTanamanbyPetani,
   editDataTanamanPetani,
   deleteDatatanamanPetani,
