@@ -181,7 +181,7 @@ const loginPetani = async (req, res) => {
 				});
 			}
 		} else if (NIP) {
-			const user = await dataPenyuluh.findOne({ where: { NIP } });
+			const user = await dataPenyuluh.findOne({ where: { nik: NIP } });
 			if (!user) throw new ApiError(400, "NIP tidak terdaftar.");
 			if (!bcrypt.compareSync(password, user.password)) {
 				throw new ApiError(400, "Password salah.");
@@ -190,7 +190,7 @@ const loginPetani = async (req, res) => {
 				const token = jwt.sign(
 					{
 						id: user.id,
-						NIK: user.NIP,
+						NIK: user.nik,
 					},
 					process.env.SECRET_KEY
 				);
