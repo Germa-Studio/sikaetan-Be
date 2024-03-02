@@ -3,10 +3,14 @@ const imageKit = require("../../midleware/imageKit");
 
 const getFooters = async (req, res) => {
   try {
-    const { key } = req.query;
+    const { key, category, desc = false } = req.query;
     const filter = key ? { key } : {};
+    if (category) {
+      filter.category = category;
+    }
     const data = await Footer.findAll({
       where: filter,
+      order: [["createdAt", Boolean(desc) ? "DESC" : "ASC"]],
     });
     const { peran } = req.user || {};
     if (peran !== "operator admin" && peran !== "operator super admin") {
@@ -37,7 +41,7 @@ const getFooters = async (req, res) => {
 
 const updateFooter = async (req, res) => {
   try {
-    const { key, value } = req.body;
+    const { key, value, category } = req.body;
     const { file } = req;
     const { peran } = req.user || {};
     if (peran !== "operator admin" && peran !== "operator super admin") {
@@ -91,12 +95,14 @@ const updateFooter = async (req, res) => {
       await Footer.create({
         key: key,
         value: img ? img.url : value,
+        category: category === "" ? null : category,
         isActive: true,
       });
     } else {
       await Footer.update(
         {
           value: img ? img.url : value,
+          category: category === "" ? null : category,
         },
         {
           where: {
@@ -125,7 +131,7 @@ const deleteFooter = async (req, res) => {
       });
       return;
     }
-    
+
     const { peran } = req.user || {};
     if (peran !== "operator admin" && peran !== "operator super admin") {
       throw new ApiError(400, "Anda tidak memiliki akses.");

@@ -15,6 +15,7 @@ module.exports = (sequelize, DataTypes) => {
     {
       key: DataTypes.STRING,
       value: DataTypes.STRING,
+      category: DataTypes.STRING,
       isActive: DataTypes.BOOLEAN,
     },
     {
