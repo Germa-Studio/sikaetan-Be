@@ -1,4 +1,4 @@
-const { where } = require("sequelize");
+const { where, Op } = require("sequelize");
 const ApiError = require("../../utils/ApiError");
 // const { logactivity, tbl_akun } = require("../models");
 const {
@@ -10,6 +10,7 @@ const {
 	dataPenyuluh,
 	dataOperator,
 } = require("../models");
+const { required } = require("nodemon/lib/config");
 
 const activities = [
 	{
@@ -39,6 +40,66 @@ const activities = [
 	},
 ];
 
+const errorMessage = (res, type, userInAction) => {
+	switch (type) {
+		case "deleted":
+			if (userInAction) {
+				return res.status(500).json({
+					message: `Activity has already been deleted permanently`,
+					text: `Activity has already been deleted permanently by ${userInAction.nama} as ${userInAction.peran}`,
+				});
+			} else {
+				return res.status(500).json({
+					message: `Activity has already been deleted permanently`,
+					text: `Activity has already been deleted permanently by unknown (deleted) user`,
+				});
+			}
+		case "notFound":
+			return res.status(500).json({
+				message: "Activity User Not Found",
+				type: "question",
+				text: "This could be caused by inconsistent data. Please report to the developer immediately!",
+			});
+		default:
+			return res.status(500).json({
+				message: "Activity User Not Found",
+				type: "question",
+				text: "This could be caused by inconsistent data. Please report to the developer immediately!",
+			});
+	}
+};
+
+const traceActivity = async (activity, res) => {
+	const delPermAct = await logactivity.findOne({
+		where: {
+			detail: activity.detail,
+			activity: "DELETE PERMANENT",
+		},
+		order: [["createdAt", "DESC"]],
+	});
+	if (delPermAct) {
+		const prevCreateAct = await logactivity.findOne({
+			where: {
+				detail: activity.detail,
+				activity: "CREATE",
+			},
+			order: [["createdAt", "DESC"]],
+		});
+		if (prevCreateAct.id < delPermAct.id) {
+			const userInAction = await tbl_akun.findByPk(prevCreateAct.user_id);
+			if (userInAction) {
+				errorMessage(res, "deleted", userInAction);
+			} else {
+				errorMessage(res, "deleted");
+			}
+		} else {
+			errorMessage(res, "notFound");
+		}
+	} else {
+		errorMessage(res, "notFound");
+	}
+};
+
 const getActivity = async (req, res) => {
 	const { page, limit } = req.query;
 	const { peran } = req.user || {};
@@ -50,8 +111,14 @@ const getActivity = async (req, res) => {
 			include: [
 				{
 					model: tbl_akun,
+					required: true,
 				},
 			],
+			// where: {
+			// 	activity: {
+			// 		[Op.not]: "DELETE PERMANENT",
+			// 	},
+			// },
 			order: [["createdAt", "DESC"]],
 			limit: Number(limit),
 			offset: (Number(page) - 1) * Number(limit),
@@ -153,7 +220,9 @@ const deleteActivity = async (req, res) => {
 		const { id } = req.params;
 		const activity = await logactivity.findByPk(id);
 		if (!activity) {
-			throw new ApiError(500, "Activity Not Found");
+			res.status(500).json({
+				message: "Activity Log Not Found",
+			});
 		}
 		const detailActivityArr = activity.detail.split(" ");
 		const detailActivity = detailActivityArr
@@ -198,22 +267,11 @@ const deleteActivity = async (req, res) => {
 								});
 							}
 						} else {
-							throw new ApiError(500, "Activity Not Found");
+							throw new ApiError(500, "Activity User Not Found");
 						}
 					})
 					.catch(async (err) => {
-						const userInAction = await tbl_akun.findByPk(
-							activity.user_id
-						);
-						if (userInAction) {
-							res.status(500).json({
-								message: `Activity has already been deleted permanently by ${userInAction.nama} as ${userInAction.peran}`,
-							});
-						} else {
-							res.status(500).json({
-								message: `Activity has already been deleted permanently by unknown user`,
-							});
-						}
+						traceActivity(activity, res);
 					});
 			}
 		});
@@ -229,15 +287,17 @@ const restoreActivity = async (req, res) => {
 		const { id } = req.params;
 		const activity = await logactivity.findByPk(id);
 		if (!activity) {
-			throw new ApiError(500, "Activity Not Found");
+			res.status(500).json({
+				message: "Activity Log Not Found",
+			});
 		}
 		const detailActivityArr = activity.detail.split(" ");
 		const detailActivity = detailActivityArr
 			.slice(0, detailActivityArr.length - 1)
 			.join(" ");
-		activities.forEach(async (act) => {
+		activities.forEach((act) => {
 			if (act.txt === detailActivity) {
-				await act.value
+				act.value
 					.findOne({
 						where: {
 							id: detailActivityArr[detailActivityArr.length - 1],
@@ -264,7 +324,7 @@ const restoreActivity = async (req, res) => {
 								});
 							}
 						} else {
-							throw new ApiError(500, "Activity Not Found");
+							traceActivity(activity, res);
 						}
 					});
 			}
