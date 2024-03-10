@@ -1,4 +1,5 @@
 const { faq } = require("../models");
+const ApiError = require("../../utils/ApiError");
 
 const getFaqs = async (req, res) => {
   try {
@@ -42,6 +43,7 @@ const getDetailFaq = async (req, res) => {
 const createFaq = async (req, res) => {
   try {
     const { peran } = req.user || {};
+
     if (peran !== "operator admin" && peran !== "operator super admin") {
       throw new ApiError(400, "Anda tidak memiliki akses.");
     }
@@ -104,7 +106,7 @@ const updateFaq = async (req, res) => {
 const deleteFaq = async (req, res) => {
   try {
     const { id } = req.params;
-    
+
     const { peran } = req.user || {};
     if (peran !== "operator admin" && peran !== "operator super admin") {
       throw new ApiError(400, "Anda tidak memiliki akses.");

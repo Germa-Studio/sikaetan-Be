@@ -1,4 +1,5 @@
 const router = require("express").Router();
+const auth = require("../../midleware/auth");
 const {
   getFaqs,
   getDetailFaq,
@@ -7,9 +8,9 @@ const {
   deleteFaq,
 } = require("../controllers/faq");
 
-router.get("/", getFaqs);
-router.get("/:id", getDetailFaq);
-router.post("/", createFaq);
-router.patch("/:id", updateFaq);
-router.delete("/:id", deleteFaq);
+router.get("/", auth, getFaqs);
+router.get("/:id", auth, getDetailFaq);
+router.post("/", auth, createFaq);
+router.patch("/:id", auth, updateFaq);
+router.delete("/:id", auth, deleteFaq);
 module.exports = router;
