@@ -207,6 +207,18 @@ const getTanamanPetaniStatistically = async (req, res) => {
       },
     });
     const latest = await tanamanPetani.findAll({
+      include: [
+        {
+          model: dataPetani,
+          as: "dataPetani",
+          include: [
+            {
+              model: kelompok,
+              as: "kelompok",
+            },
+          ],
+        },
+      ],
       order: [[Sequelize.col("createdAt"), "DESC"]],
       limit: 5,
     });
