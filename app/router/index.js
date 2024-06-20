@@ -10,6 +10,7 @@ const InfoTani = require("./InfoTani");
 const tokoTani = require("./tokoTani");
 const liveChat = require("./liveChat");
 const statistik = require("./statistik");
+const kelompok = require("./kelompok");
 const dataPenyuluh = require("./dataPenyuluh");
 const select = require("./select");
 const allUsers = require("./allUsers");
@@ -37,6 +38,7 @@ router.post("/cek-nip", auth, cekNiP);
 
 router.use("/auth", akun);
 router.use("/statistik", statistik);
+router.use("/", kelompok);
 router.use("/tanaman-petani", tanamanPetani);
 router.use("/footer", footer);
 router.use("/faq", faq);
