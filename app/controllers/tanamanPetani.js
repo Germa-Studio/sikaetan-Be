@@ -473,7 +473,9 @@ const uploadDataTanamanPetani = async (req, res) => {
     worksheet.eachRow({ includeEmpty: true }, async (row, rowNumber) => {
       if (rowNumber === 1) return;
       const nikPetani = row.getCell(1).value.toString(); // Fix variable name
-      const petani = await dataPetani.findOne({ nik: nikPetani });
+      const petani = await dataPetani.findOne({
+        where: { nik: nikPetani }
+      });
       if (petani) {
         // Check if petani is found before creating tanamanPetani
         await tanamanPetani.create({

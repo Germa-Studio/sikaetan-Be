@@ -216,7 +216,7 @@ const uploadDataPetani = async (req, res) => {
 		worksheet.eachRow({ includeEmpty: true }, async (row, rowNumber) => {
 			if (rowNumber === 1) return;
 			const nikPenyuluh = row.getCell(1).value.toString(); // Fix variable name
-			const penyuluh = await dataPenyuluh.findOne({ nik: nikPenyuluh });
+			const penyuluh = await dataPenyuluh.findOne({ where: { nik: nikPenyuluh } });
 			const accountID = crypto.randomUUID();
 			const password = row.getCell(10).value.toString();
 			const hashedPassword = bcrypt.hashSync(password, 10);
