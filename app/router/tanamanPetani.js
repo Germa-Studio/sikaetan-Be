@@ -7,12 +7,14 @@ const {
   getTanamanPetaniStatistically,
   getAllTanamanPetaniByPetani,
   getTanamanbyPetani,
+  getTopTanamanPetani
   // getTanamanPetaniById,
   // tambahTanamanPetani,
   // ubahTanamanPetaniById,
   // deleteTanamanPetaniById,
 } = require("../controllers/tanamanPetani");
 
+router.get("/", getTopTanamanPetani);
 router.get("/list/", auth, getAllTanamanPetani);
 router.get("/statistik/", getTanamanPetaniStatistically);
 router.get("/petani/:id", auth, getTanamanbyPetani);

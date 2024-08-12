@@ -9,10 +9,15 @@ const ApiError = require("../../utils/ApiError");
 const imageKit = require("../../midleware/imageKit");
 const dotenv = require("dotenv");
 const bcrypt = require("bcrypt");
-const { Op, Sequelize } = require("sequelize");
+const { Op, Sequelize, literal } = require("sequelize");
 const ExcelJS = require("exceljs");
 
 dotenv.config();
+
+const monthOrder = [
+  'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+  'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+];
 
 const getAllTanamanPetani = async (req, res) => {
   const { peran } = req.user || {};
@@ -82,6 +87,50 @@ const getAllTanamanPetani = async (req, res) => {
       message: error.message,
     });
   }
+};
+
+const getTopTanamanPetani = async (req, res) => {
+	const { page, limit } = req.query;
+	try {
+		const limitFilter = Number(limit) || 10;
+		const pageFilter = Number(page) || 1;
+
+		const query = {
+			limit: limitFilter,
+			offset: (pageFilter - 1) * limitFilter,
+			order: [['prakiraanProduksiPanen', 'DESC'], [literal(`FIELD(prakiraanBulanPanen, '${monthOrder.join("', '")}')`), 'ASC']],
+      include: [
+        {
+          model: dataPetani,
+          as: "dataPetani",
+          include: [
+            {
+              model: kelompok,
+              as: "kelompok",
+            },
+          ],
+        },
+      ],
+		};
+
+		const data = await tanamanPetani.findAll(query);
+		const total = await tanamanPetani.count();
+
+		res.status(200).json({
+			message: "Berhasil mendapatkan data tanaman petani",
+			data,
+			total,
+			currentPage: pageFilter,
+			limit: limitFilter,
+			maxPages: Math.ceil(total / limitFilter),
+			from: (pageFilter - 1) * limitFilter + 1,
+			to: (pageFilter - 1) * limitFilter + data.length,
+		});
+	} catch (error) {
+		res.status(error.statusCode || 500).json({
+			message: error.message,
+		});
+	}
 };
 
 const tambahDataTanamanPetani = async (req, res) => {
@@ -508,6 +557,7 @@ const uploadDataTanamanPetani = async (req, res) => {
 
 module.exports = {
   getAllTanamanPetani,
+  getTopTanamanPetani,
   tambahDataTanamanPetani,
   getTanamanPetaniStatistically,
   getAllTanamanPetaniByPetani,

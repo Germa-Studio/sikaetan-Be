@@ -16,7 +16,7 @@ const bcrypt = require("bcrypt");
 const crypto = require("crypto");
 const ExcelJS = require("exceljs");
 const { postActivity } = require("./logActivity");
-
+  
 const laporanPetani = async (req, res) => {
 	try {
 		const data = await dataPerson.findAll({
@@ -723,34 +723,6 @@ const ubahTanamanPetaniById = async (req, res) => {
 	}
 };
 
-const getTanamanPetani = async (req, res) => {
-	try {
-		const { peran } = req.user || {};
-		if (peran === "petani") {
-			throw new ApiError(400, "Anda tidak memiliki akses.");
-		}
-		const data = await tanamanPetani.findAll({
-			include: [
-				{
-					model: dataPetani,
-					include: [
-						{
-							model: kelompok,
-						},
-					],
-				},
-			],
-		});
-		res.status(200).json({
-			message: "Berhasil mendapatkan data tanaman petani",
-			data,
-		});
-	} catch (error) {
-		res.status(error.statusCode || 500).json({
-			message: error.message,
-		});
-	}
-};
 
 const getTanamanPetaniById = async (req, res) => {
 	const { id } = req.params;
@@ -824,7 +796,6 @@ module.exports = {
 	dataTaniDetail,
 	updateTaniDetail,
 	getLaporanPetani,
-	getTanamanPetani,
 	tambahTanamanPetani,
 	getTanamanPetaniById,
 	ubahTanamanPetaniById,
