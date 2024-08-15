@@ -10,16 +10,40 @@ const {
 // const { Op } = require('sequelize');
 // const {Sequelize} = require('sequelize');
 const { Sequelize, Op, literal, QueryTypes } = require("sequelize");
+// const { QueryTypes } = require('sequelize'); // Ensure you have this import
 // import { sql } from '@sequelize/core';
 // const { Op, literal } = require('sequelize');
 
 const usersAll = async (req, res) => {
+	const { peran } = req.user || {};
+	const { page, limit } = req.query;
 	try {
-		const data = await dataPerson.findAll();
-		res.status(200).json({
-			message: "Data semua users berhasil di peroleh",
-			tani: data,
-		});
+		if (peran === NULL) {
+			throw new ApiError(400, "Anda tidak memiliki akses.");
+		} else {
+			const limitFilter = Number(limit) || 10;
+			const pageFilter = Number(page) || 1;
+
+			const query = {
+				limit: limitFilter,
+				offset: (pageFilter - 1) * limitFilter,
+				limit: parseInt(limit),
+			};
+			const data = await dataPerson.findAll({ ...query });
+			const total = await dataPerson.count({ ...query });
+			res.status(200).json({
+				message: "Data User Berhasil Diperoleh",
+				data,
+				total,
+				currentPages: page,
+				limit: Number(limit),
+				maxPages: Math.ceil(total / (Number(limit) || 10)),
+				from: Number(page) ? (Number(page) - 1) * Number(limit) + 1 : 1,
+				to: Number(page)
+					? (Number(page) - 1) * Number(limit) + data.length
+					: data.length,
+			});
+		}
 	} catch (error) {
 		res.status(error.statusCode || 500).json({
 			message: error.message,

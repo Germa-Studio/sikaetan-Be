@@ -366,19 +366,43 @@ const opsiPoktan = async (req, res) => {
 };
 
 const getUserNotVerify = async (req, res) => {
+	const { peran } = req.user || {};
+	const { page, limit } = req.query;
+
 	try {
-		const user = await dataPerson.findAll({ where: { verify: false } });
-		if (!user) throw new ApiError(400, "user tidak ditemukan");
-		return res.status(200).json({
-			message: "user belum di verifikasi",
-			user,
-		});
+		if (!peran) {
+			throw new ApiError(400, "Anda tidak memiliki akses.");
+		} else {
+			const limitFilter = Number(limit) || 10;
+			const pageFilter = Number(page) || 1;
+
+			const query = {
+				where: { verify: false },
+				limit: limitFilter,
+				offset: (pageFilter - 1) * limitFilter,
+			};
+
+			const data = await dataPerson.findAll(query);
+			const total = await dataPerson.count({ where: { verify: false } });
+
+			res.status(200).json({
+				message: "Data User Berhasil Diperoleh",
+				data,
+				total,
+				currentPage: pageFilter,
+				limit: limitFilter,
+				maxPages: Math.ceil(total / limitFilter),
+				from: (pageFilter - 1) * limitFilter + 1,
+				to: (pageFilter - 1) * limitFilter + data.length,
+			});
+		}
 	} catch (error) {
 		res.status(error.statusCode || 500).json({
 			message: error.message,
 		});
 	}
 };
+
 const verifikasi = async (req, res) => {
 	const { id } = req.params;
 	try {

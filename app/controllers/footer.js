@@ -1,5 +1,6 @@
-const { Footer } = require("../models");
+const { footer } = require("../models");
 const imageKit = require("../../midleware/imageKit");
+const ApiError = require("../../utils/ApiError");
 
 const getFooters = async (req, res) => {
   try {
@@ -8,7 +9,7 @@ const getFooters = async (req, res) => {
     if (category) {
       filter.category = category;
     }
-    const data = await Footer.findAll({
+    const data = await footer.findAll({
       where: filter,
       order: [["createdAt", Boolean(desc) ? "DESC" : "ASC"]],
     });
@@ -87,19 +88,19 @@ const updateFooter = async (req, res) => {
     }
 
     const filter = key ? { key } : {};
-    const data = await Footer.findAll({
+    const data = await footer.findAll({
       where: filter,
     });
 
     if (data.length === 0) {
-      await Footer.create({
+      await footer.create({
         key: key,
         value: img ? img.url : value,
         category: category === "" ? null : category,
         isActive: true,
       });
     } else {
-      await Footer.update(
+      await footer.update(
         {
           value: img ? img.url : value,
           category: category === "" ? null : category,
@@ -138,7 +139,7 @@ const deleteFooter = async (req, res) => {
     }
 
     const filter = key ? { key: key } : {};
-    const data = await Footer.findAll({
+    const data = await footer.findAll({
       where: filter,
     });
 
@@ -148,7 +149,7 @@ const deleteFooter = async (req, res) => {
       });
     } else {
       if (hide == "true") {
-        await Footer.update(
+        await footer.update(
           {
             isActive: false,
           },
@@ -159,7 +160,7 @@ const deleteFooter = async (req, res) => {
           }
         );
       } else {
-        await Footer.destroy({
+        await footer.destroy({
           where: filter,
         });
       }

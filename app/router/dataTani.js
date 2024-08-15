@@ -10,7 +10,6 @@ const {
   deleteDaftarTani,
   dataTaniDetail,
   updateTaniDetail,
-  getTanamanPetani,
   getLaporanPetani,
   tambahTanamanPetani,
   getTanamanPetaniById,
@@ -33,7 +32,6 @@ router.get("/laporan-petani", auth, laporanPetani);
 router.get("/laporan-penyuluh", auth, laporanPenyuluh);
 router.get("/daftar-tani", auth, daftarTani);
 router.post("/tanaman-petani", auth, tambahTanamanPetani);
-
 router.get("/tanaman-petani/detail/:id", auth, getTanamanPetaniById);
 router.get("/statistik/", auth, getAllDataTanaman);
 router.get("/tanaman-petani/:id", auth, getLaporanPetani);
