@@ -150,10 +150,8 @@ const loginPetani = async (req, res) => {
 			);
 		}
 		if (NIK) {
-			// const user = await dataPerson.findOne({ where: { NIK } });
 			const userPetani = await dataPetani.findOne({ where: { NIK } });
 			if (!userPetani) throw new ApiError(400, "NIK tidak terdaftar.");
-			// console.log(user);
 			const user = await tblAkun.findOne({
 				where: { accountID: userPetani.accountID },
 			});
@@ -171,7 +169,6 @@ const loginPetani = async (req, res) => {
 				const token = jwt.sign(
 					{
 						id: user.id,
-						NIK: userPetani.NIK,
 					},
 					process.env.SECRET_KEY
 				);
@@ -182,23 +179,26 @@ const loginPetani = async (req, res) => {
 				});
 			}
 		} else if (NIP) {
-			const user = await dataPenyuluh.findOne({ where: { nik: NIP } });
-			if (!user) throw new ApiError(400, "NIP tidak terdaftar.");
-			if (!bcrypt.compareSync(password, user.password)) {
+			const userPenyuluh = await dataPenyuluh.findOne({ where: { nik: NIP } });
+			if (!userPenyuluh) throw new ApiError(400, "NIP tidak terdaftar.");
+			if (!bcrypt.compareSync(password, userPenyuluh.password)) {
 				throw new ApiError(400, "Password salah.");
 			}
-			if (bcrypt.compareSync(password, user.password)) {
+			
+			const user = await tblAkun.findOne({
+				where: { accountID: userPenyuluh.accountID },
+			});
+			if (bcrypt.compareSync(password, userPenyuluh.password)) {
 				const token = jwt.sign(
 					{
 						id: user.id,
-						NIK: user.nik,
 					},
 					process.env.SECRET_KEY
 				);
 				return res.status(200).json({
 					message: "Login berhasil.",
 					token,
-					user,
+					user: userPenyuluh,
 				});
 			}
 		}
@@ -467,8 +467,6 @@ const getProfile = async (req, res) => {
 
 const getDetailProfile = async (req, res) => {
 	try {
-		// console log req.user
-		// console.log({req.user});
 		const { accountID, peran } = req.user;
 		if (accountID) {
 			let data;
@@ -589,8 +587,6 @@ const updateDetailProfile = async (req, res) => {
 					password: passwordBaru ? bcrypt.hashSync(passwordBaru, 10) : data.password, // Hash password only if provided
 					no_wa: whatsapp || data.no_wa,
 					nama: nama || data.nama,
-					// pekerjaan: "",
-					// peran: "penyuluh",
 					foto: urlImg || data.foto,
 				},
 				{
@@ -618,10 +614,11 @@ const updateDetailProfile = async (req, res) => {
 					},
 				}
 			);
-			res.status(200).json({
+
+			newDataPenyuluh && accountUpdate ? res.status(200).json({
 				message: "Berhasil Mengubah Profil",
-				newDataPenyuluh,
-				accountUpdate,
+			}) : res.status(400).json({
+				message: "Gagal Mengubah Profil",
 			});
 		} else if (peran === "petani") {
 			const {
@@ -805,7 +802,6 @@ const updateDetailProfile = async (req, res) => {
 const getPeran = async (req, res) => {
 	const { peran } = req.user || {};
 	const { page, limit } = req.query;
-	console.log("test");
 	try {
 		const limitFilter = Number(limit) || 10;
 		const pageFilter = Number(page) || 1;
@@ -815,7 +811,6 @@ const getPeran = async (req, res) => {
 			limit: parseInt(limit),
 		};
 		const data = await tblAkun.findAll({ ...query });
-		// console.log(data);
 		const total = await tblAkun.count({ ...query });
 		res.status(200).json({
 			message: "berhasil",
@@ -837,13 +832,7 @@ const getPeran = async (req, res) => {
 };
 
 const ubahPeran = async (req, res) => {
-	// const {accountID, peran} = req.user;
 	const { id, roles } = req.body;
-	// const {id}  = req.query
-	console.log({ id });
-	console.log({ roles });
-	// const { id, peran } = req.body;
-	console.log("Halo");
 	try {
 		const user = await tblAkun.findOne({ where: { id: id } });
 		let detailUser;
@@ -872,7 +861,7 @@ const ubahPeran = async (req, res) => {
 				where: { accountID: user.accountID },
 			});
 		}
-		console.log({ detailUser });
+
 		if (roles === "petani") {
 			await dataPetani.create({
 				nik: detailUser.nik,

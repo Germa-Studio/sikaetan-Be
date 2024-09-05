@@ -124,7 +124,6 @@ const tambahDaftarTani = async (req, res) => {
 					desa: desa,
 				},
 			});
-			// console.log(kelompokData)
 			let urlImg;
 			if (file) {
 				const validFormat =

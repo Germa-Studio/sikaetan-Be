@@ -29,8 +29,6 @@ const SocketServer = (server) => {
 
       const chatters = await getChatters(user.id) //query 
 
-      // console.log(chatters)
-
       // notify his friends that user is now online
       for (let i = 0; i < chatters.length; i++) {
         if (users.has(chatters[i])) {
@@ -48,7 +46,6 @@ const SocketServer = (server) => {
       sockets.forEach(socket => {
         try {
           io.to(socket).emit('friends', onlineFriends)
-          // console.log(user)
         } catch (error) { }
       })
     })

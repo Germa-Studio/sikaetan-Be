@@ -5,7 +5,6 @@ const auth = require("../../midleware/auth");
 const { postActivity } = require("./logActivity");
 
 const infoTani = async (req, res) => {
-	// console.log(req.query);
 	try {
 		const { category } = req.query;
 
@@ -39,7 +38,6 @@ const infoTaniById = async (req, res) => {
 	}
 };
 const tambahInfoTani = async (req, res) => {
-	// console.log(req.user)
 	const { nama, peran, id } = req.user;
 	//
 	try {
@@ -139,7 +137,6 @@ const eventTaniById = async (req, res) => {
 const tambahEventTani = async (req, res) => {
 	try {
 		const { nama, peran, id } = req.user;
-		// console.log(peran);
 
 		if (
 			peran === "petani"
@@ -220,7 +217,6 @@ const tambahEventTani = async (req, res) => {
 
 const deleteInfoTani = async (req, res) => {
 	const { nama, peran, id } = req.user;
-	// console.log("id user", id);
 	try {
 		if (
 			peran !== "operator super admin"
@@ -296,7 +292,6 @@ const deleteEventTani = async (req, res) => {
 const updateInfoTani = async (req, res) => {
 	try {
 		const { nama, peran, id } = req.user;
-		// console.log(peran);
 
 		const { judul, tanggal, status, kategori, createdBy, isi } = req.body;
 		const beritaId = req.params.id;
@@ -371,7 +366,6 @@ const updateInfoTani = async (req, res) => {
 const updateEventTani = async (req, res) => {
 	try {
 		const { nama, peran, id } = req.user;
-		// console.log(peran);
 		const {
 			namaKegiatan,
 			tanggalAcara,

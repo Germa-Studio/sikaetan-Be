@@ -18,7 +18,6 @@ const { postActivity } = require("./logActivity");
 dotenv.config();
 const tambahDataPenyuluh = async (req, res) => {
 	const { peran, id } = req.user || {};
-	// console.log(peran)
 	try {
 		if (peran === "petani" || peran === "penyuluh") {
 			throw new ApiError(400, "Anda tidak memiliki akses.");
@@ -38,7 +37,6 @@ const tambahDataPenyuluh = async (req, res) => {
 				selectedKelompokIds,
 				pekerjaan = "",
 			} = req.body;
-			console.log({ desaBinaan });
 			const kelompokArray = selectedKelompokIds.split(",");
 			const hashedPassword = bcrypt.hashSync(password, 10);
 			const accountID = crypto.randomUUID();
@@ -487,7 +485,6 @@ const jurnalKegiatan = async (req, res) => {
 const jurnalKegiatanbyId = async (req, res) => {
 	const { peran } = req.user || {};
 	const { id } = req.params;
-	// console.log("this is id..", id);
 	try {
 		if (peran === "petani") {
 			throw new ApiError(400, "Anda tidak memiliki akses.");
@@ -765,7 +762,6 @@ const updatePenyuluh = async (req, res) => {
 				desaBinaan,
 			} = req.body;
 			const { file } = req;
-			console.log(file);
 			const data = await dataPenyuluh.findOne({
 				where: {
 					id,
