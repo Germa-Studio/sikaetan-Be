@@ -1,21 +1,28 @@
-const { tbl_akun } = require("../models");
-const { beritaTani } = require("../models");
+const { tbl_akun, dataPetani, beritaTani } = require("../models");
 
 const getDashboardIndexData = async (req, res) => {
   try {
-    const verifiedPetani = await tbl_akun.count({
-      where: {
-        peran: "petani",
-        isVerified: 1,
-      },
-    });
+    const verifiedPetani = await dataPetani.count({
+      include: [
+				{
+					model: tbl_akun,
+				}
+      ],
+      where:{
+        "$tbl_akun.isVerified$": 1
+      }
+     });
 
-    const unverifiedPetani = await tbl_akun.count({
-      where: {
-        peran: "petani",
-        isVerified: 0,
-      },
-    });
+    const unverifiedPetani = await dataPetani.count({
+      include: [
+				{
+					model: tbl_akun,
+				}
+      ],
+      where:{
+        "$tbl_akun.isVerified$": 0
+      }
+     });
 
     const berita = await beritaTani.count({
       where: {
@@ -41,7 +48,6 @@ const getDashboardIndexData = async (req, res) => {
       tips,
     });
   } catch (err) {
-    console.log(err);
     res.status(500).json({
       message: "Error",
       error: err,

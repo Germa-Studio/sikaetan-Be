@@ -52,8 +52,17 @@ const usersAll = async (req, res) => {
 };
 
 const userVerify = async (req, res) => {
-	const { page, limit } = req.query;
+	const { page, limit, verified } = req.query;
 	const { peran } = req.user || {};
+	
+	const orderFilter = !['true', 'false'].includes(verified)
+		? [["id", "ASC"]]
+		: [
+			[ "isVerified", verified === "true" ? "DESC" : "ASC"],
+			["id", "ASC"],
+		];
+
+		console.log(orderFilter);
 
 	try {
 		// Check if the user has restricted roles
@@ -80,7 +89,7 @@ const userVerify = async (req, res) => {
 				},
 			},
 			attributes: ["id", "nama", "peran", "no_wa", "email", "isVerified"],
-			order: [["nama", "ASC"]],
+			order: orderFilter,
 			limit: Number(limit),
 			offset: (Number(page) - 1) * Number(limit),
 		};
