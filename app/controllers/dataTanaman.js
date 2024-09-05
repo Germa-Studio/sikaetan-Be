@@ -30,7 +30,7 @@ const getAllDataTanaman = async (req, res) => {
 			],
 			limit: limitFilter,
 			offset: (pageFilter - 1) * limitFilter,
-			order: [[sortBy || "id", sortType || "ASC"]],
+			order: [[sortBy || "id", sortType || "DESC"]],
 		};
 
 		if (poktan_id !== "undefined") {
