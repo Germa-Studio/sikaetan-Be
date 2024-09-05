@@ -68,7 +68,7 @@ const getAllDataTanaman = async (req, res) => {
 					? (Number(page) - 1) * Number(limit) + data.length
 					: data.length,
 				sortBy: sortBy || "id",
-				sortType: sortType || "ASC",
+				sortType: sortType || "DESC",
 			},
 		});
 	} catch (error) {
