@@ -11,6 +11,7 @@ const dotenv = require("dotenv");
 const bcrypt = require("bcrypt");
 const { Op, Sequelize, literal } = require("sequelize");
 const ExcelJS = require("exceljs");
+const moment = require("moment");
 
 dotenv.config();
 
@@ -95,10 +96,16 @@ const getTopTanamanPetani = async (req, res) => {
 		const limitFilter = Number(limit) || 10;
 		const pageFilter = Number(page) || 1;
 
+    const whereQuery = {
+      createdAt: {
+        [Op.gte]: moment().startOf('month').toDate(),
+      },
+    };
+
 		const query = {
-			limit: limitFilter,
-			offset: (pageFilter - 1) * limitFilter,
+			limit: 30,
 			order: [['prakiraanProduksiPanen', 'DESC'], [literal(`FIELD(prakiraanBulanPanen, '${monthOrder.join("', '")}')`), 'ASC']],
+      where: whereQuery,
       include: [
         {
           model: dataPetani,
@@ -114,15 +121,19 @@ const getTopTanamanPetani = async (req, res) => {
 		};
 
 		const data = await tanamanPetani.findAll(query);
-		const total = await tanamanPetani.count();
+		const total = await tanamanPetani.count({
+      where: whereQuery,
+    });
+    const limitedTotal = total > 30 ? 30 : total;
+    const slicedData = data.slice((pageFilter - 1) * limitFilter, pageFilter * limitFilter);
 
 		res.status(200).json({
 			message: "Berhasil mendapatkan data tanaman petani",
-			data,
-			total,
+			data: slicedData,
+			total: limitedTotal,
 			currentPages: pageFilter,
 			limit: limitFilter,
-			maxPages: Math.ceil(total / limitFilter),
+			maxPages: Math.ceil(limitedTotal / limitFilter),
 			from: (pageFilter - 1) * limitFilter + 1,
 			to: (pageFilter - 1) * limitFilter + data.length,
 		});
