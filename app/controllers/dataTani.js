@@ -341,14 +341,12 @@ const daftarTani = async (req, res) => {
 		}
 		const limitFilter = Number(limit) || 10;
 		const pageFilter = Number(page) || 1;
-		const whereFilter =
-			verified === ""
-				? {}
-				: {
-						"$tbl_akun.isVerified$": {
-							[Op.eq]: verified === "true" ? 1 : 0,
-						},
-				  };
+		const orderFilter = verified === ""
+		? [["id", "ASC"]]
+		: [
+			[tbl_akun, "isVerified", verified === "true" ? "DESC" : "ASC"],
+			["id", "ASC"],
+		];
 
 		const query = {
 			include: [
@@ -360,12 +358,13 @@ const daftarTani = async (req, res) => {
 				},
 				{
 					model: tbl_akun,
+					required: true,
 				},
 			],
 			limit: limitFilter,
 			offset: (pageFilter - 1) * limitFilter,
 			limit: parseInt(limit),
-			where: whereFilter,
+			order: orderFilter,
 		};
 
 		const data = await dataPetani.findAll({ ...query });

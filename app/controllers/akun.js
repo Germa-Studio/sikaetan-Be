@@ -410,17 +410,17 @@ const getUserNotVerify = async (req, res) => {
 const verifikasi = async (req, res) => {
 	const { id } = req.params;
 	try {
-		const user = await dataPerson.findOne({ where: { id } });
+		const user = await tblAkun.findOne({ where: { id } });
 		if (!user) throw new ApiError(400, "user tidak ditemukan");
-		await dataPerson.update(
-			{ verify: true },
+		await tblAkun.update(
+			{ isVerified: true },
 			{
 				where: {
 					id,
 				},
 			}
 		);
-		const users = await dataPerson.findOne({ where: { id } });
+
 		return res.status(200).json({
 			message: "User berhasil diverifikasi",
 		});
