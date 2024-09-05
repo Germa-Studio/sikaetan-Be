@@ -120,7 +120,7 @@ const getTopTanamanPetani = async (req, res) => {
 			message: "Berhasil mendapatkan data tanaman petani",
 			data,
 			total,
-			currentPage: pageFilter,
+			currentPages: pageFilter,
 			limit: limitFilter,
 			maxPages: Math.ceil(total / limitFilter),
 			from: (pageFilter - 1) * limitFilter + 1,

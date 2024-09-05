@@ -393,7 +393,7 @@ const getUserNotVerify = async (req, res) => {
 				message: "Data User Berhasil Diperoleh",
 				data,
 				total,
-				currentPage: pageFilter,
+				currentPages: pageFilter,
 				limit: limitFilter,
 				maxPages: Math.ceil(total / limitFilter),
 				from: (pageFilter - 1) * limitFilter + 1,
