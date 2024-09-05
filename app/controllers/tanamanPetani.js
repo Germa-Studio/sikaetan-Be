@@ -237,6 +237,9 @@ const getTanamanPetaniStatistically = async (req, res) => {
       ],
       group: [lineChartType, Sequelize.fn("DATE", Sequelize.col("createdAt"))],
       where: {
+        [lineChartType]:{
+          [Op.not]: null
+        },
         createdAt: {
           [Op.between]: [date_starts, date_ends],
         },
@@ -250,6 +253,9 @@ const getTanamanPetaniStatistically = async (req, res) => {
       ],
       group: [pieChartType],
       where: {
+        [pieChartType]:{
+          [Op.not]: null
+        },
         createdAt: {
           [Op.between]: [date_starts, date_ends],
         },
