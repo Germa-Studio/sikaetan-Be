@@ -98,7 +98,7 @@ const getTopTanamanPetani = async (req, res) => {
 
     const whereQuery = {
       createdAt: {
-        [Op.gte]: moment().startOf('month').toDate(),
+        [Op.gte]: moment().subtract(30, 'days').toDate(),
       },
     };
 
