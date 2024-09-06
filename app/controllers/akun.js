@@ -833,6 +833,7 @@ const getPeran = async (req, res) => {
 
 const ubahPeran = async (req, res) => {
 	const { id, roles } = req.body;
+	
 	try {
 		const user = await tblAkun.findOne({ where: { id: id } });
 		let detailUser;
@@ -841,12 +842,8 @@ const ubahPeran = async (req, res) => {
 			detailUser = await dataPetani.findOne({
 				where: { accountID: user.accountID },
 			});
-			await dataPetani.destroy({ where: { accountID: user.accountID } });
 		} else if (user.peran === "penyuluh") {
 			detailUser = await dataPenyuluh.findOne({
-				where: { accountID: user.accountID },
-			});
-			await dataPenyuluh.destroy({
 				where: { accountID: user.accountID },
 			});
 		} else if (
@@ -857,11 +854,8 @@ const ubahPeran = async (req, res) => {
 			detailUser = await dataOperator.findOne({
 				where: { accountID: user.accountID },
 			});
-			await dataOperator.destroy({
-				where: { accountID: user.accountID },
-			});
 		}
-
+		
 		if (roles === "petani") {
 			await dataPetani.create({
 				nik: detailUser.nik,
@@ -904,6 +898,23 @@ const ubahPeran = async (req, res) => {
 				},
 			}
 		);
+
+		if (user.peran === "petani") {
+			await dataPetani.destroy({ where: { accountID: user.accountID } });
+		} else if (user.peran === "penyuluh") {
+			await dataPenyuluh.destroy({
+				where: { accountID: user.accountID },
+			});
+		} else if (
+			user.peran === "operator super admin" ||
+			user.peran === "operator admin" ||
+			user.peran === "operator poktan"
+		) {
+			await dataOperator.destroy({
+				where: { accountID: user.accountID },
+			});
+		}
+
 		return res.status(200).json({
 			message: "Peran berhasil diubah",
 		});
