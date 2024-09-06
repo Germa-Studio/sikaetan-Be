@@ -105,7 +105,7 @@ const getActivity = async (req, res) => {
 	const { peran } = req.user || {};
 	try {
 		if (peran === "petani") {
-			throw new ApiError(400, "Anda tidak memiliki akses.");
+			throw new ApiError(403, "Anda tidak memiliki akses.");
 		}
 		const query = {
 			include: [
@@ -153,7 +153,7 @@ const getTrashActivity = async (req, res) => {
 		const { peran } = req.user || {};
 
 		if (peran === "petani") {
-			throw new ApiError(400, "Anda tidak memiliki akses.");
+			throw new ApiError(403, "Anda tidak memiliki akses.");
 		}
 		const { page, limit } = req.query;
 		const query = {

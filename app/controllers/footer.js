@@ -13,10 +13,6 @@ const getFooters = async (req, res) => {
       where: filter,
       order: [["createdAt", Boolean(desc) ? "DESC" : "ASC"]],
     });
-    const { peran } = req.user || {};
-    if (peran !== "operator admin" && peran !== "operator super admin") {
-      throw new ApiError(400, "Anda tidak memiliki akses.");
-    }
     if (data.length === 0) {
       res.status(404).json({
         message: "Footer Tidak Ditemukan",
@@ -46,7 +42,7 @@ const updateFooter = async (req, res) => {
     const { file } = req;
     const { peran } = req.user || {};
     if (peran !== "operator admin" && peran !== "operator super admin") {
-      throw new ApiError(400, "Anda tidak memiliki akses.");
+      throw new ApiError(403, "Anda tidak memiliki akses.");
     }
     if (!key) {
       res.status(400).json({
@@ -135,7 +131,7 @@ const deleteFooter = async (req, res) => {
 
     const { peran } = req.user || {};
     if (peran !== "operator admin" && peran !== "operator super admin") {
-      throw new ApiError(400, "Anda tidak memiliki akses.");
+      throw new ApiError(403, "Anda tidak memiliki akses.");
     }
 
     const filter = key ? { key: key } : {};

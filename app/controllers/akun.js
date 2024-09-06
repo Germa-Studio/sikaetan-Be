@@ -375,7 +375,7 @@ const getUserNotVerify = async (req, res) => {
 
 	try {
 		if (!peran) {
-			throw new ApiError(400, "Anda tidak memiliki akses.");
+			throw new ApiError(403, "Anda tidak memiliki akses.");
 		} else {
 			const limitFilter = Number(limit) || 10;
 			const pageFilter = Number(page) || 1;

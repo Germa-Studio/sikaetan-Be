@@ -13,7 +13,7 @@ const getAllKelompok = async (req,res) => {
 	const { page, limit } = req.query;
 	try {
 		if (peran !== "operator super admin" && peran !== "operator admin") {
-			throw new ApiError(400, "Anda tidak memiliki akses.");
+			throw new ApiError(403, "Anda tidak memiliki akses.");
 		} else {
 			const limitFilter = Number(limit) || 10;
 			const pageFilter = Number(page) || 1;
@@ -50,7 +50,7 @@ const uploadDataKelompoks = async (req, res) => {
 
 	try {
 		if (peran === "petani") {
-			throw new ApiError(400, "Anda tidak memiliki akses.");
+			throw new ApiError(403, "Anda tidak memiliki akses.");
 		}
 
 		const { file } = req;

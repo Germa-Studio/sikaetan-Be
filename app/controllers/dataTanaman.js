@@ -192,7 +192,7 @@ const editDataTanaman = async (req, res) => {
 			peran === "penyuluh" ||
 			peran === "operator poktan"
 		) {
-			throw new ApiError(400, "Anda tidak memiliki akses.");
+			throw new ApiError(403, "Anda tidak memiliki akses.");
 		}
 		const {
 			kategori,
@@ -280,7 +280,7 @@ const hapusDataTanaman = async (req, res) => {
 			peran === "penyuluh" ||
 			peran === "operator poktan"
 		) {
-			throw new ApiError(400, "Anda tidak memiliki akses.");
+			throw new ApiError(403, "Anda tidak memiliki akses.");
 		}
 
 		await dataTanaman.destroy({
@@ -309,7 +309,7 @@ const uploadDataTanaman = async (req, res) => {
 
 	try {
 		if (peran === "petani") {
-			throw new ApiError(400, "Anda tidak memiliki akses.");
+			throw new ApiError(403, "Anda tidak memiliki akses.");
 		}
 
 		const { file } = req;

@@ -80,113 +80,109 @@ const laporanPenyuluh = async (req, res) => {
 
 const tambahDaftarTani = async (req, res) => {
 	try {
-		// if (peran === "petani") {
-		// 	throw new ApiError(400, "Anda tidak memiliki akses.");
-		// } else {
-			const {
-				NIK,
-				nokk,
-				NoWa,
-				email,
-				alamat,
-				desa,
-				nama,
-				kecamatan,
-				password,
-				gapoktan,
-				penyuluh,
-				namaKelompok,
-			} = req.body;
+		const {
+			NIK,
+			nokk,
+			NoWa,
+			email,
+			alamat,
+			desa,
+			nama,
+			kecamatan,
+			password,
+			gapoktan,
+			penyuluh,
+			namaKelompok,
+		} = req.body;
 
-			if (!NIK) {
-				throw new ApiError(400, "NIK tidak boleh kosong");
-			}
-			if (!nama) {
-				throw new ApiError(400, "nama tidak boleh kosong");
-			}
-			if (!penyuluh) {
-				throw new ApiError(400, "penyuluh tidak boleh kosong");
-			}
-			const tani = await dataPetani.findOne({ where: { nik: NIK } });
-			if (tani) {
-				throw new ApiError(400, "NIK sudah digunakan");
-			}
-			const { file } = req;
-			const penyuluhData = await dataPenyuluh.findOne({
-				where: { id: penyuluh },
-			});
-			const hashedPassword = bcrypt.hashSync(password, 10);
-			const accountID = crypto.randomUUID();
-			const kelompokData = await kelompok.findOne({
-				where: {
-					gapoktan: gapoktan,
-					namaKelompok: namaKelompok,
-					desa: desa,
-				},
-			});
-			let urlImg;
-			if (file) {
-				const validFormat =
-					file.mimetype === "image/png" ||
-					file.mimetype === "image/jpg" ||
-					file.mimetype === "image/jpeg" ||
-					file.mimetype === "image/gif";
-				if (!validFormat) {
-					return res.status(400).json({
-						status: "failed",
-						message: "Wrong Image Format",
-					});
-				}
-				const split = file.originalname.split(".");
-				const ext = split[split.length - 1];
-
-				// upload file ke imagekit
-				const img = await imageKit.upload({
-					file: file.buffer,
-					fileName: `IMG-${Date.now()}.${ext}`,
+		if (!NIK) {
+			throw new ApiError(400, "NIK tidak boleh kosong");
+		}
+		if (!nama) {
+			throw new ApiError(400, "nama tidak boleh kosong");
+		}
+		if (!penyuluh) {
+			throw new ApiError(400, "penyuluh tidak boleh kosong");
+		}
+		const tani = await dataPetani.findOne({ where: { nik: NIK } });
+		if (tani) {
+			throw new ApiError(400, "NIK sudah digunakan");
+		}
+		const { file } = req;
+		const penyuluhData = await dataPenyuluh.findOne({
+			where: { id: penyuluh },
+		});
+		const hashedPassword = bcrypt.hashSync(password, 10);
+		const accountID = crypto.randomUUID();
+		const kelompokData = await kelompok.findOne({
+			where: {
+				gapoktan: gapoktan,
+				namaKelompok: namaKelompok,
+				desa: desa,
+			},
+		});
+		let urlImg;
+		if (file) {
+			const validFormat =
+				file.mimetype === "image/png" ||
+				file.mimetype === "image/jpg" ||
+				file.mimetype === "image/jpeg" ||
+				file.mimetype === "image/gif";
+			if (!validFormat) {
+				return res.status(400).json({
+					status: "failed",
+					message: "Wrong Image Format",
 				});
-				img.url;
-				urlImg = img.url;
 			}
-			const newAccount = await tbl_akun.create({
-				email,
-				password: hashedPassword,
-				no_wa: NoWa,
-				nama,
-				pekerjaan: "",
-				peran: "petani",
-				foto: urlImg,
-				accountID: accountID,
-			});
-			const daftarPetani = await dataPetani.create({
-				nik: NIK,
-				nkk: nokk,
-				foto: urlImg,
-				nama,
-				alamat,
-				desa,
-				kecamatan,
-				password: hashedPassword,
-				email,
-				noTelp: NoWa,
-				accountID: accountID,
-				fk_penyuluhId: penyuluhData.id,
-				fk_kelompokId: kelompokData.id,
-			});
+			const split = file.originalname.split(".");
+			const ext = split[split.length - 1];
 
-			postActivity({
-				user_id: id,
-				activity: "CREATE",
-				type: "DATA PETANI",
-				detail_id: daftarPetani.id,
+			// upload file ke imagekit
+			const img = await imageKit.upload({
+				file: file.buffer,
+				fileName: `IMG-${Date.now()}.${ext}`,
 			});
+			img.url;
+			urlImg = img.url;
+		}
+		const newAccount = await tbl_akun.create({
+			email,
+			password: hashedPassword,
+			no_wa: NoWa,
+			nama,
+			pekerjaan: "",
+			peran: "petani",
+			foto: urlImg,
+			accountID: accountID,
+		});
+		const daftarPetani = await dataPetani.create({
+			nik: NIK,
+			nkk: nokk,
+			foto: urlImg,
+			nama,
+			alamat,
+			desa,
+			kecamatan,
+			password: hashedPassword,
+			email,
+			noTelp: NoWa,
+			accountID: accountID,
+			fk_penyuluhId: penyuluhData.id,
+			fk_kelompokId: kelompokData.id,
+		});
 
-			res.status(200).json({
-				message: "Berhasil Menambahakan Daftar Tani",
-				daftarPetani,
-				newAccount,
-			});
-		// }
+		postActivity({
+			user_id: id,
+			activity: "CREATE",
+			type: "DATA PETANI",
+			detail_id: daftarPetani.id,
+		});
+
+		res.status(200).json({
+			message: "Berhasil Menambahakan Daftar Tani",
+			daftarPetani,
+			newAccount,
+		});
 	} catch (error) {
 		res.status(error.statusCode || 500).json({
 			message: error.message,
@@ -337,7 +333,7 @@ const daftarTani = async (req, res) => {
 	const { page, limit, verified } = req.query;
 	try {
 		if (peran === "petani") {
-			throw new ApiError(400, "Anda tidak memiliki akses.");
+			throw new ApiError(403, "Anda tidak memiliki akses.");
 		}
 		const limitFilter = Number(limit) || 10;
 		const pageFilter = Number(page) || 1;
@@ -393,7 +389,7 @@ const deleteDaftarTani = async (req, res) => {
 	const { peran, id: UserId } = req.user;
 	try {
 		if (peran !== "operator super admin") {
-			throw new ApiError(400, "Anda tidak memiliki akses.");
+			throw new ApiError(403, "Anda tidak memiliki akses.");
 		} else {
 			const data = await dataPetani.findOne({
 				where: {
@@ -476,7 +472,7 @@ const updateTaniDetail = async (req, res) => {
 
   try {
     if (peran === "petani") {
-      throw new ApiError(400, "Anda tidak memiliki akses.");
+      throw new ApiError(403, "Anda tidak memiliki akses.");
     } else {
       const data = await dataPetani.findOne({
         where: {
@@ -656,7 +652,7 @@ const ubahTanamanPetaniById = async (req, res) => {
 	try {
 		const { peran, id: UserId } = req.user || {};
 		if (peran === "petani") {
-			throw new ApiError(400, "Anda tidak memiliki akses.");
+			throw new ApiError(403, "Anda tidak memiliki akses.");
 		}
 		const { id } = req.params;
 		const {
@@ -727,7 +723,7 @@ const getTanamanPetaniById = async (req, res) => {
 	try {
 		const { peran } = req.user || {};
 		if (peran === "petani") {
-			throw new ApiError(400, "Anda tidak memiliki akses.");
+			throw new ApiError(403, "Anda tidak memiliki akses.");
 		}
 		const data = await tanamanPetani.findOne({
 			where: {
@@ -755,7 +751,7 @@ const deleteTanamanPetaniById = async (req, res) => {
 			peran === "penyuluh" ||
 			peran === "operator poktan"
 		) {
-			throw new ApiError(400, "Anda tidak memiliki akses.");
+			throw new ApiError(403, "Anda tidak memiliki akses.");
 		}
 		const data = await tanamanPetani.findOne({
 			where: {

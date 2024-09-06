@@ -24,7 +24,7 @@ const tambahDataOperator = async (req, res) => {
 	const { peran, id } = req.user || {};
 	try {
 		if (peran !== "operator super admin" && peran !== "operator admin") {
-			throw new ApiError(400, "Anda tidak memiliki akses.");
+			throw new ApiError(403, "Anda tidak memiliki akses.");
 		} else {
 			const { nik, nkk, nama, peran, email, notelp, alamat, password } =
 				req.body;
@@ -107,7 +107,7 @@ const getDaftarOperator = async (req, res) => {
 	const { page, limit } = req.query;
 	try {
 		if (peran !== "operator super admin" && peran !== "operator admin") {
-			throw new ApiError(400, "Anda tidak memiliki akses.");
+			throw new ApiError(403, "Anda tidak memiliki akses.");
 		} else {
 			const limitFilter = Number(limit) || 10;
 			const pageFilter = Number(page) || 1;
@@ -144,7 +144,7 @@ const deleteDaftarOperator = async (req, res) => {
 	const { peran } = req.user || {};
 	try {
 		if (peran !== "operator super admin") {
-			throw new ApiError(400, "Anda tidak memiliki akses.");
+			throw new ApiError(403, "Anda tidak memiliki akses.");
 		} else {
 			const data = await dataOperator.findOne({
 				where: {
@@ -182,7 +182,7 @@ const getOperatorDetail = async (req, res) => {
 	const { peran } = req.user || {};
 	try {
 		if (peran !== "operator super admin" && peran !== "operator admin") {
-			throw new ApiError(400, "Anda tidak memiliki akses.");
+			throw new ApiError(403, "Anda tidak memiliki akses.");
 		} else {
 			const data = await sequelize.query(
 				`SELECT do.*, ta.peran
@@ -223,7 +223,7 @@ const updateOperatorDetail = async (req, res) => {
 
 	try {
 		if (peran !== "operator super admin" && peran !== "operator admin") {
-			throw new ApiError(400, "Anda tidak memiliki akses.");
+			throw new ApiError(403, "Anda tidak memiliki akses.");
 		} else {
 			const { nik, nkk, nama, peran, email, notelp, alamat, password } =
 				req.body;
@@ -313,7 +313,7 @@ const uploadDataOperator = async (req, res) => {
 	const { peran, id } = req.user || {};
 	try {
 		if (peran !== "operator super admin") {
-			throw new ApiError(400, "Anda tidak memiliki akses.");
+			throw new ApiError(403, "Anda tidak memiliki akses.");
 		} else {
 			// const { file } = req;
 			// if (!file) throw new ApiError(400, "File tidak ditemukan.");

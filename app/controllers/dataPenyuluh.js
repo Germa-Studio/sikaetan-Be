@@ -20,7 +20,7 @@ const tambahDataPenyuluh = async (req, res) => {
 	const { peran, id } = req.user || {};
 	try {
 		if (peran === "petani" || peran === "penyuluh") {
-			throw new ApiError(400, "Anda tidak memiliki akses.");
+			throw new ApiError(403, "Anda tidak memiliki akses.");
 		} else {
 			const {
 				NIP,
@@ -170,7 +170,7 @@ const uploadDataPenyuluh = async (req, res) => {
 	const { peran, id } = req.user || {};
 	try {
 		if (peran === "petani" || peran === "penyuluh") {
-			throw new ApiError(400, "Anda tidak memiliki akses.");
+			throw new ApiError(403, "Anda tidak memiliki akses.");
 		}
 
 		const { file } = req;
@@ -234,15 +234,11 @@ const uploadDataPenyuluh = async (req, res) => {
 
 const opsiPenyuluh = async (req, res) => {
 	try {
-		// if (peran === "petani") {
-		// 	throw new ApiError(400, "Anda tidak memiliki akses.");
-		// } else {
 		const dataDaftarPenyuluh = await dataPenyuluh.findAll();
 		res.status(200).json({
 			message: "Semua Data Penyuluh",
 			dataDaftarPenyuluh,
 		});
-		// }
 	} catch (error) {
 		res.status(error.statusCode || 500).json({
 			message: error.message,
@@ -255,7 +251,7 @@ const daftarPenyuluh = async (req, res) => {
 	const { page, limit } = req.query;
 	try {
 		if (peran === "petani" || peran === "penyuluh") {
-			throw new ApiError(400, "Anda tidak memiliki akses.");
+			throw new ApiError(403, "Anda tidak memiliki akses.");
 		}
 		const limitFilter = Number(limit) || 10;
 		const pageFilter = Number(page) || 1;
@@ -290,7 +286,7 @@ const deleteDaftarPenyuluh = async (req, res) => {
 	const { nama, peran, id: UserId } = req.user || {};
 	try {
 		if (peran !== "operator potan") {
-			throw new ApiError(400, "Anda tidak memiliki akses.");
+			throw new ApiError(403, "Anda tidak memiliki akses.");
 		} else {
 			const data = await dataPenyuluh.findOne({
 				where: {
@@ -333,7 +329,7 @@ const presensiKehadiran = async (req, res) => {
 			peran !== "super admin" &&
 			peran !== "PENYULUH"
 		) {
-			throw new ApiError(400, "Anda tidak memiliki akses.");
+			throw new ApiError(403, "Anda tidak memiliki akses.");
 		} else {
 			const DataPresesiKehadiran = await dataPerson.findAll({
 				include: [
@@ -361,7 +357,7 @@ const presensiKehadiranWeb = async (req, res) => {
 			peran !== "super admin" &&
 			peran !== "PENYULUH"
 		) {
-			throw new ApiError(400, "Anda tidak memiliki akses.");
+			throw new ApiError(403, "Anda tidak memiliki akses.");
 		} else {
 			const DataPresesiKehadiran = await presesiKehadiran.findAll({
 				include: {
@@ -392,7 +388,7 @@ const tambahPresensiKehadiran = async (req, res) => {
 			peran !== "super admin" &&
 			peran !== "penyuluh"
 		) {
-			throw new ApiError(400, "Anda tidak memiliki akses.");
+			throw new ApiError(403, "Anda tidak memiliki akses.");
 		} else {
 			const {
 				NIP = "",
@@ -462,7 +458,7 @@ const jurnalKegiatan = async (req, res) => {
 	const { peran } = req.user || {};
 	try {
 		if (peran === "petani") {
-			throw new ApiError(400, "Anda tidak memiliki akses.");
+			throw new ApiError(403, "Anda tidak memiliki akses.");
 		} else {
 			const newData = await jurnalHarian.findAll({
 				include: [
@@ -487,7 +483,7 @@ const jurnalKegiatanbyId = async (req, res) => {
 	const { id } = req.params;
 	try {
 		if (peran === "petani") {
-			throw new ApiError(400, "Anda tidak memiliki akses.");
+			throw new ApiError(403, "Anda tidak memiliki akses.");
 		} else {
 			const newData = await jurnalHarian.findOne({
 				where: {
@@ -515,7 +511,7 @@ const deleteJurnalKegiatan = async (req, res) => {
 	const { nama, peran, id: UserId } = req.user || {};
 	try {
 		if (peran === "petani") {
-			throw new ApiError(400, "Anda tidak memiliki akses.");
+			throw new ApiError(403, "Anda tidak memiliki akses.");
 		} else {
 			const data = await jurnalHarian.findOne({
 				where: {
@@ -552,7 +548,7 @@ const updateJurnalKegiatan = async (req, res) => {
 	const { nama, peran, id: UserId } = req.user || {};
 	try {
 		if (peran === "petani") {
-			throw new ApiError(400, "Anda tidak memiliki akses.");
+			throw new ApiError(403, "Anda tidak memiliki akses.");
 		} else {
 			const {
 				judul,
@@ -630,7 +626,7 @@ const tambahJurnalKegiatan = async (req, res) => {
 	const { nama, peran, id } = req.user || {};
 	try {
 		if (peran === "petani") {
-			throw new ApiError(400, "Anda tidak memiliki akses.");
+			throw new ApiError(403, "Anda tidak memiliki akses.");
 		} else {
 			const { NIK, judul, tanggalDibuat, uraian, statusJurnal } =
 				req.body;
@@ -700,7 +696,7 @@ const RiwayatChat = async (req, res) => {
 			peran !== "super admin" &&
 			peran !== "penyuluh"
 		) {
-			throw new ApiError(400, "Anda tidak memiliki akses.");
+			throw new ApiError(403, "Anda tidak memiliki akses.");
 		} else {
 			const dataRiwayatChat = await dataPerson.findAll({
 				include: [
@@ -724,7 +720,7 @@ const daftarPenyuluhById = async (req, res) => {
 	const { nama, peran } = req.user || {};
 	try {
 		if (peran === "petani" || peran === "penyuluh") {
-			throw new ApiError(400, "Anda tidak memiliki akses.");
+			throw new ApiError(403, "Anda tidak memiliki akses.");
 		} else {
 			const dataDaftarPenyuluh = await dataPenyuluh.findOne({
 				where: { id: id },
@@ -746,7 +742,7 @@ const updatePenyuluh = async (req, res) => {
 	const { nama, peran, id: UserId } = req.user || {};
 	try {
 		if (peran === "petani" || peran === "penyuluh") {
-			throw new ApiError(400, "Anda tidak memiliki akses.");
+			throw new ApiError(403, "Anda tidak memiliki akses.");
 		} else {
 			const {
 				nik,
@@ -854,7 +850,7 @@ const getKelompok = async (req, res) => {
 	const { peran } = req.user || {};
 	try {
 		if (peran === "petani") {
-			throw new ApiError(400, "Anda tidak memiliki akses.");
+			throw new ApiError(403, "Anda tidak memiliki akses.");
 		} else {
 			const dataKelompok = await kelompok.findAll();
 			// Convert array to object
@@ -879,7 +875,7 @@ const getPetani = async (req, res) => {
 
 	try {
 		if (peran === "petani") {
-			throw new ApiError(400, "Anda tidak memiliki akses.");
+			throw new ApiError(403, "Anda tidak memiliki akses.");
 		} else {
 			const petanis = await dataPetani.findAll({
 				where: {

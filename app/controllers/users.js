@@ -19,7 +19,7 @@ const usersAll = async (req, res) => {
 	const { page, limit } = req.query;
 	try {
 		if (peran === NULL) {
-			throw new ApiError(400, "Anda tidak memiliki akses.");
+			throw new ApiError(403, "Anda tidak memiliki akses.");
 		} else {
 			const limitFilter = Number(limit) || 10;
 			const pageFilter = Number(page) || 1;
@@ -71,7 +71,7 @@ const userVerify = async (req, res) => {
 			peran === "penyuluh" ||
 			peran === "operator poktan"
 		) {
-			throw new ApiError(400, "Anda tidak memiliki akses.");
+			throw new ApiError(403, "Anda tidak memiliki akses.");
 		}
 
 		// Build the query with pagination
@@ -219,7 +219,7 @@ const deleteUser = async (req, res) => {
 	const { peran } = req.user;
 	try {
 		if (peran !== "super admin" && peran !== "admin") {
-			throw new ApiError(400, "Anda tidak memiliki akses.");
+			throw new ApiError(403, "Anda tidak memiliki akses.");
 		} else {
 			const data = await tbl_akun.findOne({
 				where: {
