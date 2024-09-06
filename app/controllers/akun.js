@@ -838,58 +838,49 @@ const ubahPeran = async (req, res) => {
 		const user = await tblAkun.findOne({ where: { id: id } });
 		let detailUser;
 		if (!user) throw new ApiError(400, "user tidak ditemukan");
-		if (user.peran === "petani") {
-			detailUser = await dataPetani.findOne({
-				where: { accountID: user.accountID },
-			});
-		} else if (user.peran === "penyuluh") {
+
+		// check detail user in every table
+		detailUser = await dataPetani.findOne({
+			where: { accountID: user.accountID },
+		});
+
+		if(!detailUser){
 			detailUser = await dataPenyuluh.findOne({
 				where: { accountID: user.accountID },
 			});
-		} else if (
-			user.peran === "operator super admin" ||
-			user.peran === "operator admin" ||
-			user.peran === "operator poktan"
-		) {
+		}
+		if(!detailUser){
 			detailUser = await dataOperator.findOne({
 				where: { accountID: user.accountID },
 			});
 		}
+
+		const jsonDetailUser = JSON.parse(JSON.stringify(detailUser));
+		const jsonUser = JSON.parse(JSON.stringify(user));
+
+		const {id: unusedId, createdAt, updatedAt, ...payload} = {
+			...jsonDetailUser,
+			...jsonUser,
+			noTelp: jsonDetailUser.noTelp || jsonUser.no_wa,
+		};
 		
 		if (roles === "petani") {
-			await dataPetani.create({
-				nik: detailUser.nik,
-				nama: detailUser.nama,
-				email: detailUser.email,
-				noTelp: detailUser.noTelp,
-				foto: detailUser.foto,
-				alamat: detailUser.alamat,
-				password: detailUser.password,
-				accountID: detailUser.accountID,
-			});
+			await dataPetani.destroy({ where: { accountID: user.accountID }, force: true, });
+			await dataPetani.create(payload);
 		} else if (roles === "penyuluh") {
-			await dataPenyuluh.create({
-				nik: detailUser.nik,
-				nama: detailUser.nama,
-				email: detailUser.email,
-				noTelp: detailUser.noTelp,
-				foto: detailUser.foto,
-				alamat: detailUser.alamat,
-				password: detailUser.password,
-				accountID: detailUser.accountID,
+			await dataPenyuluh.destroy({
+				where: { accountID: user.accountID },
+				force: true,
 			});
+			await dataPenyuluh.create(payload);
 		} else {
-			await dataOperator.create({
-				nik: detailUser.nik,
-				nama: detailUser.nama,
-				email: detailUser.email,
-				noTelp: detailUser.noTelp,
-				foto: detailUser.foto,
-				alamat: detailUser.alamat,
-				password: detailUser.password,
-				accountID: detailUser.accountID,
+			await dataOperator.destroy({
+				where: { accountID: user.accountID },
+				force: true,
 			});
+			await dataOperator.create(payload);
 		}
+
 		await tblAkun.update(
 			{ peran: roles },
 			{
