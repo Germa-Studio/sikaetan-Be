@@ -666,10 +666,9 @@ const updateDetailProfile = async (req, res) => {
 					file: file.buffer,
 					fileName: `IMG-${Date.now()}.${ext}`,
 				});
-				img.url;
 				urlImg = img.url;
 			}
-			const hashedPassword = bcrypt.hashSync(password, 10);
+
 			const accountUpdate = await tblAkun.update(
 				{
 					email,
@@ -694,6 +693,7 @@ const updateDetailProfile = async (req, res) => {
 					kecamatan: kecamatan || data.kecamatan,
 					password: passwordBaru ? bcrypt.hashSync(passwordBaru, 10) : data.password, // Hash password only if provided
 					email: email || data.email,
+					foto: urlImg || data.foto,
 					noTelp: whatsapp || data.noTelp,
 				},
 				{
