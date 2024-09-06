@@ -7,7 +7,8 @@ const {
   getTanamanPetaniStatistically,
   getAllTanamanPetaniByPetani,
   getTanamanbyPetani,
-  getTopTanamanPetani
+  getTopTanamanPetani,
+  getAllTanamanPetaniByPenyuluh
   // getTanamanPetaniById,
   // tambahTanamanPetani,
   // ubahTanamanPetaniById,
@@ -19,5 +20,6 @@ router.get("/list/", auth, getAllTanamanPetani);
 router.get("/statistik/", getTanamanPetaniStatistically);
 router.get("/petani/:id", auth, getTanamanbyPetani);
 router.get("/petani/:id/all", auth, getAllTanamanPetaniByPetani);
+router.get("/penyuluh/all", auth, getAllTanamanPetaniByPenyuluh);
 
 module.exports = router;

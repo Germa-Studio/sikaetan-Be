@@ -305,13 +305,32 @@ const getTanamanPetaniStatistically = async (req, res) => {
 
 const getAllTanamanPetaniByPetani = async (req, res) => {
   const { id } = req.params;
-  const { peran } = req.user || {};
+  const { peran, accountID } = req.user || {};
   const { page, limit } = req.query;
 
   try {
-    if (peran !== "petani" && peran !== "operator super admin") {
+    if(!['petani', 'operator super admin', 'penyuluh'].includes(peran)) {
       throw new ApiError(403, "Anda tidak memiliki akses.");
     }
+
+    const petani = await dataPetani.findOne({
+      where: { id },
+    });
+
+    if(!petani) {
+      throw new ApiError(404, "Petani tidak ditemukan.");
+    }
+
+    if(peran === 'penyuluh') {
+      const penyuluh = await dataPenyuluh.findOne({
+        where: { accountID },
+      });
+
+      if(petani.fk_penyuluhId !== penyuluh.id) {
+        throw new ApiError(403, "Anda tidak memiliki akses.");
+      }
+    }
+
 
     const limitFilter = limit ? Number(limit) : 10;
     const pageFilter = page ? Number(page) : 1;
@@ -361,8 +380,6 @@ const getTanamanbyPetani = async (req, res) => {
       where: { id },
     });
 
-    
-    
     if(!petani) {
       throw new ApiError(404, "Petani tidak ditemukan.");
     }
@@ -420,6 +437,65 @@ const getTanamanbyPetani = async (req, res) => {
     res.status(200).json({
       message: "Data berhasil didapatkan.",
       data,
+    });
+  } catch (error) {
+    res.status(error.statusCode || 500).json({
+      message: error.message,
+    });
+  }
+};
+
+const getAllTanamanPetaniByPenyuluh = async (req, res) => {
+  const { peran, accountID } = req.user || {};
+  const { page, limit } = req.query;
+
+  try {
+    if(!['operator super admin', 'penyuluh'].includes(peran)) {
+      throw new ApiError(403, "Anda tidak memiliki akses.");
+    }
+
+    const penyuluh = await dataPenyuluh.findOne({
+      where: { accountID },
+    });
+
+    const petanis = await dataPetani.findAll({
+      where: { fk_penyuluhId: penyuluh.id },
+    });
+
+    const petaniIds = petanis.map((petani) => petani.id);
+
+    const limitFilter = limit ? Number(limit) : 10;
+    const pageFilter = page ? Number(page) : 1;
+
+    console.log({petaniIds});
+    
+    const query = {
+      where: {
+        fk_petaniId: {
+          [Op.in]: petaniIds,
+        },
+      },
+      limit: limitFilter,
+      offset: (pageFilter - 1) * limitFilter,
+    };
+    
+    const data = await tanamanPetani.findAll({
+      ...query,
+      order: [["createdAt", "DESC"]],
+    });
+    const total = await tanamanPetani.count({ ...query });
+
+    res.status(200).json({
+      message: "Data berhasil didapatkan.",
+      data,
+      total,
+      currentPages: pageFilter,
+      limit: limitFilter,
+      maxPages: Math.ceil(total / limitFilter),
+      from: pageFilter ? (pageFilter - 1) * limitFilter + 1 : 1,
+      to: pageFilter
+        ? (pageFilter - 1) * limitFilter + data.length
+        : data.length,
     });
   } catch (error) {
     res.status(error.statusCode || 500).json({
@@ -603,4 +679,5 @@ module.exports = {
   deleteDatatanamanPetani,
   getDetailedDataTanamanPetani,
   uploadDataTanamanPetani,
+  getAllTanamanPetaniByPenyuluh
 };
