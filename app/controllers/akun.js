@@ -861,7 +861,7 @@ const ubahPeran = async (req, res) => {
 		const {id: unusedId, createdAt, updatedAt, ...payload} = {
 			...jsonDetailUser,
 			...jsonUser,
-			noTelp: jsonDetailUser.noTelp || jsonUser.no_wa,
+			noTelp: jsonDetailUser?.noTelp || jsonUser.no_wa,
 		};
 		
 		if (roles === "petani") {
