@@ -26,7 +26,7 @@ router.get("/populate-penyuluh", opsiPenyuluh);
 router.get("/populate-poktan", opsiPoktan);
 router.get("/profile", getProfile);
 router.get("/detailprofile", auth, getDetailProfile);
-router.put("/updateprofile", auth, upload.single("foto"), updateDetailProfile)
+router.post("/updateprofile", auth, upload.single("foto"), updateDetailProfile)
 router.get("/verify", getUserNotVerify);
 router.get("/verify/:id", verifikasi);
 router.get("/peran", auth, getPeran);
