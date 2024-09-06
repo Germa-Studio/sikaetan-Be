@@ -349,12 +349,32 @@ const getAllTanamanPetaniByPetani = async (req, res) => {
 
 const getTanamanbyPetani = async (req, res) => {
   const { id } = req.params;
-  const { peran } = req.user || {};
+  const { peran, accountID } = req.user || {};
   const { jenis, musim, tipe, startDate, endDate } = req.query;
 
   try {
-    if (peran !== "petani" && peran !== "operator super admin") {
+    if(!['petani', 'operator super admin', 'penyuluh'].includes(peran)) {
       throw new ApiError(403, "Anda tidak memiliki akses.");
+    }
+
+    const petani = await dataPetani.findOne({
+      where: { id },
+    });
+
+    
+    
+    if(!petani) {
+      throw new ApiError(404, "Petani tidak ditemukan.");
+    }
+    
+    if(peran === 'penyuluh') {
+      const penyuluh = await dataPenyuluh.findOne({
+        where: { accountID },
+      });
+      
+      if(petani.fk_penyuluhId !== penyuluh.id) {
+        throw new ApiError(403, "Anda tidak memiliki akses.");
+      }
     }
 
     const filter = {
