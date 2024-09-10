@@ -721,16 +721,20 @@ const daftarPenyuluhById = async (req, res) => {
 	try {
 		if (peran === "petani" || peran === "penyuluh") {
 			throw new ApiError(403, "Anda tidak memiliki akses.");
-		} else {
-			const dataDaftarPenyuluh = await dataPenyuluh.findOne({
-				where: { id: id },
-				include: [{ model: kelompok, as: "kelompoks" }], // Assuming the association is named 'kelompok'
-			});
-			res.status(200).json({
-				message: "Detail Penyuluh",
-				dataDaftarPenyuluh,
-			});
 		}
+		const dataDaftarPenyuluh = await dataPenyuluh.findOne({
+			where: { id: id },
+			include: [{ model: kelompok, as: "kelompoks" }], // Assuming the association is named 'kelompok'
+		});
+
+		if (!dataDaftarPenyuluh) {
+			throw new ApiError(404, "Data penyuluh tidak ditemukan.");
+		}
+		
+		res.status(200).json({
+			message: "Detail Penyuluh",
+			dataDaftarPenyuluh,
+		});
 	} catch (error) {
 		res.status(error.statusCode || 500).json({
 			message: error.message,
