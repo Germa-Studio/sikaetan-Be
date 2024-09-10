@@ -2,7 +2,7 @@ const {kelompok } = require("../models");
 
 const ApiError = require("../../utils/ApiError");
 const dotenv = require("dotenv");
-const { Op } = require("sequelize");
+const { Op, fn, col } = require("sequelize");
 const ExcelJS = require("exceljs");
 const { postActivity } = require("./logActivity");
 
@@ -45,6 +45,159 @@ const getAllKelompok = async (req,res) => {
     }
 }
 
+const getKelompokById = async (req, res) => {
+	const { peran } = req.user || {};
+	const { id } = req.params;
+
+	try {
+		if (peran !== "operator super admin" && peran !== "operator admin") {
+			throw new ApiError(403, "Anda tidak memiliki akses.");
+		}
+
+		const data = await kelompok.findByPk(id);
+		if (!data) {
+			throw new ApiError(404, "Data kelompok tidak ditemukan.");
+		}
+
+		res.status(200).json({
+			message: "Data kelompok berhasil diperoleh.",
+			data,
+		});
+	} catch (error) {
+		res.status(error.statusCode || 500).json({
+			message: error.message,
+		});
+	}
+}
+
+const editKelompokById = async (req, res) => {
+	const { peran } = req.user || {};
+	const { id } = req.params;
+	const { gapoktan, namaKelompok, desa, kecamatan } = req.body;
+
+	try {
+		if (peran !== "operator super admin" && peran !== "operator admin") {
+			throw new ApiError(403, "Anda tidak memiliki akses.");
+		}
+
+		const data = await kelompok.findByPk(id);
+		if (!data) {
+			throw new ApiError(404, "Data kelompok tidak ditemukan.");
+		}
+
+		await kelompok.update(
+			{
+				gapoktan,
+				namaKelompok,
+				desa,
+				kecamatan,
+			},
+			{
+				where: {
+					id,
+				},
+			}
+		);
+
+		await postActivity({
+			user_id: req.user.id,
+			activity: "UPDATE",
+			type: "KELOMPOK",
+			detail_id: id,
+		});
+
+		res.status(200).json({
+			message: "Data kelompok berhasil diubah.",
+		});
+	} catch (error) {
+		res.status(error.statusCode || 500).json({
+			message: error.message,
+		});
+	}
+}
+
+const deleteKelompok = async (req, res) => {
+	const { peran } = req.user || {};
+	const { id } = req.params;
+
+	try {
+		if (peran !== "operator super admin" && peran !== "operator admin") {
+			throw new ApiError(403, "Anda tidak memiliki akses.");
+		}
+
+		const data = await kelompok.findByPk(id);
+		if (!data) {
+			throw new ApiError(404, "Data kelompok tidak ditemukan.");
+		}
+
+		await kelompok.destroy({
+			where: {
+				id,
+			},
+		});
+
+		await postActivity({
+			user_id: req.user.id,
+			activity: "DELETE",
+			type: "KELOMPOK",
+			detail_id: id,
+		});
+
+		res.status(200).json({
+			message: "Data kelompok berhasil dihapus.",
+		});
+	} catch (error) {
+		res.status(error.statusCode || 500).json({
+			message: error.message,
+		});
+	}
+}
+
+const getAllKecamatan = async (req, res) => {
+	try {
+		const data = await kelompok.findAll({
+			attributes: [
+				[fn("DISTINCT", col("kecamatan")), "kecamatan"],
+			],
+		});
+
+		res.status(200).json({
+			message: "Data kecamatan berhasil diperoleh.",
+			data,
+		});
+	} catch (error) {
+		res.status(error.statusCode || 500).json({
+			message: error.message,
+		});
+	}
+}
+
+const getAllDesaInKecamatan = async (req, res) => {
+	const { kecamatan } = req.query;
+
+	console.log({ kecamatan });
+
+	try {
+		const data = await kelompok.findAll({
+			attributes: [
+				[fn("DISTINCT", col("desa")), "desa"],
+			],
+			where: {
+				kecamatan,
+			},
+		});
+
+		res.status(200).json({
+			message: "Data desa berhasil diperoleh.",
+			data,
+		});
+	} catch (error) {
+		res.status(error.statusCode || 500).json({
+			message: error.message,
+		});
+	}
+}
+
 const uploadDataKelompoks = async (req, res) => {
 	const { peran } = req.user || {};
 
@@ -85,5 +238,10 @@ const uploadDataKelompoks = async (req, res) => {
 
 module.exports = {
 	uploadDataKelompoks,
-    getAllKelompok
+	editKelompokById,
+	getKelompokById,
+	deleteKelompok,
+    getAllKelompok,
+	getAllKecamatan,
+	getAllDesaInKecamatan,
 };
