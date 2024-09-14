@@ -23,6 +23,7 @@ const tanamanPetani = require("./tanamanPetani");
 const logActivity = require("./logActivity");
 const dataOperator = require("./dataOperator");
 const dashboard = require("./dashboard");
+const wilayah = require("./wilayah");
 const { getProfile } = require("../controllers/akun");
 
 router.use("/api-docs", swaggerUI.serve);
@@ -55,5 +56,6 @@ router.use("/", chatt);
 router.use("/", laporanTanam);
 router.use("/", logActivity);
 router.use("/", dataOperator);
+router.use("/wilayah", wilayah);
 
 module.exports = router;
