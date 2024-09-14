@@ -5,6 +5,8 @@ const dotenv = require("dotenv");
 const { Op } = require("sequelize");
 const ExcelJS = require("exceljs");
 const { postActivity } = require("./logActivity");
+const { tanamanPangan, tanamanPerkebunan, komoditasSemusim, komoditasTahunan } = require("../../utils/constants/tanaman");
+const monthOrder = require("../../utils/constants/months");
 
 dotenv.config();
 
@@ -317,27 +319,96 @@ const uploadDataTanaman = async (req, res) => {
 
 		const workbook = new ExcelJS.Workbook();
 		await workbook.xlsx.load(file.buffer);
-
 		const worksheet = workbook.getWorksheet(1);
-
-		// Iterate through rows and columns to read data
+		
+		let somethingWrong = false;
+		let errorMessage = "";
 		worksheet.eachRow({ includeEmpty: true }, async (row, rowNumber) => {
-			if (rowNumber === 1) return;
+			try {
+				if (rowNumber === 1) return;
+				const kategori = row.getCell(2).value;
+				const komoditas = row.getCell(3).value;
+				const periodeTanam = row.getCell(4).value;
+				const luasLahan = row.getCell(5).value;
+				const prakiraanLuasPanen = row.getCell(6).value;
+				const prakiraanHasilPanen = row.getCell(7).value;
+				const prakiraanBulanPanen = row.getCell(8).value;
+				const realisasiLuasPanen = row.getCell(9).value;
+				const realisasiHasilPanen = row.getCell(10).value;
+				const realisasiBulanPanen = row.getCell(11).value;
 
-			await dataTanaman.create({
-				fk_kelompokId: row.getCell(1).value,
-				kategori: row.getCell(2).value,
-				komoditas: row.getCell(3).value,
-				periodeTanam: row.getCell(4).value,
-				luasLahan: row.getCell(5).value,
-				prakiraanLuasPanen: row.getCell(6).value,
-				prakiraanHasilPanen: row.getCell(7).value,
-				prakiraanBulanPanen: row.getCell(8).value,
-				realisasiLuasPanen: row.getCell(9).value,
-				realisasiHasilPanen: row.getCell(10).value,
-				realisasiBulanPanen: row.getCell(11).value,
-			});
+				if (!["pangan", "perkebunan", "sayur", "buah"].includes(kategori)) throw new ApiError(400, "Kategori tidak valid.");
+				if (!tanamanPangan.concat(tanamanPerkebunan).concat(komoditasSemusim).concat(komoditasTahunan).includes(komoditas)) throw new ApiError(400, "Komoditas tidak valid.");
+				if (!monthOrder.includes(periodeTanam)) throw new ApiError(400, "Periode tanam tidak valid.");
+				if (!luasLahan || isNaN(luasLahan)) throw new ApiError(400, "Luas lahan tidak valid.");
+				if (!prakiraanLuasPanen || isNaN(prakiraanLuasPanen)) throw new ApiError(400, "Prakiraan luas panen tidak valid.");
+				if (!prakiraanHasilPanen || isNaN(prakiraanHasilPanen)) throw new ApiError(400, "Prakiraan hasil panen tidak valid.");
+				if (!monthOrder.includes(prakiraanBulanPanen)) throw new ApiError(400, "Prakiraan bulan panen tidak valid.");
+				if (realisasiLuasPanen && isNaN(realisasiLuasPanen)) throw new ApiError(400, "Realisasi luas panen tidak valid.");
+				if (realisasiHasilPanen && isNaN(realisasiHasilPanen)) throw new ApiError(400, "Realisasi hasil panen tidak valid.");
+				if (realisasiBulanPanen && !monthOrder.includes(realisasiBulanPanen)) throw new ApiError(400, "Realisasi bulan panen tidak valid.");
+			} catch (error) {
+				somethingWrong = true;
+				if(errorMessage === "") errorMessage = `Kesalahan memproses baris ${rowNumber}: ${error.message} Baca petunjuk pengisian file excel.`;
+			}
 		});
+
+		if (somethingWrong) {
+			throw new ApiError(400, errorMessage);
+		}
+
+		const promises = [];
+		worksheet.eachRow({ includeEmpty: true }, (row, rowNumber) => {
+			if (rowNumber === 1) return;
+			const promise = (async () => {
+				try {
+					const fk_kelompokId = row.getCell(1).value;
+					const kategori = row.getCell(2).value;
+					const komoditas = row.getCell(3).value;
+					const periodeTanam = row.getCell(4).value;
+					const luasLahan = row.getCell(5).value;
+					const prakiraanLuasPanen = row.getCell(6).value;
+					const prakiraanHasilPanen = row.getCell(7).value;
+					const prakiraanBulanPanen = row.getCell(8).value;
+					const realisasiLuasPanen = row.getCell(9).value;
+					const realisasiHasilPanen = row.getCell(10).value;
+					const realisasiBulanPanen = row.getCell(11).value;
+
+					const kelompokTani = await kelompok.findOne({
+						where: { id: fk_kelompokId },
+					});
+
+					if (!kelompokTani) throw new ApiError(400, "Kelompok tidak ditemukan.");
+					return dataTanaman.create({
+						fk_kelompokId,
+						kategori,
+						komoditas,
+						periodeTanam,
+						luasLahan,
+						prakiraanLuasPanen,
+						prakiraanHasilPanen,
+						prakiraanBulanPanen,
+						realisasiLuasPanen,
+						realisasiHasilPanen,
+						realisasiBulanPanen,
+					});
+				} catch (error) {
+					console.error(`Error processing row ${rowNumber}:`, error.message);
+					return null;
+				}
+			})();
+
+			promises.push(promise);
+		});
+
+		// Wait for all promises to complete
+		Promise.all(promises)
+			.then(results => {
+				console.log('All rows processed successfully', results);
+			})
+			.catch(error => {
+				console.error('Error processing rows', error);
+			});
 
 		res.status(201).json({
 			message: "Data berhasil ditambahkan.",

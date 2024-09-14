@@ -12,13 +12,9 @@ const bcrypt = require("bcrypt");
 const { Op, Sequelize, literal } = require("sequelize");
 const ExcelJS = require("exceljs");
 const moment = require("moment");
+const monthOrder = require("../../utils/constants/months");
 
 dotenv.config();
-
-const monthOrder = [
-  'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
-  'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
-];
 
 const getAllTanamanPetani = async (req, res) => {
   const { peran } = req.user || {};
