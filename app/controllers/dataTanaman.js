@@ -80,6 +80,108 @@ const getAllDataTanaman = async (req, res) => {
 	}
 };
 
+const fixKategori = async (req, res) => {
+	const { peran } = req.user || {};
+	const { category } = req.query;
+	try {
+		if (peran === "petani") {
+			throw new ApiError(403, "Anda tidak memiliki akses.");
+		}
+
+		const whereFilter = category?{
+			where: {
+				kategori: category,
+			},
+		}: {};
+		const data = await dataTanaman.findAll(
+			whereFilter
+		);
+
+		if(whereFilter.where){
+			return res.status(200).json({
+				message: "Data berhasil didapatkan.",
+				data,
+			});
+		}
+
+		data.forEach(async (item) => {
+			let correctCategory = "";
+			if(tanamanPangan.includes(item.komoditas)){
+				correctCategory = "pangan";
+			}
+			else if(tanamanPerkebunan.includes(item.komoditas) || item.komoditas.toLowerCase().includes("perkebunan")){
+				correctCategory = "perkebunan";
+			}
+			else if(komoditasSemusim.includes(item.komoditas)){
+				correctCategory = "buah";
+			}
+			else if(komoditasTahunan.includes(item.komoditas)){
+				correctCategory = "sayur";
+			}
+			await item.update({
+				kategori: correctCategory,
+			});
+		});
+
+		res.status(200).json({
+			message: "Data berhasil diupdate.",
+		});
+	} catch (error) {
+		res.status(error.statusCode || 500).json({
+			message: error.message,
+		});
+	}
+};
+
+const fixKomoditas = async (req, res) => {
+	const { peran } = req.user || {};
+	const { wrongKomoditas, correctKomoditas, getWrong, debug } = req.query;
+	try {
+		if (peran === "petani") {
+			throw new ApiError(403, "Anda tidak memiliki akses.");
+		}
+
+		if(getWrong){
+			const correctKomoditas = tanamanPangan.concat(tanamanPerkebunan).concat(komoditasSemusim).concat(komoditasTahunan);
+			return res.status(200).json({
+				message: "Data berhasil didapatkan.",
+				data: await dataTanaman.findAll({
+					where: {
+						komoditas: {
+							[Op.notIn]: correctKomoditas,
+						},
+					},
+				}),
+			});
+		}
+		
+		const data = await dataTanaman.findAll({
+			where: {
+				komoditas: wrongKomoditas,
+			},
+		});
+		if(debug){
+			return res.status(200).json({
+				message: "Data berhasil didapatkan.",
+				data,
+			});
+		}
+		data.forEach(async (item) => {
+			await item.update({
+				komoditas: correctKomoditas,
+			});
+		});
+
+		res.status(200).json({
+			message: "Data berhasil diupdate.",
+		});
+	} catch (error) {
+		res.status(error.statusCode || 500).json({
+			message: error.message,
+		});
+	}
+};
+
 const getDetailedDataTanaman = async (req, res) => {
 	const { id } = req.params;
 	const { peran } = req.user || {};
@@ -427,4 +529,6 @@ module.exports = {
 	editDataTanaman,
 	hapusDataTanaman,
 	uploadDataTanaman,
+	fixKategori,
+	fixKomoditas,
 };
