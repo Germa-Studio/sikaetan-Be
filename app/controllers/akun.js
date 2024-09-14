@@ -435,7 +435,7 @@ const getProfile = async (req, res) => {
 	try {
 		const bearerToken = req.headers.authorization;
 		if (!bearerToken) {
-			res.status(401).json({
+			return res.status(401).json({
 				status: "failed",
 				message: "Required authorization",
 			});
@@ -443,19 +443,29 @@ const getProfile = async (req, res) => {
 		const payload = jwt.verify(bearerToken, process.env.SECRET_KEY);
 		if (payload.NIK) {
 			dataPerson.findByPk(payload.id).then((instance) => {
+				if (!instance) {
+					return res.status(404).json({ message: "User not found" });
+				}
 				req.user = instance;
-				res.status(200).json({
+				return res.status(200).json({
 					message: "berhasil",
 					user: req.user,
 				});
+			}).catch((err) => {
+				return res.status(500).json({ message: "Server error", error: err.message });
 			});
 		} else {
 			tblAkun.findByPk(payload.id).then((instance) => {
+				if (!instance) {
+					return res.status(404).json({ message: "Account not found" });
+				}
 				req.user = instance;
-				res.status(200).json({
+				return res.status(200).json({
 					message: "berhasil",
 					user: req.user,
 				});
+			}).catch((err) => {
+				return res.status(500).json({ message: "Server error", error: err.message });
 			});
 		}
 	} catch (error) {
