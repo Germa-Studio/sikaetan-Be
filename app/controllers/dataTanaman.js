@@ -142,7 +142,7 @@ const fixKomoditas = async (req, res) => {
 		}
 
 		if(getWrong){
-			const correctKomoditas = tanamanPangan.concat(tanamanPerkebunan).concat(komoditasSemusim).concat(komoditasTahunan);
+			const correctKomoditas = tanamanPangan.concat(tanamanPerkebunan).concat(komoditasSemusim).concat(komoditasTahunan).concat(["Perkebunan Tebu", "Perkebunan Tembakau"])
 			return res.status(200).json({
 				message: "Data berhasil didapatkan.",
 				data: await dataTanaman.findAll({
