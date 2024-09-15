@@ -6,6 +6,7 @@ const {
 	dataPenyuluh,
 	dataPetani,
 	tbl_akun,
+	kecamatan
 } = require("../models");
 const { Op, NOW } = require("sequelize");
 const ApiError = require("../../utils/ApiError");
@@ -89,6 +90,7 @@ const tambahDaftarTani = async (req, res) => {
 			desa,
 			nama,
 			kecamatan,
+			kecamatanId,
 			password,
 			gapoktan,
 			penyuluh,
@@ -155,6 +157,22 @@ const tambahDaftarTani = async (req, res) => {
 			foto: urlImg,
 			accountID: accountID,
 		});
+		let kecamatanData;
+		if (kecamatan && !kecamatanId) {
+			kecamatanData = await kecamatan.findOne({
+				where: {
+					nama: kecamatan,
+				},
+			});
+
+			if (!kecamatanData) {
+				return res.status(400).json({
+					status: "failed",
+					message: "Kecamatan tidak ditemukan",
+				});
+			}
+		} 
+
 		const daftarPetani = await dataPetani.create({
 			nik: NIK,
 			nkk: nokk,
@@ -169,6 +187,7 @@ const tambahDaftarTani = async (req, res) => {
 			accountID: accountID,
 			fk_penyuluhId: penyuluhData.id,
 			fk_kelompokId: kelompokData.id,
+			kecamatanId: kecamatanData ? kecamatanData.id : kecamatanId,
 		});
 
 		postActivity({
@@ -226,6 +245,21 @@ const uploadDataPetani = async (req, res) => {
 			const urlImg =
 				"https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/images/bg-7.png";
 			if (penyuluh) {
+				let kecamatanData;
+				if (row.getCell(7).value && !row.getCell(13).value) {
+					kecamatanData = await kecamatan.findOne({
+						where: {
+							nama: row.getCell(7).value.toString(),
+						},
+					});
+
+					if (!kecamatanData) {
+						return res.status(400).json({
+							status: "failed",
+							message: "Kecamatan tidak ditemukan",
+						});
+					}
+				}
 				const newPetani = await dataPetani.create({
 					nik: row.getCell(2).value.toString(),
 					nkk: row.getCell(3).value.toString(),
@@ -240,6 +274,7 @@ const uploadDataPetani = async (req, res) => {
 					accountID: accountID,
 					fk_penyuluhId: penyuluh.id,
 					fk_kelompokId: kelompokData.id,
+					kecamatanId: kecamatanData ? kecamatanData.id : row.getCell(13).value,
 				});
 
 				await tbl_akun.create({
@@ -337,6 +372,7 @@ const daftarTani = async (req, res) => {
 		}
 		const limitFilter = Number(limit) || 10;
 		const pageFilter = Number(page) || 1;
+		
 		const orderFilter = verified === ""
 		? [["id", "ASC"]]
 		: [
@@ -356,10 +392,14 @@ const daftarTani = async (req, res) => {
 					model: tbl_akun,
 					required: true,
 				},
+				{
+					model: kecamatan,
+					as: "kecamatanData",
+				}
 			],
 			limit: limitFilter,
 			offset: (pageFilter - 1) * limitFilter,
-			limit: parseInt(limit),
+			limit: limitFilter,
 			order: orderFilter,
 		};
 
@@ -370,11 +410,11 @@ const daftarTani = async (req, res) => {
 			data,
 			total,
 			currentPages: page,
-			limit: Number(limit),
-			maxPages: Math.ceil(total / (Number(limit) || 10)),
-			from: Number(page) ? (Number(page) - 1) * Number(limit) + 1 : 1,
-			to: Number(page)
-				? (Number(page) - 1) * Number(limit) + data.length
+			limit: limitFilter,
+			maxPages: Math.ceil(total / (limitFilter || 10)),
+			from: pageFilter ? (pageFilter - 1) * limitFilter + 1 : 1,
+			to: pageFilter
+				? (pageFilter - 1) * limitFilter + data.length
 				: data.length,
 		});
 	} catch (error) {
@@ -438,6 +478,10 @@ const dataTaniDetail = async (req, res) => {
 				{
 					model: dataPenyuluh,
 				},
+				{
+					model: kecamatan,
+					as: "kecamatanData",
+				}
 			],
 		});
 		res.status(200).json({
@@ -463,6 +507,7 @@ const updateTaniDetail = async (req, res) => {
 		desa,
 		nama,
 		kecamatan,
+		kecamatanId,
 		password,
 		namaKelompok,
 		penyuluh,
@@ -532,6 +577,21 @@ const updateTaniDetail = async (req, res) => {
 					where: { accountID: data.accountID },
 				}
 			);
+			let kecamatanData;
+			if (kecamatan && !kecamatanId) {
+				kecamatanData = await kecamatan.findOne({
+					where: {
+						nama: kecamatan,
+					},
+				});
+
+				if (!kecamatanData) {
+					return res.status(400).json({
+						status: "failed",
+						message: "Kecamatan tidak ditemukan",
+					});
+				}
+			}
 			const petaniUpdate = await dataPetani.update(
 				{
 					nik: NIK,
@@ -546,6 +606,7 @@ const updateTaniDetail = async (req, res) => {
 					noTelp: NoWa,
 					fk_penyuluhId: penyuluhData.id,
 					fk_kelompokId: kelompokData.id,
+					kecamatanId: kecamatanData ? kecamatanData.id : kecamatanId,
 				},
 				{
 					where: { id },

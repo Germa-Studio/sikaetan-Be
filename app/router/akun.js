@@ -14,7 +14,8 @@ const {
   getPeran,
   ubahPeran,
   opsiPenyuluh,
-  opsiPoktan
+  opsiPoktan,
+  changeKecamatanToId
   // verifikasiUser,
 } = require("../controllers/akun");
 
@@ -31,6 +32,7 @@ router.get("/verify", getUserNotVerify);
 router.get("/verify/:id", verifikasi);
 router.get("/peran", auth, getPeran);
 router.put("/peran/:id", auth, ubahPeran);
+router.put("/fix/kecamatan", auth, changeKecamatanToId);
 // router.put("/verify/:id", verifikasiUser)
 
 module.exports = router;

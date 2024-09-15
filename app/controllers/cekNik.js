@@ -3,6 +3,7 @@ const {
   dataPenyuluh,
   kelompok,
   dataPetani,
+  kecamatan
 } = require("../models");
 const ApiError = require("../../utils/ApiError");
 
@@ -12,7 +13,7 @@ const cekNik = async (req, res) => {
 
     const user = await dataPetani.findOne({
       where: { NIK },
-      include: [{ model: tanamanPetani }, { model: kelompok }],
+      include: [{ model: tanamanPetani }, { model: kelompok }, { model: kecamatan, as: "kecamatanData", }],
     });
     if (!user)
       throw new ApiError(400, `data dengan NIK ${NIK} tidak ditemukan`);

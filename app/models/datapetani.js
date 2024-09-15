@@ -20,6 +20,10 @@ module.exports = (sequelize, DataTypes) => {
 			});
 			this.belongsTo(models.kelompok, { foreignKey: "fk_kelompokId" });
 			this.hasMany(models.tanamanPetani, { foreignKey: "fk_petaniId" });
+			this.belongsTo(models.kecamatan, { 
+				foreignKey: "kecamatanId",
+				as: "kecamatanData",
+			});
 		}
 	}
 	dataPetani.init(

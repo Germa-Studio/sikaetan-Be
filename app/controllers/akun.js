@@ -8,13 +8,14 @@ const {
 	dataPenyuluh,
 	kelompok,
 	dataOperator,
+	kecamatan
 } = require("../models");
 const ApiError = require("../../utils/ApiError");
 const isEmailValid = require("../../utils/emailValidation");
 const imageKit = require("../../midleware/imageKit");
+const { Op} = require("sequelize");
 
 const crypto = require("crypto");
-const { tambahLaporanTani } = require("./dataTani");
 const { postActivity } = require("./logActivity");
 
 dotenv.config();
@@ -222,6 +223,7 @@ const registerPetani = async (req, res) => {
 			alamat, // mandatory
 			desa, // mandatory
 			kecamatan, // mandatory
+			kecamatanId,
 			password, // mandatory
 			NoWa, // mandatory
 			gapoktan, // mandatory
@@ -236,7 +238,7 @@ const registerPetani = async (req, res) => {
 		if (!email) email = nama.split(" ")[0] + "@gmail.com";
 		if (!alamat) throw new ApiError(400, "Alamat tidak boleh kosong.");
 		if (!desa) throw new ApiError(400, "Desa tidak boleh kosong.");
-		if (!kecamatan)
+		if (!kecamatan && !kecamatanId)
 			throw new ApiError(400, "Kecamatan tidak boleh kosong.");
 		if (!password) throw new ApiError(400, "Password tidak boleh kosong.");
 		if (!NoWa) throw new ApiError(400, "no wa tidak boleh kosong.");
@@ -299,6 +301,18 @@ const registerPetani = async (req, res) => {
 			accountID,
 		});
 
+		let kecamatanData;
+		if(!kecamatanId){
+			kecamatanData = await kecamatan.findOne({
+				where: { nama: kecamatan },
+			});
+
+			if (!kecamatanData) {
+				return res.status(400).json({
+					message: "Kecamatan tidak ditemukan",
+				});
+			}
+		}
 		const daftarTani = await dataPetani.create({
 			nik: NIK,
 			nkk: NKK,
@@ -313,6 +327,7 @@ const registerPetani = async (req, res) => {
 			accountID,
 			fk_penyuluhId: penyuluhData.id,
 			fk_kelompokId: kelompokData.id,
+			kecamatanId: kecamatanId || kecamatanData.id,
 		});
 
 		const token = jwt.sign(
@@ -508,6 +523,10 @@ const getDetailProfile = async (req, res) => {
 								exclude: ["createdAt", "updatedAt"],
 							},
 						},
+						{
+							model: kecamatan,
+							as: "kecamatanData",
+						}
 					],
 				});
 			} else {
@@ -640,6 +659,7 @@ const updateDetailProfile = async (req, res) => {
 				desa,
 				nama,
 				kecamatan,
+				kecamatanId,
 				password,
 				passwordBaru,
 				foto,
@@ -693,6 +713,20 @@ const updateDetailProfile = async (req, res) => {
 					where: { accountID: accountID },
 				}
 			);
+
+			let kecamatanData;
+			if(!kecamatanId){
+				kecamatanData = await kecamatan.findOne({
+					where: { nama: kecamatan || data.kecamatan },
+				});
+
+				if (!kecamatanData) {
+					return res.status(400).json({
+						message: "Kecamatan tidak ditemukan",
+					});
+				}
+			}
+
 			const petaniUpdate = await dataPetani.update(
 				{
 					nik: nik || data.nik,
@@ -705,6 +739,7 @@ const updateDetailProfile = async (req, res) => {
 					email: email || data.email,
 					foto: urlImg || data.foto,
 					noTelp: whatsapp || data.noTelp,
+					kecamatanId: kecamatanId || kecamatanData.id,
 				},
 				{
 					where: { accountID: accountID },
@@ -926,6 +961,92 @@ const ubahPeran = async (req, res) => {
 	}
 };
 
+const changeKecamatanToId = async (req, res) => {
+	const { peran } = req.user || {};
+	try {
+		const { debug, wrongKecamatan, correctKecamatan, getWrong } = req.query;
+
+		if (peran === "petani") {
+			throw new ApiError(403, "Anda tidak memiliki akses.");
+		}
+
+		if(getWrong){
+			const data = await dataPetani.findAll({
+				where: {
+					[Op.and]: [
+						{ kecamatan: { [Op.not]: null } },
+						{ kecamatanId: null },
+					]
+				},
+				include: [
+					{
+						model: kecamatan,
+						as: "kecamatanData",
+					},
+				],
+			});
+			return res.status(200).json({
+				message: "Berhasil mendapatkan data petani",
+				data,
+			});
+		}
+
+		
+		if(debug){
+			const data = await dataPetani.findAll({
+				where: {
+					kecamatan: {
+						[Op.like]: `%${wrongKecamatan}%`,
+					},
+				},
+			});
+			
+			return res.status(200).json({
+				message: "Berhasil mendapatkan data petani",
+				data,
+			});
+		}
+
+		if(correctKecamatan){
+			await dataPetani.update(
+				{
+					kecamatan: correctKecamatan,
+				},
+				{
+					where: {
+						kecamatan: wrongKecamatan,
+					},
+				}
+			);
+		} else {
+			const dataKecamatans = await kecamatan.findAll({});
+
+			for (let i = 0; i < dataKecamatans.length; i++) {
+				const kecamatanResult = dataKecamatans[i];
+
+				await dataPetani.update(
+					{
+						kecamatanId: kecamatanResult.id,
+					},
+					{
+						where: {
+							kecamatan: kecamatanResult.nama,
+						},
+					}
+				);
+			}
+		}
+
+		return res.status(200).json({
+			message: "Berhasil mengubah kecamatan",
+		});
+	} catch (error) {
+		res.status(error.statusCode || 500).json({
+			message: error.message,
+		});
+	}
+}
+
 module.exports = {
 	login,
 	register,
@@ -940,4 +1061,5 @@ module.exports = {
 	ubahPeran,
 	opsiPenyuluh,
 	opsiPoktan,
+	changeKecamatanToId,
 };

@@ -29,8 +29,6 @@ const addWilayah = async (req, res) => {
                 }
             });
 
-            console.log(JSON.stringify(kecamatanResult));
-
             const kecamatanId = kecamatanResult[0].id;
             await desa.create({
                 nama: desaData,

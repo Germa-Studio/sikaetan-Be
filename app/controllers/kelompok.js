@@ -175,8 +175,6 @@ const getAllKecamatan = async (req, res) => {
 const getAllDesaInKecamatan = async (req, res) => {
 	const { kecamatan } = req.query;
 
-	console.log({ kecamatan });
-
 	try {
 		const data = await kelompok.findAll({
 			attributes: [
@@ -218,6 +216,7 @@ const uploadDataKelompoks = async (req, res) => {
 		worksheet.eachRow({ includeEmpty: true }, async (row, rowNumber) => {
 			if (rowNumber === 1) return;
 
+			// TODO: check if kecamatan using id or name
 			await kelompok.create({
 				gapoktan: row.getCell(2).value,
 				namaKelompok: row.getCell(3).value,
