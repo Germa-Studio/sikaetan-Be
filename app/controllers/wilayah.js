@@ -17,7 +17,7 @@ const addWilayah = async (req, res) => {
         const rowCount = worksheet.rowCount;
         if (rowCount < 2) throw new ApiError(400, "Data tidak ditemukan.");
 
-        for (let index = 2; index < rowCount; index++) {
+        for (let index = 2; index <= rowCount; index++) {
             const row = worksheet.getRow(index);
             const kecamatanData = row.getCell(1).value;
             const desaData = row.getCell(2).value;

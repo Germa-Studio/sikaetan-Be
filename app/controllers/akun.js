@@ -8,12 +8,13 @@ const {
 	dataPenyuluh,
 	kelompok,
 	dataOperator,
-	kecamatan
+	kecamatan,
+	desa
 } = require("../models");
 const ApiError = require("../../utils/ApiError");
 const isEmailValid = require("../../utils/emailValidation");
 const imageKit = require("../../midleware/imageKit");
-const { Op} = require("sequelize");
+const { Op, col } = require("sequelize");
 
 const crypto = require("crypto");
 const { postActivity } = require("./logActivity");
@@ -221,8 +222,9 @@ const registerPetani = async (req, res) => {
 			nama, // mandatory
 			email, // not mandatory
 			alamat, // mandatory
-			desa, // mandatory
-			kecamatan, // mandatory
+			desa: inputDesa, // mandatory
+			desaId,
+			kecamatan: inputKecamatan, // mandatory
 			kecamatanId,
 			password, // mandatory
 			NoWa, // mandatory
@@ -237,8 +239,8 @@ const registerPetani = async (req, res) => {
 		if (!nama) throw new ApiError(400, "nama tidak boleh kosong");
 		if (!email) email = nama.split(" ")[0] + "@gmail.com";
 		if (!alamat) throw new ApiError(400, "Alamat tidak boleh kosong.");
-		if (!desa) throw new ApiError(400, "Desa tidak boleh kosong.");
-		if (!kecamatan && !kecamatanId)
+		if (!inputDesa && !desaId) throw new ApiError(400, "Desa tidak boleh kosong.");
+		if (!inputKecamatan && !kecamatanId)
 			throw new ApiError(400, "Kecamatan tidak boleh kosong.");
 		if (!password) throw new ApiError(400, "Password tidak boleh kosong.");
 		if (!NoWa) throw new ApiError(400, "no wa tidak boleh kosong.");
@@ -261,7 +263,7 @@ const registerPetani = async (req, res) => {
 			where: {
 				gapoktan: gapoktan,
 				namaKelompok: namaKelompok,
-				desa: desa,
+				desa: inputDesa,
 			},
 		});
 
@@ -304,7 +306,7 @@ const registerPetani = async (req, res) => {
 		let kecamatanData;
 		if(!kecamatanId){
 			kecamatanData = await kecamatan.findOne({
-				where: { nama: kecamatan },
+				where: { nama: inputKecamatan },
 			});
 
 			if (!kecamatanData) {
@@ -313,14 +315,30 @@ const registerPetani = async (req, res) => {
 				});
 			}
 		}
+		let desaData;
+		if(!desaId){
+			desaData = await desa.findOne({
+				where: { 
+					nama: inputDesa,
+					kecamatanId: kecamatanData.id ?? kecamatanId,
+				},
+			});
+
+			if (!desaData) {
+				return res.status(400).json({
+					message: "Desa tidak ditemukan",
+				});
+			}
+		}
+
 		const daftarTani = await dataPetani.create({
 			nik: NIK,
 			nkk: NKK,
 			nama,
 			foto: urlImg,
 			alamat,
-			desa,
-			kecamatan,
+			desa: inputDesa,
+			kecamatan: inputKecamatan,
 			password: hashedPassword,
 			email: email,
 			noTelp: NoWa,
@@ -328,6 +346,7 @@ const registerPetani = async (req, res) => {
 			fk_penyuluhId: penyuluhData.id,
 			fk_kelompokId: kelompokData.id,
 			kecamatanId: kecamatanId || kecamatanData.id,
+			desaId: desaId || desaData.id,
 		});
 
 		const token = jwt.sign(
@@ -526,6 +545,10 @@ const getDetailProfile = async (req, res) => {
 						{
 							model: kecamatan,
 							as: "kecamatanData",
+						},
+						{
+							model: desa,
+							as: "desaData",
 						}
 					],
 				});
@@ -656,9 +679,10 @@ const updateDetailProfile = async (req, res) => {
 				email,
 				whatsapp,
 				alamat,
-				desa,
+				desa: inputDesa,
+				desaId,
 				nama,
-				kecamatan,
+				kecamatan: inputKecamatan,
 				kecamatanId,
 				password,
 				passwordBaru,
@@ -717,12 +741,27 @@ const updateDetailProfile = async (req, res) => {
 			let kecamatanData;
 			if(!kecamatanId){
 				kecamatanData = await kecamatan.findOne({
-					where: { nama: kecamatan || data.kecamatan },
+					where: { nama: inputKecamatan || data.kecamatan },
 				});
 
 				if (!kecamatanData) {
 					return res.status(400).json({
 						message: "Kecamatan tidak ditemukan",
+					});
+				}
+			}
+			let desaData;
+			if(!desaId){
+				desaData = await desa.findOne({
+					where: {
+						nama: inputDesa || data.desa,
+						kecamatanId: kecamatanData.id ?? data.kecamatanId,
+					},
+				});
+
+				if (!desaData) {
+					return res.status(400).json({
+						message: "Desa tidak ditemukan",
 					});
 				}
 			}
@@ -733,13 +772,14 @@ const updateDetailProfile = async (req, res) => {
 					nkk: nokk || data.nkk,
 					nama: nama || data.nama,
 					alamat: alamat || data.alamat,
-					desa: desa || data.desa,
-					kecamatan: kecamatan || data.kecamatan,
+					desa: inputDesa || data.desa,
+					kecamatan: inputKecamatan || data.kecamatan,
 					password: passwordBaru ? bcrypt.hashSync(passwordBaru, 10) : data.password, // Hash password only if provided
 					email: email || data.email,
 					foto: urlImg || data.foto,
 					noTelp: whatsapp || data.noTelp,
 					kecamatanId: kecamatanId || kecamatanData.id,
+					desaId: desaId || desaData.id,
 				},
 				{
 					where: { accountID: accountID },
@@ -1047,6 +1087,102 @@ const changeKecamatanToId = async (req, res) => {
 	}
 }
 
+const changeDesaToId = async (req, res) => {
+	const { peran } = req.user || {};
+	try {
+		const { debug, wrongDesa, correctDesa, getWrong, kecamatanId, updateEmpty } = req.query;
+
+		if (peran === "petani") {
+			throw new ApiError(403, "Anda tidak memiliki akses.");
+		}
+
+		if(getWrong){
+			const data = await dataPetani.findAll({
+				where: {
+					[Op.and]: [
+						{ desa: { [Op.not]: null } },
+						{ desaId: null },
+						kecamatanId ? { kecamatanId } : { },
+					]
+				}
+			});
+			return res.status(200).json({
+				message: "Berhasil mendapatkan data petani",
+				data,
+			});
+		}
+
+		
+		if(debug){
+			const data = await dataPetani.findAll({
+				where: {
+					desa: {
+						[Op.like]: `%${wrongDesa}%`,
+					},
+				},
+			});
+			
+			return res.status(200).json({
+				message: "Berhasil mendapatkan data petani",
+				data,
+			});
+		}
+
+		if(updateEmpty){
+			await dataPetani.update(
+				{
+					desa: col("alamat"),
+				},
+				{
+					where: {
+						desa: ""
+					},
+				}
+			);
+		}
+
+		if(correctDesa){
+			await dataPetani.update(
+				{
+					desa: correctDesa,
+				},
+				{
+					where: {
+						[Op.and]: [
+							{ desa: wrongDesa },
+							kecamatanId ? { kecamatanId } : { },
+						],
+					},
+				}
+			);
+		} else {
+			const dataDesas = await desa.findAll({});
+
+			for (let i = 0; i < dataDesas.length; i++) {
+				const desaResult = dataDesas[i];
+
+				await dataPetani.update(
+					{
+						desaId: desaResult.id,
+					},
+					{
+						where: {
+							desa: desaResult.nama,
+							kecamatanId: desaResult.kecamatanId,
+						},
+					}
+				);
+			}
+		}
+
+		return res.status(200).json({
+			message: "Berhasil mengubah desa",
+		});
+	} catch (error) {
+		
+	}
+}
+
 module.exports = {
 	login,
 	register,
@@ -1062,4 +1198,5 @@ module.exports = {
 	opsiPenyuluh,
 	opsiPoktan,
 	changeKecamatanToId,
+	changeDesaToId
 };

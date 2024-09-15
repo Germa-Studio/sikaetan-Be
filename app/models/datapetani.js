@@ -24,6 +24,10 @@ module.exports = (sequelize, DataTypes) => {
 				foreignKey: "kecamatanId",
 				as: "kecamatanData",
 			});
+			this.belongsTo(models.desa, {
+				foreignKey: "desaId",
+				as: "desaData",
+			});
 		}
 	}
 	dataPetani.init(

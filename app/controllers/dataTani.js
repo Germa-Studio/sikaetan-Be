@@ -6,7 +6,8 @@ const {
 	dataPenyuluh,
 	dataPetani,
 	tbl_akun,
-	kecamatan
+	kecamatan,
+	desa,
 } = require("../models");
 const { Op, NOW } = require("sequelize");
 const ApiError = require("../../utils/ApiError");
@@ -87,9 +88,10 @@ const tambahDaftarTani = async (req, res) => {
 			NoWa,
 			email,
 			alamat,
-			desa,
+			desa: inputDesa,
+			desaid,
 			nama,
-			kecamatan,
+			kecamatan: inputKecamatan,
 			kecamatanId,
 			password,
 			gapoktan,
@@ -120,7 +122,7 @@ const tambahDaftarTani = async (req, res) => {
 			where: {
 				gapoktan: gapoktan,
 				namaKelompok: namaKelompok,
-				desa: desa,
+				desa: inputDesa,
 			},
 		});
 		let urlImg;
@@ -158,10 +160,10 @@ const tambahDaftarTani = async (req, res) => {
 			accountID: accountID,
 		});
 		let kecamatanData;
-		if (kecamatan && !kecamatanId) {
+		if (inputKecamatan && !kecamatanId) {
 			kecamatanData = await kecamatan.findOne({
 				where: {
-					nama: kecamatan,
+					nama: inputKecamatan,
 				},
 			});
 
@@ -172,6 +174,22 @@ const tambahDaftarTani = async (req, res) => {
 				});
 			}
 		} 
+		let desaData;
+		if (inputDesa && !desaid) {
+			desaData = await desa.findOne({
+				where: {
+					nama: inputDesa,
+					kecamatanId: kecamatanData.id ?? kecamatanId,
+				},
+			});
+
+			if (!desaData) {
+				return res.status(400).json({
+					status: "failed",
+					message: "Desa tidak ditemukan",
+				});
+			}
+		}
 
 		const daftarPetani = await dataPetani.create({
 			nik: NIK,
@@ -179,8 +197,8 @@ const tambahDaftarTani = async (req, res) => {
 			foto: urlImg,
 			nama,
 			alamat,
-			desa,
-			kecamatan,
+			desa: inputDesa,
+			kecamatan: inputKecamatan,
 			password: hashedPassword,
 			email,
 			noTelp: NoWa,
@@ -188,6 +206,7 @@ const tambahDaftarTani = async (req, res) => {
 			fk_penyuluhId: penyuluhData.id,
 			fk_kelompokId: kelompokData.id,
 			kecamatanId: kecamatanData ? kecamatanData.id : kecamatanId,
+			desaId: desaData ? desaData.id : desaid,
 		});
 
 		postActivity({
@@ -260,6 +279,24 @@ const uploadDataPetani = async (req, res) => {
 						});
 					}
 				}
+
+				let desaData;
+				if (row.getCell(6).value && !row.getCell(14).value) {
+					desaData = await desa.findOne({
+						where: {
+							nama: row.getCell(6).value.toString(),
+							kecamatanId: kecamatanData.id ?? row.getCell(13).value,
+						},
+					});
+
+					if (!desaData) {
+						return res.status(400).json({
+							status: "failed",
+							message: "Desa tidak ditemukan",
+						});
+					}
+				}
+
 				const newPetani = await dataPetani.create({
 					nik: row.getCell(2).value.toString(),
 					nkk: row.getCell(3).value.toString(),
@@ -275,6 +312,7 @@ const uploadDataPetani = async (req, res) => {
 					fk_penyuluhId: penyuluh.id,
 					fk_kelompokId: kelompokData.id,
 					kecamatanId: kecamatanData ? kecamatanData.id : row.getCell(13).value,
+					desaId: desaData ? desaData.id : row.getCell(14).value,
 				});
 
 				await tbl_akun.create({
@@ -395,6 +433,10 @@ const daftarTani = async (req, res) => {
 				{
 					model: kecamatan,
 					as: "kecamatanData",
+				},
+				{
+					model: desa,
+					as: "desaData",
 				}
 			],
 			limit: limitFilter,
@@ -481,6 +523,10 @@ const dataTaniDetail = async (req, res) => {
 				{
 					model: kecamatan,
 					as: "kecamatanData",
+				},
+				{
+					model: desa,
+					as: "desaData",
 				}
 			],
 		});
@@ -504,9 +550,10 @@ const updateTaniDetail = async (req, res) => {
 		email,
 		NoWa,
 		alamat,
-		desa,
+		desa: inputDesa,
+		desaId,
 		nama,
-		kecamatan,
+		kecamatan: inputKecamatan,
 		kecamatanId,
 		password,
 		namaKelompok,
@@ -529,7 +576,7 @@ const updateTaniDetail = async (req, res) => {
         where: {
           gapoktan: gapoktan,
           namaKelompok: namaKelompok,
-          desa: desa,
+          desa: inputDesa,
         },
       });
       const penyuluhData = await dataPenyuluh.findOne({
@@ -578,10 +625,10 @@ const updateTaniDetail = async (req, res) => {
 				}
 			);
 			let kecamatanData;
-			if (kecamatan && !kecamatanId) {
+			if (inputKecamatan && !kecamatanId) {
 				kecamatanData = await kecamatan.findOne({
 					where: {
-						nama: kecamatan,
+						nama: inputKecamatan,
 					},
 				});
 
@@ -592,6 +639,22 @@ const updateTaniDetail = async (req, res) => {
 					});
 				}
 			}
+			let desaData;
+			if (inputDesa && !desaId) {
+				desaData = await desa.findOne({
+					where: {
+						nama: inputDesa,
+						kecamatanId: kecamatanData.id ?? kecamatanId,
+					},
+				});
+
+				if (!desaData) {
+					return res.status(400).json({
+						status: "failed",
+						message: "Desa tidak ditemukan",
+					});
+				}
+			}
 			const petaniUpdate = await dataPetani.update(
 				{
 					nik: NIK,
@@ -599,14 +662,15 @@ const updateTaniDetail = async (req, res) => {
 					foto: urlImg,
 					nama,
 					alamat,
-					desa,
-					kecamatan,
+					desa: inputDesa,
+					kecamatan: inputKecamatan,
 					password: hashedPassword,
 					email,
 					noTelp: NoWa,
 					fk_penyuluhId: penyuluhData.id,
 					fk_kelompokId: kelompokData.id,
 					kecamatanId: kecamatanData ? kecamatanData.id : kecamatanId,
+					desaId: desaData ? desaData.id : desaId,
 				},
 				{
 					where: { id },
