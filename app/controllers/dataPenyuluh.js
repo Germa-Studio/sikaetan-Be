@@ -8,7 +8,9 @@ const {
   kelompok,
   dataPetani,
   kecamatan,
-  desa
+  desa,
+  kecamatanBinaan,
+  desaBinaan
 } = require('../models');
 const ApiError = require('../../utils/ApiError');
 const imageKit = require('../../midleware/imageKit');
@@ -17,7 +19,7 @@ const bcrypt = require('bcrypt');
 const crypto = require('crypto');
 const ExcelJS = require('exceljs');
 const { postActivity } = require('./logActivity');
-const { Op, col } = require('sequelize');
+const { Op, col, fn, literal } = require('sequelize');
 
 dotenv.config();
 
@@ -237,7 +239,9 @@ const opsiPenyuluh = async (req, res) => {
     const dataDaftarPenyuluh = await dataPenyuluh.findAll({
       include: [
         { model: kecamatan, as: 'kecamatanData' },
-        { model: desa, as: 'desaData' }
+        { model: desa, as: 'desaData' },
+        { model: kecamatanBinaan, as: 'kecamatanBinaanData' },
+        { model: desaBinaan, as: 'desaBinaanData' }
       ]
     });
     res.status(200).json({
@@ -265,7 +269,9 @@ const daftarPenyuluh = async (req, res) => {
       offset: (pageFilter - 1) * limitFilter,
       include: [
         { model: kecamatan, as: 'kecamatanData' },
-        { model: desa, as: 'desaData' }
+        { model: desa, as: 'desaData' },
+        { model: kecamatanBinaan, as: 'kecamatanBinaanData' },
+        { model: desaBinaan, as: 'desaBinaanData' }
       ]
     };
     const data = await dataPenyuluh.findAll({ ...query });
@@ -699,7 +705,9 @@ const daftarPenyuluhById = async (req, res) => {
       include: [
         { model: kelompok, as: 'kelompoks' },
         { model: kecamatan, as: 'kecamatanData' },
-        { model: desa, as: 'desaData' }
+        { model: desa, as: 'desaData' },
+        { model: kecamatanBinaan, as: 'kecamatanBinaanData' },
+        { model: desaBinaan, as: 'desaBinaanData' }
       ]
     });
 
@@ -938,11 +946,13 @@ const changeKecamatanToId = async (req, res) => {
       );
       await dataPenyuluh.update(
         {
-          kecamatanBinaan: correctKecamatan
+          kecamatanBinaan: fn('replace', col('kecamatanBinaan'), wrongKecamatan, correctKecamatan)
         },
         {
           where: {
-            kecamatanBinaan: wrongKecamatan
+            kecamatanBinaan: {
+              [Op.like]: `%${wrongKecamatan}%`
+            }
           }
         }
       );
@@ -1050,11 +1060,13 @@ const changeDesaToId = async (req, res) => {
       );
       await dataPenyuluh.update(
         {
-          desaBinaan: correctDesa
+          desaBinaan: fn('replace', col('desaBinaan'), wrongDesa, correctDesa)
         },
         {
           where: {
-            [Op.and]: [{ desaBinaan: wrongDesa }, kecamatanId ? { kecamatanId } : {}]
+            desaBinaan: {
+              [Op.like]: `%${wrongDesa}%`
+            }
           }
         }
       );
@@ -1088,6 +1100,136 @@ const changeDesaToId = async (req, res) => {
   }
 };
 
+const refactorWilayahBinaan = async (req, res) => {
+  const { peran } = req.user || {};
+  try {
+    const { getWrong, type } = req.query;
+
+    if (peran === 'petani') {
+      throw new ApiError(403, 'Anda tidak memiliki akses.');
+    }
+
+    let data;
+    if (type === 'kecamatan') {
+      data = await dataPenyuluh.findAll({
+        where: literal('kecamatanBinaanData.id IS NULL AND kecamatanBinaan != ""'),
+        include: [
+          {
+            model: kecamatanBinaan,
+            as: 'kecamatanBinaanData',
+            required: false
+          }
+        ]
+      });
+    } else {
+      data = await dataPenyuluh.findAll({
+        where: literal('desaBinaanData.id IS NULL AND desaBinaan != ""'),
+        include: [
+          {
+            model: desaBinaan,
+            as: 'desaBinaanData',
+            required: false
+          }
+        ]
+      });
+    }
+    if (getWrong) {
+      return res.status(200).json({
+        message: 'Berhasil mendapatkan data penyuluh',
+        data
+      });
+    }
+
+    const failedList = [];
+    const successList = [];
+    if (type === 'kecamatan') {
+      for (let i = 0; i < data.length; i++) {
+        const penyuluh = data[i];
+        const kecamatanBinaans = penyuluh.kecamatanBinaan
+          .split(',')
+          .map((kecamatan) => kecamatan.trim());
+        for (let j = 0; j < kecamatanBinaans.length; j++) {
+          const namaKecamatanBinaan = kecamatanBinaans[j];
+          const kecamatanBinaanData = await kecamatan.findOne({
+            where: {
+              nama: namaKecamatanBinaan
+            }
+          });
+          if (kecamatanBinaanData) {
+            // return res.status(200).json({
+            //   message: 'Berhasil mendapatkan data penyuluh',
+            //   kecamatanBinaanData,
+            //   penyuluhId: penyuluh.id
+            // });
+            await kecamatanBinaan.create({
+              kecamatanId: kecamatanBinaanData.id,
+              penyuluhId: penyuluh.id
+            });
+            successList.push({
+              penyuluhId: penyuluh.id,
+              kecamatanBinaan: namaKecamatanBinaan
+            });
+          } else {
+            failedList.push({
+              penyuluhId: penyuluh.id,
+              kecamatanBinaan: namaKecamatanBinaan
+            });
+          }
+        }
+      }
+    } else {
+      for (let i = 0; i < data.length; i++) {
+        const penyuluh = data[i];
+        const desaBinaans = penyuluh.desaBinaan.split(',').map((desa) => desa.trim());
+
+        for (let j = 0; j < desaBinaans.length; j++) {
+          const namaDesaBinaan = desaBinaans[j];
+          const desaBinaanData = await desa.findOne({
+            where: {
+              nama: namaDesaBinaan
+            }
+          });
+          if (desaBinaanData) {
+            // return res.status(200).json({
+            //   message: 'Berhasil mendapatkan data penyuluh',
+            //   desaBinaanData,
+            //   penyuluhId: penyuluh.id
+            // });
+            await desaBinaan.create({
+              desaId: desaBinaanData.id,
+              penyuluhId: penyuluh.id
+            });
+            successList.push({
+              penyuluhId: penyuluh.id,
+              desaBinaan: namaDesaBinaan
+            });
+          } else {
+            failedList.push({
+              penyuuluhId: penyuluh.id,
+              desaBinaan: namaDesaBinaan
+            });
+          }
+        }
+      }
+    }
+
+    if (successList.length > 0) {
+      return res.status(200).json({
+        message: 'Berhasil mengubah wilayah binaan',
+        successList
+      });
+    }
+    return res.status(400).json({
+      message: 'Gagal mengubah wilayah binaan',
+      failedList
+    });
+  } catch (error) {
+    res.status(error.statusCode || 500).json({
+      message: error.message
+    });
+  }
+};
+
 module.exports = {
   tambahDataPenyuluh,
   presensiKehadiran,
@@ -1108,5 +1250,6 @@ module.exports = {
   getKelompok,
   getPetani,
   changeKecamatanToId,
-  changeDesaToId
+  changeDesaToId,
+  refactorWilayahBinaan
 };

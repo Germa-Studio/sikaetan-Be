@@ -1,4 +1,13 @@
-const { tanamanPetani, dataPenyuluh, kelompok, dataPetani, kecamatan, desa } = require('../models');
+const {
+  tanamanPetani,
+  dataPenyuluh,
+  kelompok,
+  dataPetani,
+  kecamatan,
+  desa,
+  kecamatanBinaan,
+  desaBinaan
+} = require('../models');
 const ApiError = require('../../utils/ApiError');
 
 const cekNik = async (req, res) => {
@@ -34,7 +43,9 @@ const cekNiP = async (req, res) => {
       where: { nik: NIP },
       include: [
         { model: kecamatan, as: 'kecamatanData' },
-        { model: desa, as: 'desaData' }
+        { model: desa, as: 'desaData' },
+        { model: kecamatanBinaan, as: 'kecamatanBinaanData' },
+        { model: desaBinaan, as: 'desaBinaanData' }
       ]
     });
     if (!user) throw new ApiError(400, `data dengan NIP ${NIP} tidak ditemukan`);

@@ -21,7 +21,8 @@ const {
   getKelompok,
   getPetani,
   changeKecamatanToId,
-  changeDesaToId
+  changeDesaToId,
+  refactorWilayahBinaan
 } = require('../controllers/dataPenyuluh');
 
 router.post('/penyuluh/add', auth, upload.single('foto'), tambahDataPenyuluh);
@@ -49,5 +50,6 @@ router.get('/kelompok-all', auth, getKelompok);
 router.get('/daftar-petani/:id', auth, getPetani);
 router.put('/penyuluh/fix/kecamatan', auth, changeKecamatanToId);
 router.put('/penyuluh/fix/desa', auth, changeDesaToId);
+router.put('/penyuluh/fix/wilayahBinaan', auth, refactorWilayahBinaan);
 
 module.exports = router;
