@@ -19,7 +19,9 @@ const {
   deleteJurnalKegiatan,
   updateJurnalKegiatan,
   getKelompok,
-  getPetani
+  getPetani,
+	changeKecamatanToId,
+	changeDesaToId,
 } = require('../controllers/dataPenyuluh');
 
 router.post('/penyuluh/add', auth, upload.single('foto') ,tambahDataPenyuluh);
@@ -40,5 +42,7 @@ router.post('/upload-data-penyuluh',auth, upload.single("file"), uploadDataPenyu
 router.get('/opsi-penyuluh', opsiPenyuluh);
 router.get('/kelompok-all', auth, getKelompok);
 router.get('/daftar-petani/:id', auth, getPetani);
+router.put('/penyuluh/fix/kecamatan', auth, changeKecamatanToId);
+router.put('/penyuluh/fix/desa', auth, changeDesaToId);
 
 module.exports = router;
