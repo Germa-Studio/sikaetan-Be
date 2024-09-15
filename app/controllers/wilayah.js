@@ -2,6 +2,7 @@ const {
 	kecamatan,
     desa
 } = require("../models");
+const { Op } = require("sequelize");
 const ExcelJS = require("exceljs");
 
 const addWilayah = async (req, res) => {
@@ -52,7 +53,15 @@ const addWilayah = async (req, res) => {
 
 const getKecamatan = async (req, res) => {
     try {
-        const data = await kecamatan.findAll();
+        const { search } = req.query;
+        const searchQuery = search ? {
+            where: {
+                nama: {
+                    [Op.like]: `%${search}%`
+                }
+            }
+        } : {};
+        const data = await kecamatan.findAll(searchQuery);
         res.status(200).json({
             status: "success",
             data,
@@ -67,12 +76,27 @@ const getKecamatan = async (req, res) => {
 
 const getDesaByKecamatan = async (req, res) => {
     try {
-        const { kecamatanId } = req.query;
-        const data = await desa.findAll({
-            where: {
-                kecamatanId
+        const { kecamatanId, search } = req.query;
+        // if search and kecamatanId is provided, then search by kecamatanId and search query
+        // if only kecamatanId is provided, then search by kecamatanId
+        // if only search is provided, then search by search query
+        // if none provided, then return all data
+        const searchQuery = {
+            where:{
+                [Op.and]: [
+                    kecamatanId ? {
+                        kecamatanId
+                    } : {},
+                    search ? {
+                        nama: {
+                            [Op.like]: `%${search}%`
+                        }
+                    } : {}
+                ]
             }
-        });
+        }
+        
+        const data = await desa.findAll(searchQuery);
         res.status(200).json({
             status: "success",
             data,
