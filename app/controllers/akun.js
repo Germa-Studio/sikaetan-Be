@@ -603,8 +603,7 @@ const updateDetailProfile = async (req, res) => {
         passwordBaru,
         namaProduct,
         kecamatanBinaan,
-        desaBinaan,
-        fotoProfil
+        desaBinaan
       } = req.body;
       const data = await dataPenyuluh.findOne({
         where: {
@@ -698,8 +697,7 @@ const updateDetailProfile = async (req, res) => {
         kecamatan: inputKecamatan,
         kecamatanId,
         password,
-        passwordBaru,
-        foto
+        passwordBaru
       } = req.body;
       const data = await dataPetani.findOne({
         where: {
@@ -806,21 +804,7 @@ const updateDetailProfile = async (req, res) => {
             message: 'Gagal Mengubah Profil'
           });
     } else {
-      const {
-        nik,
-        email,
-        whatsapp,
-        alamat,
-        desa,
-        nama,
-        kecamatan,
-        lama,
-        baru,
-        namaProduct,
-        kecamatanBinaan,
-        desaBinaan,
-        fotoProfil
-      } = req.body;
+      const { nik, email, whatsapp, alamat, desa, nama, kecamatan, baru } = req.body;
       const data = await dataOperator.findOne({
         where: {
           accountID
@@ -898,15 +882,13 @@ const updateDetailProfile = async (req, res) => {
 };
 
 const getPeran = async (req, res) => {
-  const { peran } = req.user || {};
   const { page, limit } = req.query;
   try {
     const limitFilter = Number(limit) || 10;
     const pageFilter = Number(page) || 1;
     const query = {
       limit: limitFilter,
-      offset: (pageFilter - 1) * limitFilter,
-      limit: parseInt(limit)
+      offset: (pageFilter - 1) * limitFilter
     };
     const data = await tblAkun.findAll({ ...query });
     const total = await tblAkun.count({ ...query });

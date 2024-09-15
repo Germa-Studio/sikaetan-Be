@@ -1,7 +1,5 @@
 'use strict';
-const {
-  Model
-} = require('sequelize');
+const { Model } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
   class responseRating extends Model {
     /**
@@ -14,11 +12,14 @@ module.exports = (sequelize, DataTypes) => {
       this.hasOne(models.dataPerson, { foreignKey: 'responseRatingId' });
     }
   }
-  responseRating.init({
-    rating: DataTypes.INTEGER
-  }, {
-    sequelize,
-    modelName: 'responseRating',
-  });
+  responseRating.init(
+    {
+      rating: DataTypes.INTEGER
+    },
+    {
+      sequelize,
+      modelName: 'responseRating'
+    }
+  );
   return responseRating;
 };

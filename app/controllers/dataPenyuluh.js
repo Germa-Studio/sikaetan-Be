@@ -17,7 +17,7 @@ const bcrypt = require('bcrypt');
 const crypto = require('crypto');
 const ExcelJS = require('exceljs');
 const { postActivity } = require('./logActivity');
-const { Op } = require('sequelize');
+const { Op, col } = require('sequelize');
 
 dotenv.config();
 
@@ -263,7 +263,6 @@ const daftarPenyuluh = async (req, res) => {
     const query = {
       limit: limitFilter,
       offset: (pageFilter - 1) * limitFilter,
-      limit: limitFilter,
       include: [
         { model: kecamatan, as: 'kecamatanData' },
         { model: desa, as: 'desaData' }
@@ -290,7 +289,7 @@ const daftarPenyuluh = async (req, res) => {
 
 const deleteDaftarPenyuluh = async (req, res) => {
   const { id } = req.params;
-  const { nama, peran, id: UserId } = req.user || {};
+  const { peran, id: UserId } = req.user || {};
   try {
     if (peran !== 'operator potan') {
       throw new ApiError(403, 'Anda tidak memiliki akses.');
@@ -329,7 +328,7 @@ const deleteDaftarPenyuluh = async (req, res) => {
 };
 
 const presensiKehadiran = async (req, res) => {
-  const { nama, peran } = req.user || {};
+  const { peran } = req.user || {};
   try {
     if (peran !== 'admin' && peran !== 'super admin' && peran !== 'PENYULUH') {
       throw new ApiError(403, 'Anda tidak memiliki akses.');
@@ -377,7 +376,7 @@ const presensiKehadiranWeb = async (req, res) => {
 };
 
 const tambahPresensiKehadiran = async (req, res) => {
-  const { nama, peran } = req.user || {};
+  const { peran } = req.user || {};
   try {
     if (peran !== 'admin' && peran !== 'super admin' && peran !== 'penyuluh') {
       throw new ApiError(403, 'Anda tidak memiliki akses.');
@@ -491,7 +490,7 @@ const jurnalKegiatanbyId = async (req, res) => {
 
 const deleteJurnalKegiatan = async (req, res) => {
   const { id } = req.params;
-  const { nama, peran, id: UserId } = req.user || {};
+  const { peran, id: UserId } = req.user || {};
   try {
     if (peran === 'petani') {
       throw new ApiError(403, 'Anda tidak memiliki akses.');
@@ -564,8 +563,6 @@ const updateJurnalKegiatan = async (req, res) => {
             message: 'Wrong Image Format'
           });
         }
-        const split = file.originalname.split('.');
-        const ext = split[split.length - 1];
         urlImg = `${process.env.URL_SERVER}/files/jurnal/
         ${file.filename}`;
       }
@@ -692,7 +689,7 @@ const RiwayatChat = async (req, res) => {
 };
 const daftarPenyuluhById = async (req, res) => {
   const { id } = req.params;
-  const { nama, peran } = req.user || {};
+  const { peran } = req.user || {};
   try {
     if (peran === 'petani' || peran === 'penyuluh') {
       throw new ApiError(403, 'Anda tidak memiliki akses.');
@@ -722,7 +719,7 @@ const daftarPenyuluhById = async (req, res) => {
 };
 const updatePenyuluh = async (req, res) => {
   const { id } = req.params;
-  const { nama, peran, id: UserId } = req.user || {};
+  const { peran, id: UserId } = req.user || {};
   try {
     if (peran === 'petani' || peran === 'penyuluh') {
       throw new ApiError(403, 'Anda tidak memiliki akses.');

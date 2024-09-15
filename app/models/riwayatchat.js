@@ -1,7 +1,5 @@
 'use strict';
-const {
-  Model
-} = require('sequelize');
+const { Model } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
   class riwayatChat extends Model {
     /**
@@ -14,12 +12,15 @@ module.exports = (sequelize, DataTypes) => {
       this.hasOne(models.dataPerson, { foreignKey: 'riwayatChatId' });
     }
   }
-  riwayatChat.init({
-    chattMasuik: DataTypes.STRING,
-    chattBelumDibales: DataTypes.STRING
-  }, {
-    sequelize,
-    modelName: 'riwayatChat',
-  });
+  riwayatChat.init(
+    {
+      chattMasuik: DataTypes.STRING,
+      chattBelumDibales: DataTypes.STRING
+    },
+    {
+      sequelize,
+      modelName: 'riwayatChat'
+    }
+  );
   return riwayatChat;
 };

@@ -1,534 +1,523 @@
-const { dataTanaman, kelompok } = require("../models");
+const { dataTanaman, kelompok } = require('../models');
 
-const ApiError = require("../../utils/ApiError");
-const dotenv = require("dotenv");
-const { Op } = require("sequelize");
-const ExcelJS = require("exceljs");
-const { postActivity } = require("./logActivity");
-const { tanamanPangan, tanamanPerkebunan, komoditasSemusim, komoditasTahunan } = require("../../utils/constants/tanaman");
-const monthOrder = require("../../utils/constants/months");
+const ApiError = require('../../utils/ApiError');
+const dotenv = require('dotenv');
+const { Op } = require('sequelize');
+const ExcelJS = require('exceljs');
+const { postActivity } = require('./logActivity');
+const {
+  tanamanPangan,
+  tanamanPerkebunan,
+  komoditasSemusim,
+  komoditasTahunan
+} = require('../../utils/constants/tanaman');
+const monthOrder = require('../../utils/constants/months');
 
 dotenv.config();
 
 const getAllDataTanaman = async (req, res) => {
-	const { peran } = req.user || {};
-	const { limit, page, sortBy, sortType, poktan_id, isExport } = req.query;
+  const { peran } = req.user || {};
+  const { limit, page, sortBy, sortType, poktan_id, isExport } = req.query;
 
-	try {
-		if (peran === "petani") {
-			throw new ApiError(403, "Anda tidak memiliki akses.");
-		}
+  try {
+    if (peran === 'petani') {
+      throw new ApiError(403, 'Anda tidak memiliki akses.');
+    }
 
-		const limitFilter = Number(limit);
-		const pageFilter = Number(page);
-		const isExportFilter = Boolean(isExport);
+    const limitFilter = Number(limit);
+    const pageFilter = Number(page);
+    const isExportFilter = Boolean(isExport);
 
-		const filter = {
-			include: [
-				{
-					model: kelompok,
-					as: "kelompok",
-				},
-			],
-			limit: limitFilter,
-			offset: (pageFilter - 1) * limitFilter,
-			order: [[sortBy || "id", sortType || "DESC"]],
-		};
+    const filter = {
+      include: [
+        {
+          model: kelompok,
+          as: 'kelompok'
+        }
+      ],
+      limit: limitFilter,
+      offset: (pageFilter - 1) * limitFilter,
+      order: [[sortBy || 'id', sortType || 'DESC']]
+    };
 
-		if (poktan_id !== "undefined") {
-			filter.where = {
-				fk_kelompokId: {
-					[Op.eq]: poktan_id,
-				},
-			};
-		}
+    if (poktan_id !== 'undefined') {
+      filter.where = {
+        fk_kelompokId: {
+          [Op.eq]: poktan_id
+        }
+      };
+    }
 
-		const data = await dataTanaman.findAll(
-			isExportFilter
-				? {
-						include: [
-							{
-								model: kelompok,
-								as: "kelompok",
-							},
-						],
-				  }
-				: filter
-		);
-		const total = await dataTanaman.count(filter);
+    const data = await dataTanaman.findAll(
+      isExportFilter
+        ? {
+            include: [
+              {
+                model: kelompok,
+                as: 'kelompok'
+              }
+            ]
+          }
+        : filter
+    );
+    const total = await dataTanaman.count(filter);
 
-		res.status(200).json({
-			message: "Data berhasil didapatkan.",
-			data: {
-				data,
-				total,
-				currentPages: Number(page),
-				limit: Number(limit),
-				maxPages: Math.ceil(total / Number(limit)),
-				from: Number(page) ? (Number(page) - 1) * Number(limit) + 1 : 1,
-				to: Number(page)
-					? (Number(page) - 1) * Number(limit) + data.length
-					: data.length,
-				sortBy: sortBy || "id",
-				sortType: sortType || "DESC",
-			},
-		});
-	} catch (error) {
-		res.status(error.statusCode || 500).json({
-			message: error.message,
-		});
-	}
+    res.status(200).json({
+      message: 'Data berhasil didapatkan.',
+      data: {
+        data,
+        total,
+        currentPages: Number(page),
+        limit: Number(limit),
+        maxPages: Math.ceil(total / Number(limit)),
+        from: Number(page) ? (Number(page) - 1) * Number(limit) + 1 : 1,
+        to: Number(page) ? (Number(page) - 1) * Number(limit) + data.length : data.length,
+        sortBy: sortBy || 'id',
+        sortType: sortType || 'DESC'
+      }
+    });
+  } catch (error) {
+    res.status(error.statusCode || 500).json({
+      message: error.message
+    });
+  }
 };
 
 const fixKategori = async (req, res) => {
-	const { peran } = req.user || {};
-	const { category } = req.query;
-	try {
-		if (peran === "petani") {
-			throw new ApiError(403, "Anda tidak memiliki akses.");
-		}
+  const { peran } = req.user || {};
+  const { category } = req.query;
+  try {
+    if (peran === 'petani') {
+      throw new ApiError(403, 'Anda tidak memiliki akses.');
+    }
 
-		const whereFilter = category?{
-			where: {
-				kategori: category,
-			},
-		}: {};
-		const data = await dataTanaman.findAll(
-			whereFilter
-		);
+    const whereFilter = category
+      ? {
+          where: {
+            kategori: category
+          }
+        }
+      : {};
+    const data = await dataTanaman.findAll(whereFilter);
 
-		if(whereFilter.where){
-			return res.status(200).json({
-				message: "Data berhasil didapatkan.",
-				data,
-			});
-		}
+    if (whereFilter.where) {
+      return res.status(200).json({
+        message: 'Data berhasil didapatkan.',
+        data
+      });
+    }
 
-		data.forEach(async (item) => {
-			let correctCategory = "";
-			if(tanamanPangan.includes(item.komoditas)){
-				correctCategory = "pangan";
-			}
-			else if(tanamanPerkebunan.includes(item.komoditas) || item.komoditas.toLowerCase().includes("perkebunan")){
-				correctCategory = "perkebunan";
-			}
-			else if(komoditasSemusim.includes(item.komoditas)){
-				correctCategory = "buah";
-			}
-			else if(komoditasTahunan.includes(item.komoditas)){
-				correctCategory = "sayur";
-			}
-			await item.update({
-				kategori: correctCategory,
-			});
-		});
+    data.forEach(async (item) => {
+      let correctCategory = '';
+      if (tanamanPangan.includes(item.komoditas)) {
+        correctCategory = 'pangan';
+      } else if (
+        tanamanPerkebunan.includes(item.komoditas) ||
+        item.komoditas.toLowerCase().includes('perkebunan')
+      ) {
+        correctCategory = 'perkebunan';
+      } else if (komoditasSemusim.includes(item.komoditas)) {
+        correctCategory = 'buah';
+      } else if (komoditasTahunan.includes(item.komoditas)) {
+        correctCategory = 'sayur';
+      }
+      await item.update({
+        kategori: correctCategory
+      });
+    });
 
-		res.status(200).json({
-			message: "Data berhasil diupdate.",
-		});
-	} catch (error) {
-		res.status(error.statusCode || 500).json({
-			message: error.message,
-		});
-	}
+    res.status(200).json({
+      message: 'Data berhasil diupdate.'
+    });
+  } catch (error) {
+    res.status(error.statusCode || 500).json({
+      message: error.message
+    });
+  }
 };
 
 const fixKomoditas = async (req, res) => {
-	const { peran } = req.user || {};
-	const { wrongKomoditas, correctKomoditas, getWrong, debug } = req.query;
-	try {
-		if (peran === "petani") {
-			throw new ApiError(403, "Anda tidak memiliki akses.");
-		}
+  const { peran } = req.user || {};
+  const { wrongKomoditas, correctKomoditas, getWrong, debug } = req.query;
+  try {
+    if (peran === 'petani') {
+      throw new ApiError(403, 'Anda tidak memiliki akses.');
+    }
 
-		if(getWrong){
-			const correctKomoditas = tanamanPangan.concat(tanamanPerkebunan).concat(komoditasSemusim).concat(komoditasTahunan).concat(["Perkebunan Tebu", "Perkebunan Tembakau"])
-			return res.status(200).json({
-				message: "Data berhasil didapatkan.",
-				data: await dataTanaman.findAll({
-					where: {
-						komoditas: {
-							[Op.notIn]: correctKomoditas,
-						},
-					},
-				}),
-			});
-		}
-		
-		const data = await dataTanaman.findAll({
-			where: {
-				komoditas: wrongKomoditas,
-			},
-		});
-		if(debug){
-			return res.status(200).json({
-				message: "Data berhasil didapatkan.",
-				data,
-			});
-		}
-		data.forEach(async (item) => {
-			await item.update({
-				komoditas: correctKomoditas,
-			});
-		});
+    if (getWrong) {
+      const correctKomoditas = tanamanPangan
+        .concat(tanamanPerkebunan)
+        .concat(komoditasSemusim)
+        .concat(komoditasTahunan)
+        .concat(['Perkebunan Tebu', 'Perkebunan Tembakau']);
+      return res.status(200).json({
+        message: 'Data berhasil didapatkan.',
+        data: await dataTanaman.findAll({
+          where: {
+            komoditas: {
+              [Op.notIn]: correctKomoditas
+            }
+          }
+        })
+      });
+    }
 
-		res.status(200).json({
-			message: "Data berhasil diupdate.",
-		});
-	} catch (error) {
-		res.status(error.statusCode || 500).json({
-			message: error.message,
-		});
-	}
+    const data = await dataTanaman.findAll({
+      where: {
+        komoditas: wrongKomoditas
+      }
+    });
+    if (debug) {
+      return res.status(200).json({
+        message: 'Data berhasil didapatkan.',
+        data
+      });
+    }
+    data.forEach(async (item) => {
+      await item.update({
+        komoditas: correctKomoditas
+      });
+    });
+
+    res.status(200).json({
+      message: 'Data berhasil diupdate.'
+    });
+  } catch (error) {
+    res.status(error.statusCode || 500).json({
+      message: error.message
+    });
+  }
 };
 
 const getDetailedDataTanaman = async (req, res) => {
-	const { id } = req.params;
-	const { peran } = req.user || {};
+  const { id } = req.params;
+  const { peran } = req.user || {};
 
-	try {
-		if (peran === "petani") {
-			throw new ApiError(403, "Anda tidak memiliki akses.");
-		}
+  try {
+    if (peran === 'petani') {
+      throw new ApiError(403, 'Anda tidak memiliki akses.');
+    }
 
-		const data = await dataTanaman.findOne({
-			where: { id },
-			include: [
-				{
-					model: kelompok,
-					as: "kelompok",
-				},
-			],
-		});
+    const data = await dataTanaman.findOne({
+      where: { id },
+      include: [
+        {
+          model: kelompok,
+          as: 'kelompok'
+        }
+      ]
+    });
 
-		res.status(200).json({
-			message: "Data berhasil didapatkan.",
-			data,
-		});
-	} catch (error) {
-		res.status(error.statusCode || 500).json({
-			message: error.message,
-		});
-	}
+    res.status(200).json({
+      message: 'Data berhasil didapatkan.',
+      data
+    });
+  } catch (error) {
+    res.status(error.statusCode || 500).json({
+      message: error.message
+    });
+  }
 };
 
 const tambahDataTanaman = async (req, res) => {
-	const { peran, id } = req.user || {};
+  const { peran, id } = req.user || {};
 
-	try {
-		if (peran === "petani") {
-			throw new ApiError(403, "Anda tidak memiliki akses.");
-		}
-		const {
-			kategori,
-			komoditas,
-			periodeTanam,
-			luasLahan,
-			prakiraanLuasPanen,
-			prakiraanHasilPanen,
-			prakiraanBulanPanen,
-			fk_kelompokId,
-		} = req.body;
+  try {
+    if (peran === 'petani') {
+      throw new ApiError(403, 'Anda tidak memiliki akses.');
+    }
+    const {
+      kategori,
+      komoditas,
+      periodeTanam,
+      luasLahan,
+      prakiraanLuasPanen,
+      prakiraanHasilPanen,
+      prakiraanBulanPanen,
+      fk_kelompokId
+    } = req.body;
 
-		if (!kategori) throw new ApiError(400, "Kategori tidak boleh kosong.");
-		if (!komoditas)
-			throw new ApiError(400, "Komoditas tidak boleh kosong.");
-		if (!periodeTanam)
-			throw new ApiError(400, "Periode tanam tidak boleh kosong.");
-		if (!luasLahan)
-			throw new ApiError(400, "Luas lahan tidak boleh kosong.");
-		if (!prakiraanLuasPanen)
-			throw new ApiError(400, "Prakiraan luas panen tidak boleh kosong.");
-		if (!prakiraanHasilPanen)
-			throw new ApiError(
-				400,
-				"Prakiraan hasil panen tidak boleh kosong."
-			);
-		if (!prakiraanBulanPanen)
-			throw new ApiError(
-				400,
-				"Prakiraan bulan panen tidak boleh kosong."
-			);
-		if (!fk_kelompokId)
-			throw new ApiError(400, "Kelompok tidak boleh kosong.");
+    if (!kategori) throw new ApiError(400, 'Kategori tidak boleh kosong.');
+    if (!komoditas) throw new ApiError(400, 'Komoditas tidak boleh kosong.');
+    if (!periodeTanam) throw new ApiError(400, 'Periode tanam tidak boleh kosong.');
+    if (!luasLahan) throw new ApiError(400, 'Luas lahan tidak boleh kosong.');
+    if (!prakiraanLuasPanen) throw new ApiError(400, 'Prakiraan luas panen tidak boleh kosong.');
+    if (!prakiraanHasilPanen) throw new ApiError(400, 'Prakiraan hasil panen tidak boleh kosong.');
+    if (!prakiraanBulanPanen) throw new ApiError(400, 'Prakiraan bulan panen tidak boleh kosong.');
+    if (!fk_kelompokId) throw new ApiError(400, 'Kelompok tidak boleh kosong.');
 
-		const kelompokTani = await kelompok.findOne({
-			where: { id: fk_kelompokId },
-		});
-		if (!kelompokTani) throw new ApiError(400, "Kelompok tidak ditemukan.");
+    const kelompokTani = await kelompok.findOne({
+      where: { id: fk_kelompokId }
+    });
+    if (!kelompokTani) throw new ApiError(400, 'Kelompok tidak ditemukan.');
 
-		const data = await dataTanaman.create({
-			kategori,
-			komoditas,
-			periodeTanam,
-			luasLahan,
-			prakiraanLuasPanen,
-			prakiraanHasilPanen,
-			prakiraanBulanPanen,
-			fk_kelompokId,
-		});
+    const data = await dataTanaman.create({
+      kategori,
+      komoditas,
+      periodeTanam,
+      luasLahan,
+      prakiraanLuasPanen,
+      prakiraanHasilPanen,
+      prakiraanBulanPanen,
+      fk_kelompokId
+    });
 
-		postActivity({
-			user_id: id,
-			activity: "CREATE",
-			type: "DATA TANAMAN",
-			detail_id: data.id,
-		});
+    postActivity({
+      user_id: id,
+      activity: 'CREATE',
+      type: 'DATA TANAMAN',
+      detail_id: data.id
+    });
 
-		res.status(201).json({
-			message: "Data berhasil ditambahkan.",
-			data,
-		});
-	} catch (error) {
-		res.status(error.statusCode || 500).json({
-			message: error.message,
-		});
-	}
+    res.status(201).json({
+      message: 'Data berhasil ditambahkan.',
+      data
+    });
+  } catch (error) {
+    res.status(error.statusCode || 500).json({
+      message: error.message
+    });
+  }
 };
 
 const editDataTanaman = async (req, res) => {
-	const { id } = req.params;
-	const { peran, id: UserId } = req.user || {};
+  const { id } = req.params;
+  const { peran, id: UserId } = req.user || {};
 
-	try {
-		if (
-			peran === "petani" ||
-			peran === "penyuluh" ||
-			peran === "operator poktan"
-		) {
-			throw new ApiError(403, "Anda tidak memiliki akses.");
-		}
-		const {
-			kategori,
-			komoditas,
-			periodeTanam,
-			luasLahan,
-			prakiraanLuasPanen,
-			prakiraanHasilPanen,
-			prakiraanBulanPanen,
-			fk_kelompokId,
-			realisasiLuasPanen,
-			realisasiHasilPanen,
-			realisasiBulanPanen,
-		} = req.body;
+  try {
+    if (peran === 'petani' || peran === 'penyuluh' || peran === 'operator poktan') {
+      throw new ApiError(403, 'Anda tidak memiliki akses.');
+    }
+    const {
+      kategori,
+      komoditas,
+      periodeTanam,
+      luasLahan,
+      prakiraanLuasPanen,
+      prakiraanHasilPanen,
+      prakiraanBulanPanen,
+      fk_kelompokId,
+      realisasiLuasPanen,
+      realisasiHasilPanen,
+      realisasiBulanPanen
+    } = req.body;
 
-		if (!kategori) throw new ApiError(400, "Kategori tidak boleh kosong.");
-		if (!komoditas)
-			throw new ApiError(400, "Komoditas tidak boleh kosong.");
-		if (!periodeTanam)
-			throw new ApiError(400, "Periode tanam tidak boleh kosong.");
-		if (!luasLahan)
-			throw new ApiError(400, "Luas lahan tidak boleh kosong.");
-		if (!prakiraanLuasPanen)
-			throw new ApiError(400, "Prakiraan luas panen tidak boleh kosong.");
-		if (!prakiraanHasilPanen)
-			throw new ApiError(
-				400,
-				"Prakiraan hasil panen tidak boleh kosong."
-			);
-		if (!prakiraanBulanPanen)
-			throw new ApiError(
-				400,
-				"Prakiraan bulan panen tidak boleh kosong."
-			);
-		if (!fk_kelompokId)
-			throw new ApiError(400, "Kelompok tidak boleh kosong.");
+    if (!kategori) throw new ApiError(400, 'Kategori tidak boleh kosong.');
+    if (!komoditas) throw new ApiError(400, 'Komoditas tidak boleh kosong.');
+    if (!periodeTanam) throw new ApiError(400, 'Periode tanam tidak boleh kosong.');
+    if (!luasLahan) throw new ApiError(400, 'Luas lahan tidak boleh kosong.');
+    if (!prakiraanLuasPanen) throw new ApiError(400, 'Prakiraan luas panen tidak boleh kosong.');
+    if (!prakiraanHasilPanen) throw new ApiError(400, 'Prakiraan hasil panen tidak boleh kosong.');
+    if (!prakiraanBulanPanen) throw new ApiError(400, 'Prakiraan bulan panen tidak boleh kosong.');
+    if (!fk_kelompokId) throw new ApiError(400, 'Kelompok tidak boleh kosong.');
 
-		const kelompokTani = await kelompok.findOne({
-			where: { id: fk_kelompokId },
-		});
-		if (!kelompokTani) throw new ApiError(400, "Kelompok tidak ditemukan.");
+    const kelompokTani = await kelompok.findOne({
+      where: { id: fk_kelompokId }
+    });
+    if (!kelompokTani) throw new ApiError(400, 'Kelompok tidak ditemukan.');
 
-		await dataTanaman.update(
-			{
-				kategori,
-				komoditas,
-				periodeTanam,
-				luasLahan,
-				prakiraanLuasPanen,
-				prakiraanHasilPanen,
-				prakiraanBulanPanen,
-				fk_kelompokId,
-				realisasiLuasPanen,
-				realisasiHasilPanen,
-				realisasiBulanPanen,
-			},
-			{ where: { id } }
-		);
+    await dataTanaman.update(
+      {
+        kategori,
+        komoditas,
+        periodeTanam,
+        luasLahan,
+        prakiraanLuasPanen,
+        prakiraanHasilPanen,
+        prakiraanBulanPanen,
+        fk_kelompokId,
+        realisasiLuasPanen,
+        realisasiHasilPanen,
+        realisasiBulanPanen
+      },
+      { where: { id } }
+    );
 
-		postActivity({
-			user_id: UserId,
-			activity: "EDIT",
-			type: "DATA TANAMAN",
-			detail_id: id,
-		});
+    postActivity({
+      user_id: UserId,
+      activity: 'EDIT',
+      type: 'DATA TANAMAN',
+      detail_id: id
+    });
 
-		res.status(201).json({
-			message: "Data berhasil diupdate.",
-			data: req.body,
-		});
-	} catch (error) {
-		res.status(error.statusCode || 500).json({
-			message: error.message,
-		});
-	}
+    res.status(201).json({
+      message: 'Data berhasil diupdate.',
+      data: req.body
+    });
+  } catch (error) {
+    res.status(error.statusCode || 500).json({
+      message: error.message
+    });
+  }
 };
 
 const hapusDataTanaman = async (req, res) => {
-	const { id } = req.params;
-	const { peran, id: UserId } = req.user || {};
+  const { id } = req.params;
+  const { peran, id: UserId } = req.user || {};
 
-	try {
-		if (
-			peran === "petani" ||
-			peran === "penyuluh" ||
-			peran === "operator poktan"
-		) {
-			throw new ApiError(403, "Anda tidak memiliki akses.");
-		}
+  try {
+    if (peran === 'petani' || peran === 'penyuluh' || peran === 'operator poktan') {
+      throw new ApiError(403, 'Anda tidak memiliki akses.');
+    }
 
-		await dataTanaman.destroy({
-			where: { id },
-		});
+    await dataTanaman.destroy({
+      where: { id }
+    });
 
-		postActivity({
-			user_id: UserId,
-			activity: "DELETE",
-			type: "DATA TANAMAN",
-			detail_id: id,
-		});
+    postActivity({
+      user_id: UserId,
+      activity: 'DELETE',
+      type: 'DATA TANAMAN',
+      detail_id: id
+    });
 
-		res.status(200).json({
-			message: "Data berhasil dihapus.",
-		});
-	} catch (error) {
-		res.status(error.statusCode || 500).json({
-			message: error.message,
-		});
-	}
+    res.status(200).json({
+      message: 'Data berhasil dihapus.'
+    });
+  } catch (error) {
+    res.status(error.statusCode || 500).json({
+      message: error.message
+    });
+  }
 };
 
 const uploadDataTanaman = async (req, res) => {
-	const { peran } = req.user || {};
+  const { peran } = req.user || {};
 
-	try {
-		if (peran === "petani") {
-			throw new ApiError(403, "Anda tidak memiliki akses.");
-		}
+  try {
+    if (peran === 'petani') {
+      throw new ApiError(403, 'Anda tidak memiliki akses.');
+    }
 
-		const { file } = req;
-		if (!file) throw new ApiError(400, "File tidak ditemukan.");
+    const { file } = req;
+    if (!file) throw new ApiError(400, 'File tidak ditemukan.');
 
-		const workbook = new ExcelJS.Workbook();
-		await workbook.xlsx.load(file.buffer);
-		const worksheet = workbook.getWorksheet(1);
-		
-		let somethingWrong = false;
-		let errorMessage = "";
-		worksheet.eachRow({ includeEmpty: true }, async (row, rowNumber) => {
-			try {
-				if (rowNumber === 1) return;
-				const kategori = row.getCell(2).value;
-				const komoditas = row.getCell(3).value;
-				const periodeTanam = row.getCell(4).value;
-				const luasLahan = row.getCell(5).value;
-				const prakiraanLuasPanen = row.getCell(6).value;
-				const prakiraanHasilPanen = row.getCell(7).value;
-				const prakiraanBulanPanen = row.getCell(8).value;
-				const realisasiLuasPanen = row.getCell(9).value;
-				const realisasiHasilPanen = row.getCell(10).value;
-				const realisasiBulanPanen = row.getCell(11).value;
+    const workbook = new ExcelJS.Workbook();
+    await workbook.xlsx.load(file.buffer);
+    const worksheet = workbook.getWorksheet(1);
 
-				if (!["pangan", "perkebunan", "sayur", "buah"].includes(kategori)) throw new ApiError(400, "Kategori tidak valid.");
-				if (!tanamanPangan.concat(tanamanPerkebunan).concat(komoditasSemusim).concat(komoditasTahunan).includes(komoditas)) throw new ApiError(400, "Komoditas tidak valid.");
-				if (!monthOrder.includes(periodeTanam)) throw new ApiError(400, "Periode tanam tidak valid.");
-				if (!luasLahan || isNaN(luasLahan)) throw new ApiError(400, "Luas lahan tidak valid.");
-				if (!prakiraanLuasPanen || isNaN(prakiraanLuasPanen)) throw new ApiError(400, "Prakiraan luas panen tidak valid.");
-				if (!prakiraanHasilPanen || isNaN(prakiraanHasilPanen)) throw new ApiError(400, "Prakiraan hasil panen tidak valid.");
-				if (!monthOrder.includes(prakiraanBulanPanen)) throw new ApiError(400, "Prakiraan bulan panen tidak valid.");
-				if (realisasiLuasPanen && isNaN(realisasiLuasPanen)) throw new ApiError(400, "Realisasi luas panen tidak valid.");
-				if (realisasiHasilPanen && isNaN(realisasiHasilPanen)) throw new ApiError(400, "Realisasi hasil panen tidak valid.");
-				if (realisasiBulanPanen && !monthOrder.includes(realisasiBulanPanen)) throw new ApiError(400, "Realisasi bulan panen tidak valid.");
-			} catch (error) {
-				somethingWrong = true;
-				if(errorMessage === "") errorMessage = `Kesalahan memproses baris ${rowNumber}: ${error.message} Baca petunjuk pengisian file excel.`;
-			}
-		});
+    let somethingWrong = false;
+    let errorMessage = '';
+    worksheet.eachRow({ includeEmpty: true }, async (row, rowNumber) => {
+      try {
+        if (rowNumber === 1) return;
+        const kategori = row.getCell(2).value;
+        const komoditas = row.getCell(3).value;
+        const periodeTanam = row.getCell(4).value;
+        const luasLahan = row.getCell(5).value;
+        const prakiraanLuasPanen = row.getCell(6).value;
+        const prakiraanHasilPanen = row.getCell(7).value;
+        const prakiraanBulanPanen = row.getCell(8).value;
+        const realisasiLuasPanen = row.getCell(9).value;
+        const realisasiHasilPanen = row.getCell(10).value;
+        const realisasiBulanPanen = row.getCell(11).value;
 
-		if (somethingWrong) {
-			throw new ApiError(400, errorMessage);
-		}
+        if (!['pangan', 'perkebunan', 'sayur', 'buah'].includes(kategori))
+          throw new ApiError(400, 'Kategori tidak valid.');
+        if (
+          !tanamanPangan
+            .concat(tanamanPerkebunan)
+            .concat(komoditasSemusim)
+            .concat(komoditasTahunan)
+            .includes(komoditas)
+        )
+          throw new ApiError(400, 'Komoditas tidak valid.');
+        if (!monthOrder.includes(periodeTanam))
+          throw new ApiError(400, 'Periode tanam tidak valid.');
+        if (!luasLahan || isNaN(luasLahan)) throw new ApiError(400, 'Luas lahan tidak valid.');
+        if (!prakiraanLuasPanen || isNaN(prakiraanLuasPanen))
+          throw new ApiError(400, 'Prakiraan luas panen tidak valid.');
+        if (!prakiraanHasilPanen || isNaN(prakiraanHasilPanen))
+          throw new ApiError(400, 'Prakiraan hasil panen tidak valid.');
+        if (!monthOrder.includes(prakiraanBulanPanen))
+          throw new ApiError(400, 'Prakiraan bulan panen tidak valid.');
+        if (realisasiLuasPanen && isNaN(realisasiLuasPanen))
+          throw new ApiError(400, 'Realisasi luas panen tidak valid.');
+        if (realisasiHasilPanen && isNaN(realisasiHasilPanen))
+          throw new ApiError(400, 'Realisasi hasil panen tidak valid.');
+        if (realisasiBulanPanen && !monthOrder.includes(realisasiBulanPanen))
+          throw new ApiError(400, 'Realisasi bulan panen tidak valid.');
+      } catch (error) {
+        somethingWrong = true;
+        if (errorMessage === '')
+          errorMessage = `Kesalahan memproses baris ${rowNumber}: ${error.message} Baca petunjuk pengisian file excel.`;
+      }
+    });
 
-		const promises = [];
-		worksheet.eachRow({ includeEmpty: true }, (row, rowNumber) => {
-			if (rowNumber === 1) return;
-			const promise = (async () => {
-				try {
-					const fk_kelompokId = row.getCell(1).value;
-					const kategori = row.getCell(2).value;
-					const komoditas = row.getCell(3).value;
-					const periodeTanam = row.getCell(4).value;
-					const luasLahan = row.getCell(5).value;
-					const prakiraanLuasPanen = row.getCell(6).value;
-					const prakiraanHasilPanen = row.getCell(7).value;
-					const prakiraanBulanPanen = row.getCell(8).value;
-					const realisasiLuasPanen = row.getCell(9).value;
-					const realisasiHasilPanen = row.getCell(10).value;
-					const realisasiBulanPanen = row.getCell(11).value;
+    if (somethingWrong) {
+      throw new ApiError(400, errorMessage);
+    }
 
-					const kelompokTani = await kelompok.findOne({
-						where: { id: fk_kelompokId },
-					});
+    const promises = [];
+    worksheet.eachRow({ includeEmpty: true }, (row, rowNumber) => {
+      if (rowNumber === 1) return;
+      const promise = (async () => {
+        try {
+          const fk_kelompokId = row.getCell(1).value;
+          const kategori = row.getCell(2).value;
+          const komoditas = row.getCell(3).value;
+          const periodeTanam = row.getCell(4).value;
+          const luasLahan = row.getCell(5).value;
+          const prakiraanLuasPanen = row.getCell(6).value;
+          const prakiraanHasilPanen = row.getCell(7).value;
+          const prakiraanBulanPanen = row.getCell(8).value;
+          const realisasiLuasPanen = row.getCell(9).value;
+          const realisasiHasilPanen = row.getCell(10).value;
+          const realisasiBulanPanen = row.getCell(11).value;
 
-					if (!kelompokTani) throw new ApiError(400, "Kelompok tidak ditemukan.");
-					return dataTanaman.create({
-						fk_kelompokId,
-						kategori,
-						komoditas,
-						periodeTanam,
-						luasLahan,
-						prakiraanLuasPanen,
-						prakiraanHasilPanen,
-						prakiraanBulanPanen,
-						realisasiLuasPanen,
-						realisasiHasilPanen,
-						realisasiBulanPanen,
-					});
-				} catch (error) {
-					console.error(`Error processing row ${rowNumber}:`, error.message);
-					return null;
-				}
-			})();
+          const kelompokTani = await kelompok.findOne({
+            where: { id: fk_kelompokId }
+          });
 
-			promises.push(promise);
-		});
+          if (!kelompokTani) throw new ApiError(400, 'Kelompok tidak ditemukan.');
+          return dataTanaman.create({
+            fk_kelompokId,
+            kategori,
+            komoditas,
+            periodeTanam,
+            luasLahan,
+            prakiraanLuasPanen,
+            prakiraanHasilPanen,
+            prakiraanBulanPanen,
+            realisasiLuasPanen,
+            realisasiHasilPanen,
+            realisasiBulanPanen
+          });
+        } catch (error) {
+          console.error(`Error processing row ${rowNumber}:`, error.message);
+          return null;
+        }
+      })();
 
-		// Wait for all promises to complete
-		Promise.all(promises)
-			.then(results => {
-				console.log('All rows processed successfully', results);
-			})
-			.catch(error => {
-				console.error('Error processing rows', error);
-			});
+      promises.push(promise);
+    });
 
-		res.status(201).json({
-			message: "Data berhasil ditambahkan.",
-		});
-	} catch (error) {
-		res.status(error.statusCode || 500).json({
-			message: error.message,
-		});
-	}
+    // Wait for all promises to complete
+    Promise.all(promises)
+      .then((results) => {
+        console.log('All rows processed successfully', results);
+      })
+      .catch((error) => {
+        console.error('Error processing rows', error);
+      });
+
+    res.status(201).json({
+      message: 'Data berhasil ditambahkan.'
+    });
+  } catch (error) {
+    res.status(error.statusCode || 500).json({
+      message: error.message
+    });
+  }
 };
 
 module.exports = {
-	tambahDataTanaman,
-	getAllDataTanaman,
-	getDetailedDataTanaman,
-	editDataTanaman,
-	hapusDataTanaman,
-	uploadDataTanaman,
-	fixKategori,
-	fixKomoditas,
+  tambahDataTanaman,
+  getAllDataTanaman,
+  getDetailedDataTanaman,
+  editDataTanaman,
+  hapusDataTanaman,
+  uploadDataTanaman,
+  fixKategori,
+  fixKomoditas
 };

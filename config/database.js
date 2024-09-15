@@ -1,6 +1,6 @@
 const dotenv = require('dotenv');
 dotenv.config();
-const { DB_NAME, DB_USER, DB_PASSWORD, DB_HOST, DB_PORT, } = process.env;
+const { DB_NAME, DB_USER, DB_PASSWORD, DB_HOST, DB_PORT } = process.env;
 
 const db = {
   development: {
@@ -9,7 +9,7 @@ const db = {
     database: DB_NAME,
     host: DB_HOST,
     port: DB_PORT,
-    dialect: 'mysql',
+    dialect: 'mysql'
   },
   test: {
     username: DB_USER,
@@ -17,7 +17,7 @@ const db = {
     database: DB_NAME,
     host: DB_HOST,
     port: DB_PORT,
-    dialect: 'mysql',
+    dialect: 'mysql'
   },
   production: {
     username: DB_USER,
@@ -25,7 +25,7 @@ const db = {
     database: DB_NAME,
     host: DB_HOST,
     port: DB_PORT,
-    dialect: 'mysql',
-  },
+    dialect: 'mysql'
+  }
 };
 module.exports = db;

@@ -23,7 +23,7 @@ module.exports = {
       },
       foto: {
         type: Sequelize.TEXT
-      }, 
+      },
       desa: {
         type: Sequelize.STRING
       },

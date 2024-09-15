@@ -20,12 +20,17 @@ const {
   updateJurnalKegiatan,
   getKelompok,
   getPetani,
-	changeKecamatanToId,
-	changeDesaToId,
+  changeKecamatanToId,
+  changeDesaToId
 } = require('../controllers/dataPenyuluh');
 
-router.post('/penyuluh/add', auth, upload.single('foto') ,tambahDataPenyuluh);
-router.post('/presensi-kehadiran/add', auth, upload.single('FotoKegiatan'), tambahPresensiKehadiran);
+router.post('/penyuluh/add', auth, upload.single('foto'), tambahDataPenyuluh);
+router.post(
+  '/presensi-kehadiran/add',
+  auth,
+  upload.single('FotoKegiatan'),
+  tambahPresensiKehadiran
+);
 router.post('/jurnal-kegiatan/add', auth, upload.single('gambar'), tambahJurnalKegiatan);
 router.get('/presensi-kehadiran', auth, presensiKehadiran);
 router.get('/presensi-kehadiran/web', auth, presensiKehadiranWeb);
@@ -36,9 +41,9 @@ router.delete('/jurnal-kegiatan/:id', auth, deleteJurnalKegiatan);
 router.get('/riwayat-chat', auth, RiwayatChat);
 router.get('/daftar-penyuluh', auth, daftarPenyuluh);
 router.get('/daftar-penyuluh/:id', auth, daftarPenyuluhById);
-router.put('/daftar-penyuluh/:id', auth, upload.single('foto') ,updatePenyuluh);
+router.put('/daftar-penyuluh/:id', auth, upload.single('foto'), updatePenyuluh);
 router.delete('/daftar-penyuluh/:id', auth, deleteDaftarPenyuluh);
-router.post('/upload-data-penyuluh',auth, upload.single("file"), uploadDataPenyuluh)
+router.post('/upload-data-penyuluh', auth, upload.single('file'), uploadDataPenyuluh);
 router.get('/opsi-penyuluh', opsiPenyuluh);
 router.get('/kelompok-all', auth, getKelompok);
 router.get('/daftar-petani/:id', auth, getPetani);

@@ -1,16 +1,16 @@
-const { faq } = require("../models");
-const ApiError = require("../../utils/ApiError");
+const { faq } = require('../models');
+const ApiError = require('../../utils/ApiError');
 
 const getFaqs = async (req, res) => {
   try {
     const data = await faq.findAll();
     res.status(200).json({
-      message: "FAQ Berhasil Dimuat",
-      faq: data,
+      message: 'FAQ Berhasil Dimuat',
+      faq: data
     });
   } catch (error) {
     res.status(error.statusCode || 500).json({
-      message: error.message,
+      message: error.message
     });
   }
 };
@@ -20,22 +20,22 @@ const getDetailFaq = async (req, res) => {
     const { id } = req.params;
     const data = await faq.findOne({
       where: {
-        id,
-      },
+        id
+      }
     });
     if (!data) {
       res.status(404).json({
-        message: "FAQ Tidak Ditemukan",
+        message: 'FAQ Tidak Ditemukan'
       });
     } else {
       res.status(200).json({
-        message: "FAQ Berhasil Dimuat",
-        faq: data,
+        message: 'FAQ Berhasil Dimuat',
+        faq: data
       });
     }
   } catch (error) {
     res.status(error.statusCode || 500).json({
-      message: error.message,
+      message: error.message
     });
   }
 };
@@ -44,21 +44,21 @@ const createFaq = async (req, res) => {
   try {
     const { peran } = req.user || {};
 
-    if (peran !== "operator admin" && peran !== "operator super admin") {
-      throw new ApiError(403, "Anda tidak memiliki akses.");
+    if (peran !== 'operator admin' && peran !== 'operator super admin') {
+      throw new ApiError(403, 'Anda tidak memiliki akses.');
     }
     const { question, answer } = req.body;
     const data = await faq.create({
       question,
-      answer,
+      answer
     });
     res.status(201).json({
-      message: "FAQ Berhasil Ditambahkan",
-      faq: data,
+      message: 'FAQ Berhasil Ditambahkan',
+      faq: data
     });
   } catch (error) {
     res.status(error.statusCode || 500).json({
-      message: error.message,
+      message: error.message
     });
   }
 };
@@ -68,37 +68,37 @@ const updateFaq = async (req, res) => {
     const { id } = req.params;
     const { question, answer } = req.body;
     const { peran } = req.user || {};
-    if (peran !== "operator admin" && peran !== "operator super admin") {
-      throw new ApiError(403, "Anda tidak memiliki akses.");
+    if (peran !== 'operator admin' && peran !== 'operator super admin') {
+      throw new ApiError(403, 'Anda tidak memiliki akses.');
     }
     const data = await faq.findOne({
       where: {
-        id,
-      },
+        id
+      }
     });
     if (!data) {
       res.status(404).json({
-        message: "FAQ Tidak Ditemukan",
+        message: 'FAQ Tidak Ditemukan'
       });
     } else {
       await faq.update(
         {
           question,
-          answer,
+          answer
         },
         {
           where: {
-            id,
-          },
+            id
+          }
         }
       );
       res.status(200).json({
-        message: "FAQ Berhasil Diperbarui",
+        message: 'FAQ Berhasil Diperbarui'
       });
     }
   } catch (error) {
     res.status(error.statusCode || 500).json({
-      message: error.message,
+      message: error.message
     });
   }
 };
@@ -108,31 +108,31 @@ const deleteFaq = async (req, res) => {
     const { id } = req.params;
 
     const { peran } = req.user || {};
-    if (peran !== "operator admin" && peran !== "operator super admin") {
-      throw new ApiError(403, "Anda tidak memiliki akses.");
+    if (peran !== 'operator admin' && peran !== 'operator super admin') {
+      throw new ApiError(403, 'Anda tidak memiliki akses.');
     }
     const data = await faq.findOne({
       where: {
-        id,
-      },
+        id
+      }
     });
     if (!data) {
       res.status(404).json({
-        message: "FAQ Tidak Ditemukan",
+        message: 'FAQ Tidak Ditemukan'
       });
     } else {
       await faq.destroy({
         where: {
-          id,
-        },
+          id
+        }
       });
       res.status(200).json({
-        message: "FAQ Berhasil Dihapus",
+        message: 'FAQ Berhasil Dihapus'
       });
     }
   } catch (error) {
     res.status(error.statusCode || 500).json({
-      message: error.message,
+      message: error.message
     });
   }
 };
@@ -142,5 +142,5 @@ module.exports = {
   getDetailFaq,
   createFaq,
   updateFaq,
-  deleteFaq,
+  deleteFaq
 };

@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken');
-const { tbl_akun: tblAkun, dataPerson  } = require('../app/models');
+const { tbl_akun: tblAkun, dataPerson } = require('../app/models');
 const dotenv = require('dotenv');
 dotenv.config();
 const auth = (req, res, next) => {
@@ -9,16 +9,16 @@ const auth = (req, res, next) => {
     if (!bearerToken) {
       return res.status(401).json({
         status: 'failed',
-        message: 'Required authorization',
+        message: 'Required authorization'
       });
     }
     const payload = jwt.verify(bearerToken, process.env.SECRET_KEY);
-    if(payload.NIK){
+    if (payload.NIK) {
       dataPerson.findByPk(payload.id).then((instance) => {
         req.user = instance;
         return next();
       });
-    }else{
+    } else {
       tblAkun.findByPk(payload.id).then((instance) => {
         req.user = instance;
         return next();
@@ -27,7 +27,7 @@ const auth = (req, res, next) => {
   } catch {
     res.status(401).json({
       status: 'failed',
-      message: 'Invalid token',
+      message: 'Invalid token'
     });
   }
 };

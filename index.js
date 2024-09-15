@@ -1,7 +1,5 @@
 const express = require('express');
 const config = require('./config/app');
-const routerAkun = require('./app/router/akun');
-const authMidleware = require('./midleware/auth');
 const routerAll = require('./app/router');
 const bodyParser = require('body-parser');
 const cors = require('cors');
@@ -12,8 +10,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(cors());
 
-app.use(routerAll)
-
+app.use(routerAll);
 
 app.use(express.static(__dirname + '/public'));
 app.use(express.static(__dirname + '/uploads'));

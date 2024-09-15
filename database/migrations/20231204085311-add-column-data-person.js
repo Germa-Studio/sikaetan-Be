@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
@@ -9,9 +9,9 @@ module.exports = {
      * Example:
      * await queryInterface.createTable('users', { id: Sequelize.INTEGER });
      */
-    await queryInterface.addColumn("dataPeople", "verify", {
+    await queryInterface.addColumn('dataPeople', 'verify', {
       type: Sequelize.BOOLEAN,
-      after: "responseRatingId",
+      after: 'responseRatingId'
     });
   },
 
@@ -22,6 +22,6 @@ module.exports = {
      * Example:
      * await queryInterface.dropTable('users');
      */
-    await queryInterface.removeColumn("dataPeople", "verify");
-  },
+    await queryInterface.removeColumn('dataPeople', 'verify');
+  }
 };

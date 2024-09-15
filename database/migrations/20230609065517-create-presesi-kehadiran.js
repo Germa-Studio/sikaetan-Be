@@ -9,7 +9,7 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      dataPersonId:{
+      dataPersonId: {
         type: Sequelize.INTEGER
       },
       tanggalPresesi: {

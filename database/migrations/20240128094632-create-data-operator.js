@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
@@ -9,49 +9,49 @@ module.exports = {
      * Example:
      * await queryInterface.createTable('users', { id: Sequelize.INTEGER });
      */
-    await queryInterface.createTable("dataOperators", {
+    await queryInterface.createTable('dataOperators', {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
-        type: Sequelize.INTEGER,
+        type: Sequelize.INTEGER
       },
       accountID: {
         unique: true,
-        type: Sequelize.UUID,
+        type: Sequelize.UUID
       },
       nik: {
-        type: Sequelize.STRING,
+        type: Sequelize.STRING
       },
       nkk: {
-        type: Sequelize.STRING,
+        type: Sequelize.STRING
       },
       email: {
-        type: Sequelize.STRING,
+        type: Sequelize.STRING
       },
       noTelp: {
-        type: Sequelize.STRING,
+        type: Sequelize.STRING
       },
       nama: {
-        type: Sequelize.STRING,
+        type: Sequelize.STRING
       },
       alamat: {
-        type: Sequelize.STRING,
+        type: Sequelize.STRING
       },
       password: {
-        type: Sequelize.STRING,
+        type: Sequelize.STRING
       },
       foto: {
-        type: Sequelize.STRING,
+        type: Sequelize.STRING
       },
       createdAt: {
         allowNull: false,
-        type: Sequelize.DATE,
+        type: Sequelize.DATE
       },
       updatedAt: {
         allowNull: false,
-        type: Sequelize.DATE,
-      },
+        type: Sequelize.DATE
+      }
     });
   },
 
@@ -62,6 +62,6 @@ module.exports = {
      * Example:
      * await queryInterface.dropTable('users');
      */
-    await queryInterface.dropTable("dataOperators");
-  },
+    await queryInterface.dropTable('dataOperators');
+  }
 };

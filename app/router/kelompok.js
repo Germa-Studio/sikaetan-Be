@@ -5,11 +5,11 @@ const {
   uploadDataKelompoks,
   getAllKelompok,
   getAllKecamatan,
-	getAllDesaInKecamatan,
+  getAllDesaInKecamatan,
   deleteKelompok,
   getKelompokById,
-  editKelompokById,
-} = require("../controllers/kelompok");
+  editKelompokById
+} = require('../controllers/kelompok');
 
 // router.get();
 router.get('/kelompok', auth, getAllKelompok);
@@ -18,6 +18,6 @@ router.get('/kelompok/desa', auth, getAllDesaInKecamatan);
 router.get('/kelompok/:id', auth, getKelompokById);
 router.put('/kelompok/:id', auth, editKelompokById);
 router.delete('/kelompok/:id', auth, deleteKelompok);
-router.post('/upload', auth, upload.single("file"), uploadDataKelompoks);
+router.post('/upload', auth, upload.single('file'), uploadDataKelompoks);
 
 module.exports = router;

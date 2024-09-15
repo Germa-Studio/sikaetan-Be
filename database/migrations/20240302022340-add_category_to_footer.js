@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
@@ -9,11 +9,11 @@ module.exports = {
      * Example:
      * await queryInterface.createTable('users', { id: Sequelize.INTEGER });
      */
-    await queryInterface.addColumn("footers", "category", {
+    await queryInterface.addColumn('footers', 'category', {
       type: Sequelize.STRING,
       defaultValue: null,
       allowNull: true,
-      after: "value",
+      after: 'value'
     });
   },
 
@@ -24,6 +24,6 @@ module.exports = {
      * Example:
      * await queryInterface.dropTable('users');
      */
-    await queryInterface.removeColumn("footers", "category");
-  },
+    await queryInterface.removeColumn('footers', 'category');
+  }
 };

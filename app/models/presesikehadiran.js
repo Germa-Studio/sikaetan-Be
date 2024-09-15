@@ -1,7 +1,5 @@
 'use strict';
-const {
-  Model
-} = require('sequelize');
+const { Model } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
   class presesiKehadiran extends Model {
     /**
@@ -14,15 +12,18 @@ module.exports = (sequelize, DataTypes) => {
       this.belongsTo(models.dataPerson, { foreignKey: 'dataPersonId' });
     }
   }
-  presesiKehadiran.init({
-    dataPersonId: DataTypes.INTEGER,
-    tanggalPresesi: DataTypes.DATE,
-    judulKegiatan: DataTypes.STRING,
-    deskripsiKegiatan: DataTypes.STRING,
-    FotoKegiatan: DataTypes.STRING,
-  }, {
-    sequelize,
-    modelName: 'presesiKehadiran',
-  });
+  presesiKehadiran.init(
+    {
+      dataPersonId: DataTypes.INTEGER,
+      tanggalPresesi: DataTypes.DATE,
+      judulKegiatan: DataTypes.STRING,
+      deskripsiKegiatan: DataTypes.STRING,
+      FotoKegiatan: DataTypes.STRING
+    },
+    {
+      sequelize,
+      modelName: 'presesiKehadiran'
+    }
+  );
   return presesiKehadiran;
 };

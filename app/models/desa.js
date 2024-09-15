@@ -1,7 +1,5 @@
 'use strict';
-const {
-  Model
-} = require('sequelize');
+const { Model } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
   class desa extends Model {
     /**
@@ -11,17 +9,20 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       this.belongsTo(models.kecamatan, {
-        foreignKey: "kecamatanId"
+        foreignKey: 'kecamatanId'
       });
     }
   }
-  desa.init({
-    nama: DataTypes.STRING,
-    kecamatanId: DataTypes.INTEGER,
-    type: DataTypes.ENUM('Desa', 'Kelurahan')
-  }, {
-    sequelize,
-    modelName: 'desa',
-  });
+  desa.init(
+    {
+      nama: DataTypes.STRING,
+      kecamatanId: DataTypes.INTEGER,
+      type: DataTypes.ENUM('Desa', 'Kelurahan')
+    },
+    {
+      sequelize,
+      modelName: 'desa'
+    }
+  );
   return desa;
 };

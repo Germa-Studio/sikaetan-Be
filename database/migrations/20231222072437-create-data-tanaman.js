@@ -1,67 +1,67 @@
-"use strict";
+'use strict';
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable("dataTanamans", {
+    await queryInterface.createTable('dataTanamans', {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
-        type: Sequelize.INTEGER,
+        type: Sequelize.INTEGER
       },
       kategori: {
-        type: Sequelize.STRING,
+        type: Sequelize.STRING
       },
       komoditas: {
-        type: Sequelize.STRING,
+        type: Sequelize.STRING
       },
       periodeTanam: {
-        type: Sequelize.STRING,
+        type: Sequelize.STRING
       },
       luasLahan: {
-        type: Sequelize.INTEGER,
+        type: Sequelize.INTEGER
       },
       prakiraanLuasPanen: {
-        type: Sequelize.INTEGER,
+        type: Sequelize.INTEGER
       },
       prakiraanHasilPanen: {
-        type: Sequelize.INTEGER,
+        type: Sequelize.INTEGER
       },
       prakiraanBulanPanen: {
-        type: Sequelize.STRING,
+        type: Sequelize.STRING
       },
       realisasiLuasPanen: {
         type: Sequelize.INTEGER,
-        allowNull: true,
+        allowNull: true
       },
       realisasiHasilPanen: {
         type: Sequelize.INTEGER,
-        allowNull: true,
+        allowNull: true
       },
       realisasiBulanPanen: {
         type: Sequelize.STRING,
-        allowNull: true,
+        allowNull: true
       },
       fk_kelompokId: {
         type: Sequelize.INTEGER,
         references: {
-          model: "kelompoks",
-          key: "id",
+          model: 'kelompoks',
+          key: 'id'
         },
-        onUpdate: "CASCADE",
-        onDelete: "SET NULL",
+        onUpdate: 'CASCADE',
+        onDelete: 'SET NULL'
       },
       createdAt: {
         allowNull: false,
-        type: Sequelize.DATE,
+        type: Sequelize.DATE
       },
       updatedAt: {
         allowNull: false,
-        type: Sequelize.DATE,
-      },
+        type: Sequelize.DATE
+      }
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable("dataTanamans");
-  },
+    await queryInterface.dropTable('dataTanamans');
+  }
 };

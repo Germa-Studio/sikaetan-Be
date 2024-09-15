@@ -1,7 +1,5 @@
 'use strict';
-const {
-  Model
-} = require('sequelize');
+const { Model } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
   class chart extends Model {
     /**
@@ -14,13 +12,16 @@ module.exports = (sequelize, DataTypes) => {
       this.belongsTo(models.dataChart, { foreignKey: 'dataChartId' });
     }
   }
-  chart.init({
-    judul: DataTypes.STRING,
-    type: DataTypes.STRING,
-    dataChartId: DataTypes.INTEGER
-  }, {
-    sequelize,
-    modelName: 'chart',
-  });
+  chart.init(
+    {
+      judul: DataTypes.STRING,
+      type: DataTypes.STRING,
+      dataChartId: DataTypes.INTEGER
+    },
+    {
+      sequelize,
+      modelName: 'chart'
+    }
+  );
   return chart;
 };

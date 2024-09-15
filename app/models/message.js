@@ -1,7 +1,5 @@
 'use strict';
-const {
-  Model, STRING
-} = require('sequelize');
+const { Model } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
   class message extends Model {
     /**
@@ -14,15 +12,18 @@ module.exports = (sequelize, DataTypes) => {
       // this.belongsTo(models.attachment, { foreignKey: 'attachmentId' });
     }
   }
-  message.init({
-    attachment: DataTypes.TEXT,
-    pesan: DataTypes.TEXT,
-    chatId: DataTypes.INTEGER,
-    fromId: DataTypes.INTEGER,
-    waktu: DataTypes.STRING
-  }, {
-    sequelize,
-    modelName: 'message',
-  });
+  message.init(
+    {
+      attachment: DataTypes.TEXT,
+      pesan: DataTypes.TEXT,
+      chatId: DataTypes.INTEGER,
+      fromId: DataTypes.INTEGER,
+      waktu: DataTypes.STRING
+    },
+    {
+      sequelize,
+      modelName: 'message'
+    }
+  );
   return message;
 };

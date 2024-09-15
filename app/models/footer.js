@@ -1,5 +1,5 @@
-"use strict";
-const { Model } = require("sequelize");
+'use strict';
+const { Model } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
   class Footer extends Model {
     /**
@@ -16,11 +16,11 @@ module.exports = (sequelize, DataTypes) => {
       key: DataTypes.STRING,
       value: DataTypes.STRING,
       category: DataTypes.STRING,
-      isActive: DataTypes.BOOLEAN,
+      isActive: DataTypes.BOOLEAN
     },
     {
       sequelize,
-      modelName: "footer",
+      modelName: 'footer'
     }
   );
   return Footer;

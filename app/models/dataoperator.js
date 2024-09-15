@@ -1,5 +1,5 @@
-"use strict";
-const { Model } = require("sequelize");
+'use strict';
+const { Model } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
   class dataOperator extends Model {
     static associate(models) {
@@ -7,8 +7,8 @@ module.exports = (sequelize, DataTypes) => {
       //   this.belongsTo(models.tbl_akun, {foreignKey: "fk_accountID"});
       // this.belongsTo(models.kelompok, { foreignKey: "fk_kelompokID" });
       dataOperator.belongsTo(models.tbl_akun, {
-        foreignKey: "accountID",
-        targetKey: "accountID",
+        foreignKey: 'accountID',
+        targetKey: 'accountID'
         // as: "akun",
       });
     }
@@ -23,12 +23,12 @@ module.exports = (sequelize, DataTypes) => {
       foto: DataTypes.TEXT,
       alamat: DataTypes.TEXT,
       accountID: DataTypes.UUID,
-      password: DataTypes.STRING,
+      password: DataTypes.STRING
     },
     {
       sequelize,
-      modelName: "dataOperator",
-      tableName: "dataOperators",
+      modelName: 'dataOperator',
+      tableName: 'dataOperators'
     }
   );
   return dataOperator;

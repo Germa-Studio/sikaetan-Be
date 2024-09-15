@@ -1,26 +1,25 @@
-const { kelompok, dataPerson, dataPenyuluh } = require("../models");
-const { Op } = require("sequelize");
+const { kelompok, dataPerson, dataPenyuluh } = require('../models');
 
 const selectTani = async (req, res) => {
   try {
     const { kecamatan } = req.params;
     const penyuluh = await dataPerson.findAll({
-      attributes: ["nama"],
+      attributes: ['nama'],
       include: {
         model: dataPenyuluh,
-        attributes: ["kecamatanBinaan"],
+        attributes: ['kecamatanBinaan']
       },
       where: {
-        "$dataPenyuluh.kecamatanBinaan$": kecamatan,
-      },
+        '$dataPenyuluh.kecamatanBinaan$': kecamatan
+      }
     });
     res.status(200).json({
-      message: "Berhasil Mendapatkan Data Info Tani",
-      penyuluh,
+      message: 'Berhasil Mendapatkan Data Info Tani',
+      penyuluh
     });
   } catch (error) {
     res.status(error.statusCode || 500).json({
-      message: error.message,
+      message: error.message
     });
   }
 };
@@ -29,12 +28,12 @@ const selectKelompok = async (req, res) => {
     const { desa } = req.params;
     const kelompokTani = await kelompok.findAll({ where: { desa } });
     res.status(200).json({
-      message: "Berhasil Mendapatkan Data Info Tani",
-      kelompokTani,
+      message: 'Berhasil Mendapatkan Data Info Tani',
+      kelompokTani
     });
   } catch (error) {
     res.status(error.statusCode || 500).json({
-      message: error.message,
+      message: error.message
     });
   }
 };
@@ -44,12 +43,12 @@ const selectKelompokById = async (req, res) => {
     const { id } = req.params;
     const kelompokTani = await kelompok.findOne({ where: { id } });
     res.status(200).json({
-      message: "Berhasil Mendapatkan Data Info Tani",
-      kelompokTani,
+      message: 'Berhasil Mendapatkan Data Info Tani',
+      kelompokTani
     });
   } catch (error) {
     res.status(error.statusCode || 500).json({
-      message: error.message,
+      message: error.message
     });
   }
 };
@@ -57,5 +56,5 @@ const selectKelompokById = async (req, res) => {
 module.exports = {
   selectTani,
   selectKelompok,
-  selectKelompokById,
+  selectKelompokById
 };

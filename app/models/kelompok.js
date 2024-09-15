@@ -1,5 +1,5 @@
-"use strict";
-const { Model } = require("sequelize");
+'use strict';
+const { Model } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
   class kelompok extends Model {
     /**
@@ -10,11 +10,11 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       // define association here
       // this.hasOne(models.dataPerson, { foreignKey: 'kelompokId' });
-      this.hasMany(models.dataPetani, { foreignKey: "fk_kelompokId" });
-      
-			this.belongsTo(models.dataPenyuluh, {
-				foreignKey: "penyuluh",
-			});
+      this.hasMany(models.dataPetani, { foreignKey: 'fk_kelompokId' });
+
+      this.belongsTo(models.dataPenyuluh, {
+        foreignKey: 'penyuluh'
+      });
       // this.hasMany(models.dataOperator, { foreignKey: "fk_kelompokID" });
     }
   }
@@ -24,11 +24,11 @@ module.exports = (sequelize, DataTypes) => {
       namaKelompok: DataTypes.STRING,
       desa: DataTypes.STRING,
       kecamatan: DataTypes.STRING,
-      penyuluh: DataTypes.STRING,
+      penyuluh: DataTypes.STRING
     },
     {
       sequelize,
-      modelName: "kelompok",
+      modelName: 'kelompok'
     }
   );
   return kelompok;

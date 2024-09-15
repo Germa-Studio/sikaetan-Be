@@ -1,43 +1,43 @@
-const { tbl_akun, dataPetani, beritaTani } = require("../models");
+const { tbl_akun, dataPetani, beritaTani } = require('../models');
 
 const getDashboardIndexData = async (req, res) => {
   try {
     const verifiedPetani = await dataPetani.count({
       include: [
-				{
-					model: tbl_akun,
-				}
+        {
+          model: tbl_akun
+        }
       ],
-      where:{
-        "$tbl_akun.isVerified$": 1
+      where: {
+        '$tbl_akun.isVerified$': 1
       }
-     });
+    });
 
     const unverifiedPetani = await dataPetani.count({
       include: [
-				{
-					model: tbl_akun,
-				}
+        {
+          model: tbl_akun
+        }
       ],
-      where:{
-        "$tbl_akun.isVerified$": 0
+      where: {
+        '$tbl_akun.isVerified$': 0
       }
-     });
+    });
 
     const berita = await beritaTani.count({
       where: {
-        kategori: "berita",
-      },
+        kategori: 'berita'
+      }
     });
     const artikel = await beritaTani.count({
       where: {
-        kategori: "artikel",
-      },
+        kategori: 'artikel'
+      }
     });
     const tips = await beritaTani.count({
       where: {
-        kategori: "tips",
-      },
+        kategori: 'tips'
+      }
     });
 
     res.status(200).json({
@@ -45,16 +45,16 @@ const getDashboardIndexData = async (req, res) => {
       unverifiedPetani,
       berita,
       artikel,
-      tips,
+      tips
     });
   } catch (err) {
     res.status(500).json({
-      message: "Error",
-      error: err,
+      message: 'Error',
+      error: err
     });
   }
 };
 
 module.exports = {
-  getDashboardIndexData,
+  getDashboardIndexData
 };
