@@ -1,4 +1,4 @@
-const { kelompok, dataPerson, dataPenyuluh } = require('../models');
+const { kelompok, dataPerson, dataPenyuluh, kecamatan, desa } = require('../models');
 
 const selectTani = async (req, res) => {
   try {
@@ -26,7 +26,21 @@ const selectTani = async (req, res) => {
 const selectKelompok = async (req, res) => {
   try {
     const { desa } = req.params;
-    const kelompokTani = await kelompok.findAll({ where: { desa } });
+    const kelompokTani = await kelompok.findAll({
+      where: { desa },
+      include: [
+        {
+          model: kecamatan,
+          as: 'kecamatanData',
+          attributes: ['nama']
+        },
+        {
+          model: desa,
+          as: 'desaData',
+          attributes: ['nama']
+        }
+      ]
+    });
     res.status(200).json({
       message: 'Berhasil Mendapatkan Data Info Tani',
       kelompokTani
@@ -41,7 +55,22 @@ const selectKelompok = async (req, res) => {
 const selectKelompokById = async (req, res) => {
   try {
     const { id } = req.params;
-    const kelompokTani = await kelompok.findOne({ where: { id } });
+    const kelompokTani = await kelompok.findOne({
+      where: { id },
+      include: [
+        {
+          model: kecamatan,
+          as: 'kecamatanData',
+          attributes: ['nama']
+        },
+        {
+          model: desa,
+          as: 'desaData',
+          attributes: ['nama']
+        }
+      ]
+    });
+
     res.status(200).json({
       message: 'Berhasil Mendapatkan Data Info Tani',
       kelompokTani

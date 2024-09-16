@@ -275,14 +275,15 @@ const opsiPenyuluh = async (req, res) => {
   try {
     const dataDaftarPenyuluh = await dataPenyuluh.findAll({
       include: [
-        { model: kecamatan, as: 'kecamatanData' },
-        { model: desa, as: 'desaData' },
+        { model: kecamatan, as: 'kecamatanData', attributes: ['nama'] },
+        { model: desa, as: 'desaData', attributes: ['nama'] },
         {
           model: kecamatanBinaan,
           as: 'kecamatanBinaanData',
           include: [
             {
-              model: kecamatan
+              model: kecamatan,
+              attributes: ['nama']
             }
           ]
         },
@@ -291,7 +292,8 @@ const opsiPenyuluh = async (req, res) => {
           as: 'desaBinaanData',
           include: [
             {
-              model: desa
+              model: desa,
+              attributes: ['nama']
             }
           ]
         }
@@ -321,14 +323,15 @@ const daftarPenyuluh = async (req, res) => {
       limit: limitFilter,
       offset: (pageFilter - 1) * limitFilter,
       include: [
-        { model: kecamatan, as: 'kecamatanData' },
-        { model: desa, as: 'desaData' },
+        { model: kecamatan, as: 'kecamatanData', attributes: ['nama'] },
+        { model: desa, as: 'desaData', attributes: ['nama'] },
         {
           model: kecamatanBinaan,
           as: 'kecamatanBinaanData',
           include: [
             {
-              model: kecamatan
+              model: kecamatan,
+              attributes: ['nama']
             }
           ]
         },
@@ -337,7 +340,8 @@ const daftarPenyuluh = async (req, res) => {
           as: 'desaBinaanData',
           include: [
             {
-              model: desa
+              model: desa,
+              attributes: ['nama']
             }
           ]
         }
@@ -773,14 +777,15 @@ const daftarPenyuluhById = async (req, res) => {
       where: { id: id },
       include: [
         { model: kelompok, as: 'kelompoks' },
-        { model: kecamatan, as: 'kecamatanData' },
-        { model: desa, as: 'desaData' },
+        { model: kecamatan, as: 'kecamatanData', attributes: ['nama'] },
+        { model: desa, as: 'desaData', attributes: ['nama'] },
         {
           model: kecamatanBinaan,
           as: 'kecamatanBinaanData',
           include: [
             {
-              model: kecamatan
+              model: kecamatan,
+              attributes: ['nama']
             }
           ]
         },
@@ -789,7 +794,8 @@ const daftarPenyuluhById = async (req, res) => {
           as: 'desaBinaanData',
           include: [
             {
-              model: desa
+              model: desa,
+              attributes: ['nama']
             }
           ]
         }

@@ -430,11 +430,13 @@ const daftarTani = async (req, res) => {
         },
         {
           model: kecamatan,
-          as: 'kecamatanData'
+          as: 'kecamatanData',
+          attributes: ['nama']
         },
         {
           model: desa,
-          as: 'desaData'
+          as: 'desaData',
+          attributes: ['nama']
         }
       ],
       limit: limitFilter,
@@ -517,11 +519,13 @@ const dataTaniDetail = async (req, res) => {
         },
         {
           model: kecamatan,
-          as: 'kecamatanData'
+          as: 'kecamatanData',
+          attributes: ['nama']
         },
         {
           model: desa,
-          as: 'desaData'
+          as: 'desaData',
+          attributes: ['nama']
         }
       ]
     });

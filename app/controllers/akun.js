@@ -369,11 +369,13 @@ const opsiPenyuluh = async (req, res) => {
       include: [
         {
           model: kecamatan,
-          as: 'kecamatanData'
+          as: 'kecamatanData',
+          attributes: ['nama']
         },
         {
           model: desa,
-          as: 'desaData'
+          as: 'desaData',
+          attributes: ['nama']
         }
       ]
     });
@@ -528,18 +530,21 @@ const getDetailProfile = async (req, res) => {
             },
             {
               model: kecamatan,
-              as: 'kecamatanData'
+              as: 'kecamatanData',
+              attributes: ['nama']
             },
             {
               model: desa,
-              as: 'desaData'
+              as: 'desaData',
+              attributes: ['nama']
             },
             {
               model: kecamatanBinaan,
               as: 'kecamatanBinaanData',
               include: [
                 {
-                  model: kecamatan
+                  model: kecamatan,
+                  attributes: ['nama']
                 }
               ]
             },
@@ -548,7 +553,8 @@ const getDetailProfile = async (req, res) => {
               as: 'desaBinaanData',
               include: [
                 {
-                  model: desa
+                  model: desa,
+                  attributes: ['nama']
                 }
               ]
             }
@@ -575,11 +581,13 @@ const getDetailProfile = async (req, res) => {
             },
             {
               model: kecamatan,
-              as: 'kecamatanData'
+              as: 'kecamatanData',
+              attributes: ['nama']
             },
             {
               model: desa,
-              as: 'desaData'
+              as: 'desaData',
+              attributes: ['nama']
             }
           ]
         });
@@ -1063,7 +1071,8 @@ const changeKecamatanToId = async (req, res) => {
         include: [
           {
             model: kecamatan,
-            as: 'kecamatanData'
+            as: 'kecamatanData',
+            attributes: ['nama']
           }
         ]
       });

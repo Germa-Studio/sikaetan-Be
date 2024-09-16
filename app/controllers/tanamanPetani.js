@@ -1,4 +1,12 @@
-const { tanamanPetani, kelompok, dataPetani, dataPenyuluh, dataTanaman } = require('../models');
+const {
+  tanamanPetani,
+  kelompok,
+  dataPetani,
+  dataPenyuluh,
+  dataTanaman,
+  kecamatan,
+  desa
+} = require('../models');
 const ApiError = require('../../utils/ApiError');
 const dotenv = require('dotenv');
 const { Op, Sequelize, literal } = require('sequelize');
@@ -102,7 +110,19 @@ const getTopTanamanPetani = async (req, res) => {
           include: [
             {
               model: kelompok,
-              as: 'kelompok'
+              as: 'kelompok',
+              include: [
+                {
+                  model: kecamatan,
+                  as: 'kecamatanData',
+                  attributes: ['nama']
+                },
+                {
+                  model: desa,
+                  as: 'desaData',
+                  attributes: ['nama']
+                }
+              ]
             }
           ]
         }
