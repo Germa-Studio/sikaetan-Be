@@ -22,7 +22,9 @@ const {
   getPetani,
   changeKecamatanToId,
   changeDesaToId,
-  refactorWilayahBinaan
+  refactorWilayahBinaan,
+  tambahWilayahBinaan,
+  deleteWilayahBinaan
 } = require('../controllers/dataPenyuluh');
 
 router.post('/penyuluh/add', auth, upload.single('foto'), tambahDataPenyuluh);
@@ -51,5 +53,7 @@ router.get('/daftar-petani/:id', auth, getPetani);
 router.put('/penyuluh/fix/kecamatan', auth, changeKecamatanToId);
 router.put('/penyuluh/fix/desa', auth, changeDesaToId);
 router.put('/penyuluh/fix/wilayahBinaan', auth, refactorWilayahBinaan);
+router.post('/penyuluh/wilayah-binaan', auth, tambahWilayahBinaan);
+router.delete('/penyuluh/wilayah-binaan', auth, deleteWilayahBinaan);
 
 module.exports = router;

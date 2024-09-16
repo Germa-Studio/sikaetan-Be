@@ -44,8 +44,24 @@ const cekNiP = async (req, res) => {
       include: [
         { model: kecamatan, as: 'kecamatanData' },
         { model: desa, as: 'desaData' },
-        { model: kecamatanBinaan, as: 'kecamatanBinaanData' },
-        { model: desaBinaan, as: 'desaBinaanData' }
+        {
+          model: kecamatanBinaan,
+          as: 'kecamatanBinaanData',
+          include: [
+            {
+              model: kecamatan
+            }
+          ]
+        },
+        {
+          model: desaBinaan,
+          as: 'desaBinaanData',
+          include: [
+            {
+              model: desa
+            }
+          ]
+        }
       ]
     });
     if (!user) throw new ApiError(400, `data dengan NIP ${NIP} tidak ditemukan`);

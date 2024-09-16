@@ -277,8 +277,24 @@ const opsiPenyuluh = async (req, res) => {
       include: [
         { model: kecamatan, as: 'kecamatanData' },
         { model: desa, as: 'desaData' },
-        { model: kecamatanBinaan, as: 'kecamatanBinaanData' },
-        { model: desaBinaan, as: 'desaBinaanData' }
+        {
+          model: kecamatanBinaan,
+          as: 'kecamatanBinaanData',
+          include: [
+            {
+              model: kecamatan
+            }
+          ]
+        },
+        {
+          model: desaBinaan,
+          as: 'desaBinaanData',
+          include: [
+            {
+              model: desa
+            }
+          ]
+        }
       ]
     });
     res.status(200).json({
@@ -307,8 +323,24 @@ const daftarPenyuluh = async (req, res) => {
       include: [
         { model: kecamatan, as: 'kecamatanData' },
         { model: desa, as: 'desaData' },
-        { model: kecamatanBinaan, as: 'kecamatanBinaanData' },
-        { model: desaBinaan, as: 'desaBinaanData' }
+        {
+          model: kecamatanBinaan,
+          as: 'kecamatanBinaanData',
+          include: [
+            {
+              model: kecamatan
+            }
+          ]
+        },
+        {
+          model: desaBinaan,
+          as: 'desaBinaanData',
+          include: [
+            {
+              model: desa
+            }
+          ]
+        }
       ]
     };
     const data = await dataPenyuluh.findAll({ ...query });
@@ -743,8 +775,24 @@ const daftarPenyuluhById = async (req, res) => {
         { model: kelompok, as: 'kelompoks' },
         { model: kecamatan, as: 'kecamatanData' },
         { model: desa, as: 'desaData' },
-        { model: kecamatanBinaan, as: 'kecamatanBinaanData' },
-        { model: desaBinaan, as: 'desaBinaanData' }
+        {
+          model: kecamatanBinaan,
+          as: 'kecamatanBinaanData',
+          include: [
+            {
+              model: kecamatan
+            }
+          ]
+        },
+        {
+          model: desaBinaan,
+          as: 'desaBinaanData',
+          include: [
+            {
+              model: desa
+            }
+          ]
+        }
       ]
     });
 
@@ -1289,6 +1337,88 @@ const refactorWilayahBinaan = async (req, res) => {
   }
 };
 
+const tambahWilayahBinaan = async (req, res) => {
+  const { peran } = req.user || {};
+  try {
+    const { type, penyuluhId, wilayahId } = req.body;
+
+    if (peran === 'petani') {
+      throw new ApiError(403, 'Anda tidak memiliki akses.');
+    }
+
+    if (type === 'kecamatan') {
+      const kecamatanData = await kecamatan.findOne({
+        where: {
+          id: wilayahId
+        }
+      });
+      if (!kecamatanData) {
+        throw new ApiError(400, 'Kecamatan tidak ditemukan');
+      }
+      await kecamatanBinaan.create({
+        kecamatanId: wilayahId,
+        penyuluhId: penyuluhId
+      });
+    } else {
+      const desaData = await desa.findOne({
+        where: {
+          id: wilayahId
+        }
+      });
+      if (!desaData) {
+        throw new ApiError(400, 'Desa tidak ditemukan');
+      }
+      await desaBinaan.create({
+        desaId: desaData.id,
+        penyuluhId: penyuluhId
+      });
+    }
+
+    return res.status(200).json({
+      message: 'Berhasil menambahkan wilayah binaan'
+    });
+  } catch (error) {
+    res.status(error.statusCode || 500).json({
+      message: error.message
+    });
+  }
+};
+
+const deleteWilayahBinaan = async (req, res) => {
+  const { peran } = req.user || {};
+  try {
+    const { type, penyuluhId, wilayahId } = req.body;
+
+    if (peran === 'petani') {
+      throw new ApiError(403, 'Anda tidak memiliki akses.');
+    }
+
+    if (type === 'kecamatan') {
+      await kecamatanBinaan.destroy({
+        where: {
+          kecamatanId: wilayahId,
+          penyuluhId
+        }
+      });
+    } else {
+      await desaBinaan.destroy({
+        where: {
+          desaId: wilayahId,
+          penyuluhId
+        }
+      });
+    }
+
+    return res.status(200).json({
+      message: 'Berhasil menghapus wilayah binaan'
+    });
+  } catch (error) {
+    res.status(error.statusCode || 500).json({
+      message: error.message
+    });
+  }
+};
+
 module.exports = {
   tambahDataPenyuluh,
   presensiKehadiran,
@@ -1310,5 +1440,7 @@ module.exports = {
   getPetani,
   changeKecamatanToId,
   changeDesaToId,
-  refactorWilayahBinaan
+  refactorWilayahBinaan,
+  tambahWilayahBinaan,
+  deleteWilayahBinaan
 };

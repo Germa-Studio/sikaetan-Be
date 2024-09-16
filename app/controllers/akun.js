@@ -536,11 +536,21 @@ const getDetailProfile = async (req, res) => {
             },
             {
               model: kecamatanBinaan,
-              as: 'kecamatanBinaanData'
+              as: 'kecamatanBinaanData',
+              include: [
+                {
+                  model: kecamatan
+                }
+              ]
             },
             {
               model: desaBinaan,
-              as: 'desaBinaanData'
+              as: 'desaBinaanData',
+              include: [
+                {
+                  model: desa
+                }
+              ]
             }
           ]
         });
