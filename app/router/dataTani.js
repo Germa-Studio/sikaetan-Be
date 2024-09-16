@@ -19,7 +19,7 @@ const {
 } = require('../controllers/dataTani');
 const { getAllDataTanaman } = require('../controllers/dataTanaman');
 
-router.post('/daftar-tani/add', upload.single('foto'), tambahDaftarTani);
+router.post('/daftar-tani/add', auth, upload.single('foto'), tambahDaftarTani);
 router.post('/laporan-tani/add', auth, upload.single('fotoTanaman'), tambahLaporanTani);
 router.get('/laporan-petani', auth, laporanPetani);
 router.get('/laporan-penyuluh', auth, laporanPenyuluh);

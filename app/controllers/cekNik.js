@@ -19,8 +19,8 @@ const cekNik = async (req, res) => {
       include: [
         { model: tanamanPetani },
         { model: kelompok },
-        { model: kecamatan, as: 'kecamatanData', attributes: ['nama'] },
-        { model: desa, as: 'desaData', attributes: ['nama'] }
+        { model: kecamatan, as: 'kecamatanData' },
+        { model: desa, as: 'desaData' }
       ]
     });
     if (!user) throw new ApiError(400, `data dengan NIK ${NIK} tidak ditemukan`);
@@ -42,15 +42,14 @@ const cekNiP = async (req, res) => {
     const user = await dataPenyuluh.findOne({
       where: { nik: NIP },
       include: [
-        { model: kecamatan, as: 'kecamatanData', attributes: ['nama'] },
-        { model: desa, as: 'desaData', attributes: ['nama'] },
+        { model: kecamatan, as: 'kecamatanData' },
+        { model: desa, as: 'desaData' },
         {
           model: kecamatanBinaan,
           as: 'kecamatanBinaanData',
           include: [
             {
-              model: kecamatan,
-              attributes: ['nama']
+              model: kecamatan
             }
           ]
         },
@@ -59,8 +58,7 @@ const cekNiP = async (req, res) => {
           as: 'desaBinaanData',
           include: [
             {
-              model: desa,
-              attributes: ['nama']
+              model: desa
             }
           ]
         }

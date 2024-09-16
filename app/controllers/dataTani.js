@@ -89,7 +89,7 @@ const tambahDaftarTani = async (req, res) => {
       email,
       alamat,
       desa: inputDesa,
-      desaid,
+      desaId,
       nama,
       kecamatan: inputKecamatan,
       kecamatanId,
@@ -122,7 +122,7 @@ const tambahDaftarTani = async (req, res) => {
       where: {
         gapoktan: gapoktan,
         namaKelompok: namaKelompok,
-        desa: inputDesa
+        desaId
       }
     });
     let urlImg;
@@ -175,7 +175,7 @@ const tambahDaftarTani = async (req, res) => {
       }
     }
     let desaData;
-    if (inputDesa && !desaid) {
+    if (inputDesa && !desaId) {
       desaData = await desa.findOne({
         where: {
           nama: inputDesa,
@@ -206,10 +206,11 @@ const tambahDaftarTani = async (req, res) => {
       fk_penyuluhId: penyuluhData.id,
       fk_kelompokId: kelompokData.id,
       kecamatanId: kecamatanData ? kecamatanData.id : kecamatanId,
-      desaId: desaData ? desaData.id : desaid
+      desaId: desaData ? desaData.id : desaId
     });
 
     const { id } = req.user;
+
     postActivity({
       user_id: id,
       activity: 'CREATE',
@@ -430,13 +431,11 @@ const daftarTani = async (req, res) => {
         },
         {
           model: kecamatan,
-          as: 'kecamatanData',
-          attributes: ['nama']
+          as: 'kecamatanData'
         },
         {
           model: desa,
-          as: 'desaData',
-          attributes: ['nama']
+          as: 'desaData'
         }
       ],
       limit: limitFilter,
@@ -519,13 +518,11 @@ const dataTaniDetail = async (req, res) => {
         },
         {
           model: kecamatan,
-          as: 'kecamatanData',
-          attributes: ['nama']
+          as: 'kecamatanData'
         },
         {
           model: desa,
-          as: 'desaData',
-          attributes: ['nama']
+          as: 'desaData'
         }
       ]
     });

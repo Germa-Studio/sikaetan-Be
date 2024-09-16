@@ -369,13 +369,11 @@ const opsiPenyuluh = async (req, res) => {
       include: [
         {
           model: kecamatan,
-          as: 'kecamatanData',
-          attributes: ['nama']
+          as: 'kecamatanData'
         },
         {
           model: desa,
-          as: 'desaData',
-          attributes: ['nama']
+          as: 'desaData'
         }
       ]
     });
@@ -530,21 +528,18 @@ const getDetailProfile = async (req, res) => {
             },
             {
               model: kecamatan,
-              as: 'kecamatanData',
-              attributes: ['nama']
+              as: 'kecamatanData'
             },
             {
               model: desa,
-              as: 'desaData',
-              attributes: ['nama']
+              as: 'desaData'
             },
             {
               model: kecamatanBinaan,
               as: 'kecamatanBinaanData',
               include: [
                 {
-                  model: kecamatan,
-                  attributes: ['nama']
+                  model: kecamatan
                 }
               ]
             },
@@ -553,8 +548,7 @@ const getDetailProfile = async (req, res) => {
               as: 'desaBinaanData',
               include: [
                 {
-                  model: desa,
-                  attributes: ['nama']
+                  model: desa
                 }
               ]
             }
@@ -581,13 +575,11 @@ const getDetailProfile = async (req, res) => {
             },
             {
               model: kecamatan,
-              as: 'kecamatanData',
-              attributes: ['nama']
+              as: 'kecamatanData'
             },
             {
               model: desa,
-              as: 'desaData',
-              attributes: ['nama']
+              as: 'desaData'
             }
           ]
         });
@@ -1071,8 +1063,7 @@ const changeKecamatanToId = async (req, res) => {
         include: [
           {
             model: kecamatan,
-            as: 'kecamatanData',
-            attributes: ['nama']
+            as: 'kecamatanData'
           }
         ]
       });

@@ -114,13 +114,11 @@ const getTopTanamanPetani = async (req, res) => {
               include: [
                 {
                   model: kecamatan,
-                  as: 'kecamatanData',
-                  attributes: ['nama']
+                  as: 'kecamatanData'
                 },
                 {
                   model: desa,
-                  as: 'desaData',
-                  attributes: ['nama']
+                  as: 'desaData'
                 }
               ]
             }

@@ -1,5 +1,13 @@
 const ApiError = require('../../utils/ApiError');
-const { dataPerson, kelompok, tbl_akun, dataPetani, dataPenyuluh } = require('../models');
+const {
+  dataPerson,
+  kelompok,
+  tbl_akun,
+  dataPetani,
+  dataPenyuluh,
+  kecamatan,
+  desa
+} = require('../models');
 const { Op } = require('sequelize');
 
 const usersAll = async (req, res) => {
@@ -143,7 +151,17 @@ const searchPoktan = async (req, res) => {
           }
         ]
       },
-      limit: 10
+      limit: 10,
+      include: [
+        {
+          model: kecamatan,
+          as: 'kecamatanData'
+        },
+        {
+          model: desa,
+          as: 'desaData'
+        }
+      ]
     });
     res.status(200).json({
       message: 'Data semua users berhasil di peroleh',
@@ -177,6 +195,14 @@ const searchPetani = async (req, res) => {
         {
           model: dataPenyuluh,
           as: 'dataPenyuluh'
+        },
+        {
+          model: kecamatan,
+          as: 'kecamatanData'
+        },
+        {
+          model: desa,
+          as: 'desaData'
         }
       ],
       limit: 10

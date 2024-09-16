@@ -24,13 +24,11 @@ const getAllKelompok = async (req, res) => {
         include: [
           {
             model: kecamatan,
-            as: 'kecamatanData',
-            attributes: ['nama']
+            as: 'kecamatanData'
           },
           {
             model: desa,
-            as: 'desaData',
-            attributes: ['nama']
+            as: 'desaData'
           }
         ]
       };
@@ -67,13 +65,11 @@ const getKelompokById = async (req, res) => {
       include: [
         {
           model: kecamatan,
-          as: 'kecamatanData',
-          attributes: ['nama']
+          as: 'kecamatanData'
         },
         {
           model: desa,
-          as: 'desaData',
-          attributes: ['nama']
+          as: 'desaData'
         }
       ]
     });

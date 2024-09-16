@@ -27,19 +27,17 @@ const selectKelompok = async (req, res) => {
   try {
     const { desa } = req.params;
     const kelompokTani = await kelompok.findAll({
-      where: { desa },
-      include: [
-        {
-          model: kecamatan,
-          as: 'kecamatanData',
-          attributes: ['nama']
-        },
-        {
-          model: desa,
-          as: 'desaData',
-          attributes: ['nama']
-        }
-      ]
+      where: { desaId: desa }
+      // include: [
+      //   {
+      //     model: kecamatan,
+      //     as: 'kecamatanData'
+      //   },
+      //   {
+      //     model: desa,
+      //     as: 'desaData'
+      //   }
+      // ]
     });
     res.status(200).json({
       message: 'Berhasil Mendapatkan Data Info Tani',
@@ -60,13 +58,11 @@ const selectKelompokById = async (req, res) => {
       include: [
         {
           model: kecamatan,
-          as: 'kecamatanData',
-          attributes: ['nama']
+          as: 'kecamatanData'
         },
         {
           model: desa,
-          as: 'desaData',
-          attributes: ['nama']
+          as: 'desaData'
         }
       ]
     });
