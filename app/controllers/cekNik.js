@@ -58,7 +58,12 @@ const cekNiP = async (req, res) => {
           as: 'desaBinaanData',
           include: [
             {
-              model: desa
+              model: desa,
+              include: [
+                {
+                  model: kecamatan
+                }
+              ]
             }
           ]
         }
