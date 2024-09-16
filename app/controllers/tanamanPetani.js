@@ -521,6 +521,14 @@ const getDetailedDataTanamanPetani = async (req, res) => {
             {
               model: dataPenyuluh,
               as: 'dataPenyuluh'
+            },
+            {
+              model: kecamatan,
+              as: 'kecamatanData'
+            },
+            {
+              model: desa,
+              as: 'desaData'
             }
           ]
         }
