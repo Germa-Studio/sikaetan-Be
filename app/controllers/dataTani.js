@@ -561,19 +561,27 @@ const updateTaniDetail = async (req, res) => {
     if (peran === 'petani') {
       throw new ApiError(403, 'Anda tidak memiliki akses.');
     } else {
+      console.debug('Get data petani by id');
       const data = await dataPetani.findOne({
         where: {
           id
         }
       });
       if (!data) throw new ApiError(400, 'data tidak ditemukan.');
+      console.debug('Get data kelompok by gapoktan, namaKelompok, desaId');
       const kelompokData = await kelompok.findOne({
         where: {
           gapoktan: gapoktan,
           namaKelompok: namaKelompok,
-          desa: inputDesa
+          desaId
         }
       });
+      if (!kelompokData) {
+        return res.status(400).json({
+          status: 'failed',
+          message: 'Kelompok tidak ditemukan'
+        });
+      }
       const penyuluhData = await dataPenyuluh.findOne({
         where: {
           id: penyuluh
@@ -582,6 +590,7 @@ const updateTaniDetail = async (req, res) => {
       let urlImg;
       const { file } = req;
       if (file) {
+        console.debug('upload file');
         const validFormat =
           file.mimetype === 'image/png' ||
           file.mimetype === 'image/jpg' ||
@@ -621,6 +630,7 @@ const updateTaniDetail = async (req, res) => {
       );
       let kecamatanData;
       if (inputKecamatan && !kecamatanId) {
+        console.debug('Get data kecamatan by nama');
         kecamatanData = await kecamatan.findOne({
           where: {
             nama: inputKecamatan
@@ -636,10 +646,11 @@ const updateTaniDetail = async (req, res) => {
       }
       let desaData;
       if (inputDesa && !desaId) {
+        console.debug('Get data desa by nama, kecamatanId');
         desaData = await desa.findOne({
           where: {
             nama: inputDesa,
-            kecamatanId: kecamatanData.id ?? kecamatanId
+            kecamatanId: kecamatanId ?? kecamatanData.id
           }
         });
 
@@ -650,6 +661,9 @@ const updateTaniDetail = async (req, res) => {
           });
         }
       }
+      console.debug('Update data petani');
+      console.log({ penyuluhData, kelompokData, kecamatanData, desaData });
+
       const petaniUpdate = await dataPetani.update(
         {
           nik: NIK,
@@ -671,6 +685,7 @@ const updateTaniDetail = async (req, res) => {
           where: { id }
         }
       );
+      console.debug('Post activity');
       postActivity({
         user_id: UserId,
         activity: 'EDIT',
