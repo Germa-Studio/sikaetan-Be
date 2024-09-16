@@ -9,7 +9,9 @@ const {
   kelompok,
   dataOperator,
   kecamatan,
-  desa
+  desa,
+  kecamatanBinaan,
+  desaBinaan
 } = require('../models');
 const ApiError = require('../../utils/ApiError');
 const isEmailValid = require('../../utils/emailValidation');
@@ -531,6 +533,14 @@ const getDetailProfile = async (req, res) => {
             {
               model: desa,
               as: 'desaData'
+            },
+            {
+              model: kecamatanBinaan,
+              as: 'kecamatanBinaanData'
+            },
+            {
+              model: desaBinaan,
+              as: 'desaBinaanData'
             }
           ]
         });
@@ -596,9 +606,11 @@ const updateDetailProfile = async (req, res) => {
         email,
         whatsapp,
         alamat,
-        desa,
+        desa: inputDesa,
+        desaId,
         nama,
-        kecamatan,
+        kecamatan: inputKecamatan,
+        kecamatanId,
         password,
         passwordBaru,
         namaProduct,
@@ -641,8 +653,6 @@ const updateDetailProfile = async (req, res) => {
         urlImg = img.url;
       }
 
-      // const hashedPassword = bcrypt.hashSync(password, 10);
-      // decrypt password
       const accountUpdate = await tblAkun.update(
         {
           email: email || data.email,
@@ -655,20 +665,47 @@ const updateDetailProfile = async (req, res) => {
           where: { accountID: accountID }
         }
       );
+      let kecamatanData;
+      if (!kecamatanId) {
+        kecamatanData = await kecamatan.findOne({
+          where: { nama: inputKecamatan || data.kecamatan }
+        });
+        if (!kecamatanData) {
+          return res.status(400).json({
+            message: 'Kecamatan tidak ditemukan'
+          });
+        }
+      }
+      let desaData;
+      if (!desaId) {
+        desaData = await desa.findOne({
+          where: {
+            nama: inputDesa || data.desa,
+            kecamatanId: kecamatanId || kecamatanData.id
+          }
+        });
+        if (!desaData) {
+          return res.status(400).json({
+            message: 'Desa tidak ditemukan'
+          });
+        }
+      }
       const newDataPenyuluh = await dataPenyuluh.update(
         {
           nik: nik || data.nik,
           email: email || data.email,
           noTelp: whatsapp || data.noTelp,
           alamat: alamat || data.alamat,
-          desa: desa || data.desa,
+          desa: inputDesa || data.desa,
           nama: nama || data.nama,
-          kecamatan: kecamatan || data.kecamatan,
+          kecamatan: inputKecamatan || data.kecamatan,
           password: passwordBaru ? bcrypt.hashSync(passwordBaru, 10) : data.password, // Hash password only if provided
           namaProduct: namaProduct || data.namaProduct,
           kecamatanBinaan: kecamatanBinaan || data.kecamatanBinaan,
           desaBinaan: desaBinaan || data.desaBinaan,
-          foto: urlImg || data.foto
+          foto: urlImg || data.foto,
+          kecamatanId: kecamatanId || kecamatanData.id,
+          desaId: desaId || desaData.id
         },
         {
           where: {

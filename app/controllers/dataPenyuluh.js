@@ -34,9 +34,11 @@ const tambahDataPenyuluh = async (req, res) => {
         email,
         NoWa,
         alamat,
-        desa,
+        desa: inputDesa,
+        desaId,
         nama,
-        kecamatan,
+        kecamatan: inputKecamatan,
+        kecamatanId,
         password,
         namaProduct,
         kecamatanBinaan,
@@ -110,6 +112,24 @@ const tambahDataPenyuluh = async (req, res) => {
       {
         /* Menambahkan penyuluh yang didaftarkan */
       }
+      let kecamatanData;
+      let desaData;
+      if (!kecamatanId) {
+        kecamatanData = await kecamatan.findOne({
+          where: { nama: inputKecamatan }
+        });
+        if (!kecamatanData) {
+          throw new ApiError(400, `Kecamatan ${inputKecamatan} tidak ditemukan`);
+        }
+      }
+      if (!desaId) {
+        desaData = await desa.findOne({
+          where: { nama: inputDesa }
+        });
+        if (!desaData) {
+          throw new ApiError(400, `Desa ${inputDesa} tidak ditemukan`);
+        }
+      }
       const newPenyuluh = await dataPenyuluh.create({
         nik: NIP,
         nama: nama,
@@ -117,13 +137,15 @@ const tambahDataPenyuluh = async (req, res) => {
         alamat,
         email,
         noTelp: NoWa,
-        kecamatan,
-        desa,
+        kecamatan: inputKecamatan,
+        desa: inputDesa,
         password: hashedPassword,
         namaProduct,
         desaBinaan: desaBinaan,
         kecamatanBinaan,
-        accountID: accountID
+        accountID: accountID,
+        kecamatanId: kecamatanData.id,
+        desaId: desaData.id
       });
       // Convert each element of kelompokArray to an integer
       const integerKelompokArray = kelompokArray.map((kelompokId) => parseInt(kelompokId, 10));
@@ -190,6 +212,19 @@ const uploadDataPenyuluh = async (req, res) => {
       const urlImg =
         'https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/images/bg-7.png';
 
+      const kecamatanData = await kecamatan.findOne({
+        where: { nama: row.getCell(8).value.toString() }
+      });
+      if (!kecamatanData) {
+        throw new ApiError(400, `Kecamatan ${row.getCell(8).value.toString()} tidak ditemukan`);
+      }
+      const desaData = await desa.findOne({
+        where: { nama: row.getCell(9).value.toString() }
+      });
+      if (!desaData) {
+        throw new ApiError(400, `Desa ${row.getCell(9).value.toString()} tidak ditemukan`);
+      }
+
       const newPenyuluh = await dataPenyuluh.create({
         nik: row.getCell(1).value.toString(),
         nama: row.getCell(2).value.toString(),
@@ -203,7 +238,9 @@ const uploadDataPenyuluh = async (req, res) => {
         namaProduct: row.getCell(7).value.toString(),
         desaBinaan: row.getCell(10).value.toString(),
         kecamatanBinaan: row.getCell(11).value.toString(),
-        accountID: accountID
+        accountID: accountID,
+        kecamatanId: kecamatanData.id,
+        desaId: desaData.id
       });
 
       await tbl_akun.create({
@@ -737,9 +774,11 @@ const updatePenyuluh = async (req, res) => {
         email,
         NoWa,
         alamat,
-        desa,
+        desa: inputDesa,
+        desaId,
         nama,
-        kecamatan,
+        kecamatan: inputKecamatan,
+        kecamatanId,
         password,
         namaProduct,
         kecamatanBinaan,
@@ -792,20 +831,40 @@ const updatePenyuluh = async (req, res) => {
           where: { accountID: data.accountID }
         }
       );
+      let kecamatanData;
+      if (!kecamatanId) {
+        kecamatanData = await kecamatan.findOne({
+          where: { nama: inputKecamatan }
+        });
+        if (!kecamatanData) {
+          throw new ApiError(400, `Kecamatan ${inputKecamatan} tidak ditemukan`);
+        }
+      }
+      let desaData;
+      if (!desaId) {
+        desaData = await desa.findOne({
+          where: { nama: inputDesa }
+        });
+        if (!desaData) {
+          throw new ApiError(400, `Desa ${inputDesa} tidak ditemukan`);
+        }
+      }
       const newDataPenyuluh = await dataPenyuluh.update(
         {
           nik,
           email,
           noTelp: NoWa,
           alamat,
-          desa,
+          desa: inputDesa,
           nama,
           foto: urlImg,
-          kecamatan,
+          kecamatan: inputKecamatan,
           password: hashedPassword,
           namaProduct,
           kecamatanBinaan,
-          desaBinaan
+          desaBinaan,
+          kecamatanId: kecamatanData.id,
+          desaId: desaData.id
         },
         {
           where: {
