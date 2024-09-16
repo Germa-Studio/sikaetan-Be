@@ -38,7 +38,7 @@ router.post('/cek-nip', auth, cekNiP);
 
 router.use('/auth', akun);
 router.use('/statistik', statistik);
-router.use('/', kelompok);
+router.use('/kelompok', kelompok);
 router.use('/tanaman-petani', tanamanPetani);
 router.use('/footer', footer);
 router.use('/faq', faq);

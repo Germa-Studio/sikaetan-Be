@@ -15,7 +15,14 @@ module.exports = (sequelize, DataTypes) => {
       this.belongsTo(models.dataPenyuluh, {
         foreignKey: 'penyuluh'
       });
-      // this.hasMany(models.dataOperator, { foreignKey: "fk_kelompokID" });
+      this.belongsTo(models.kecamatan, {
+        foreignKey: 'kecamatanId',
+        as: 'kecamatanData'
+      });
+      this.belongsTo(models.desa, {
+        foreignKey: 'desaId',
+        as: 'desaData'
+      });
     }
   }
   kelompok.init(
