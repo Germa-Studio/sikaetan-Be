@@ -258,12 +258,23 @@ const uploadDataKelompoks = async (req, res) => {
     await workbook.xlsx.load(file.buffer);
 
     const worksheet = workbook.getWorksheet(1);
+    const rowCount = worksheet.rowCount;
+    if (rowCount < 2) throw new ApiError(400, 'Data tidak ditemukan.');
 
-    // Iterate through rows and columns to read data
-    worksheet.eachRow({ includeEmpty: true }, async (row, rowNumber) => {
-      if (rowNumber === 1) return;
+    for (let index = 2; index <= rowCount; index++) {
+      const row = worksheet.getRow(index);
 
-      // TODO: check if kecamatan using id or name
+      // if cells are null, then skip
+      let isRowEmpty = true;
+      for (let j = 2; j <= 5; j++) {
+        if (row.getCell(j).value) {
+          isRowEmpty = false;
+          break;
+        }
+      }
+      if (isRowEmpty) {
+        continue;
+      }
       const kecamatanData = await kecamatan.findOne({
         where: {
           [Op.or]: [{ id: row.getCell(5).value }, { nama: row.getCell(5).value }]
@@ -290,7 +301,7 @@ const uploadDataKelompoks = async (req, res) => {
         kecamatanId: kecamatanData.id,
         desaId: desaData.id
       });
-    });
+    }
 
     res.status(201).json({
       message: 'Data berhasil ditambahkan.'

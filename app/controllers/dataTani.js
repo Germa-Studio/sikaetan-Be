@@ -245,9 +245,25 @@ const uploadDataPetani = async (req, res) => {
     await workbook.xlsx.load(file.buffer);
 
     const worksheet = workbook.getWorksheet(1);
+    const rowCount = worksheet.rowCount;
 
-    worksheet.eachRow({ includeEmpty: true }, async (row, rowNumber) => {
-      if (rowNumber === 1) return;
+    if (rowCount < 2) throw new ApiError(400, 'Data tidak ditemukan.');
+
+    for (let index = 2; index <= rowCount; index++) {
+      const row = worksheet.getRow(index);
+
+      // if cells are null, then skip
+      let isRowEmpty = true;
+      for (let j = 1; j <= 12; j++) {
+        if (row.getCell(j).value) {
+          isRowEmpty = false;
+          break;
+        }
+      }
+      if (isRowEmpty) {
+        continue;
+      }
+
       const nikPenyuluh = row.getCell(1).value.toString(); // Fix variable name
       const penyuluh = await dataPenyuluh.findOne({ where: { nik: nikPenyuluh } });
       const accountID = crypto.randomUUID();
@@ -333,9 +349,10 @@ const uploadDataPetani = async (req, res) => {
           detail_id: newPetani.id
         });
       } else {
-        console.error(`Penyuluh dengan NIK ${nikPenyuluh} tidak ditemukan.`);
+        throw new ApiError(400, 'Penyuluh tidak ditemukan');
       }
-    });
+    }
+
     res.status(201).json({
       message: 'Data berhasil ditambahkan.'
     });

@@ -204,8 +204,24 @@ const uploadDataPenyuluh = async (req, res) => {
     await workbook.xlsx.load(file.buffer);
 
     const worksheet = workbook.getWorksheet(1);
-    worksheet.eachRow({ includeEmpty: true }, async (row, rowNumber) => {
-      if (rowNumber === 1) return;
+
+    const rowCount = worksheet.rowCount;
+    if (rowCount < 2) throw new ApiError(400, 'Data tidak ditemukan.');
+
+    for (let index = 2; index <= rowCount; index++) {
+      const row = worksheet.getRow(index);
+
+      let isRowEmpty = true;
+      for (let j = 1; j <= 11; j++) {
+        if (row.getCell(j).value) {
+          isRowEmpty = false;
+          break;
+        }
+      }
+      if (isRowEmpty) {
+        continue;
+      }
+
       const accountID = crypto.randomUUID();
       const password = row.getCell(6).value.toString();
       const hashedPassword = bcrypt.hashSync(password, 10);
@@ -260,7 +276,7 @@ const uploadDataPenyuluh = async (req, res) => {
         type: 'DATA PENYULUH',
         detail_id: newPenyuluh.id
       });
-    });
+    }
     res.status(201).json({
       message: 'Data berhasil ditambahkan.'
     });
