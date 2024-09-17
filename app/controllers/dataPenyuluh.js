@@ -344,7 +344,7 @@ const daftarPenyuluh = async (req, res) => {
       ]
     };
     const data = await dataPenyuluh.findAll({ ...query });
-    const total = await dataPenyuluh.count({ ...query });
+    const total = await dataPenyuluh.count({});
     res.status(200).json({
       message: 'Semua Data Penyuluh',
       data,
@@ -789,7 +789,12 @@ const daftarPenyuluhById = async (req, res) => {
           as: 'desaBinaanData',
           include: [
             {
-              model: desa
+              model: desa,
+              include: [
+                {
+                  model: kecamatan
+                }
+              ]
             }
           ]
         }
@@ -879,8 +884,12 @@ const updatePenyuluh = async (req, res) => {
           where: { accountID: data.accountID }
         }
       );
+
       let kecamatanData;
       if (!kecamatanId) {
+        if (!inputKecamatan) {
+          throw new ApiError(400, 'Kecamatan tidak boleh kosong');
+        }
         kecamatanData = await kecamatan.findOne({
           where: { nama: inputKecamatan }
         });
@@ -888,8 +897,12 @@ const updatePenyuluh = async (req, res) => {
           throw new ApiError(400, `Kecamatan ${inputKecamatan} tidak ditemukan`);
         }
       }
+
       let desaData;
       if (!desaId) {
+        if (!inputDesa) {
+          throw new ApiError(400, 'Desa tidak boleh kosong');
+        }
         desaData = await desa.findOne({
           where: { nama: inputDesa }
         });
@@ -897,6 +910,7 @@ const updatePenyuluh = async (req, res) => {
           throw new ApiError(400, `Desa ${inputDesa} tidak ditemukan`);
         }
       }
+
       const newDataPenyuluh = await dataPenyuluh.update(
         {
           nik,
@@ -911,8 +925,8 @@ const updatePenyuluh = async (req, res) => {
           namaProduct,
           kecamatanBinaan,
           desaBinaan,
-          kecamatanId: kecamatanData.id,
-          desaId: desaData.id
+          kecamatanId: kecamatanData?.id ?? kecamatanId,
+          desaId: desaData?.id ?? desaId
         },
         {
           where: {
