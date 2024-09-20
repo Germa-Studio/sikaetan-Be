@@ -474,39 +474,57 @@ const getProfile = async (req, res) => {
       });
     }
     const payload = jwt.verify(bearerToken, process.env.SECRET_KEY);
-    if (payload.NIK) {
-      dataPerson
-        .findByPk(payload.id)
-        .then((instance) => {
-          if (!instance) {
-            return res.status(404).json({ message: 'User not found' });
-          }
-          req.user = instance;
-          return res.status(200).json({
-            message: 'berhasil',
-            user: req.user
-          });
-        })
-        .catch((err) => {
-          return res.status(500).json({ message: 'Server error', error: err.message });
-        });
+    const user = await tblAkun.findByPk(payload.id);
+
+    let role;
+
+    if (user.peran === 'petani') {
+      role = await dataPetani.findOne({
+        where: { accountID: user.accountID },
+        include: [
+          { model: kecamatan, as: 'kecamatanData' },
+          { model: desa, as: 'desaData' }
+        ]
+      });
     } else {
-      tblAkun
-        .findByPk(payload.id)
-        .then((instance) => {
-          if (!instance) {
-            return res.status(404).json({ message: 'Account not found' });
+      role = await dataPenyuluh.findOne({
+        where: { accountID: user.accountID },
+        include: [
+          { model: kelompok, as: 'kelompoks' },
+          { model: kecamatan, as: 'kecamatanData' },
+          { model: desa, as: 'desaData' },
+          {
+            model: kecamatanBinaan,
+            as: 'kecamatanBinaanData',
+            include: [
+              {
+                model: kecamatan
+              }
+            ]
+          },
+          {
+            model: desaBinaan,
+            as: 'desaBinaanData',
+            include: [
+              {
+                model: desa,
+                include: [
+                  {
+                    model: kecamatan
+                  }
+                ]
+              }
+            ]
           }
-          req.user = instance;
-          return res.status(200).json({
-            message: 'berhasil',
-            user: req.user
-          });
-        })
-        .catch((err) => {
-          return res.status(500).json({ message: 'Server error', error: err.message });
-        });
+        ]
+      });
     }
+
+    return res.status(200).json({
+      message: 'berhasil',
+      userAccount: user,
+      userRole: role
+    });
   } catch (error) {
     res.status(error.statusCode || 500).json({
       message: error.message
