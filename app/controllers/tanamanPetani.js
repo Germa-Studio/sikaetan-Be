@@ -55,8 +55,15 @@ const getAllTanamanPetani = async (req, res) => {
                 as: 'dataPetani',
                 include: [
                   {
-                    model: kelompok,
-                    as: 'kelompok'
+                    model: kelompok
+                  },
+                  {
+                    model: kecamatan,
+                    as: 'kecamatanData'
+                  },
+                  {
+                    model: desa,
+                    as: 'desaData'
                   }
                 ]
               }
@@ -121,6 +128,14 @@ const getTopTanamanPetani = async (req, res) => {
                   as: 'desaData'
                 }
               ]
+            },
+            {
+              model: kecamatan,
+              as: 'kecamatanData'
+            },
+            {
+              model: desa,
+              as: 'desaData'
             }
           ]
         }
