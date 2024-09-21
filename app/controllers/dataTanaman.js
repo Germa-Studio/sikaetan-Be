@@ -432,30 +432,40 @@ const uploadDataTanaman = async (req, res) => {
           .concat(tanamanPerkebunan)
           .concat(komoditasSemusim)
           .concat(komoditasTahunan)
+          .concat(['Perkebunan Tembakau', 'Perkebunan Tebu'])
           .includes(komoditas)
       )
-        throw new ApiError(400, 'Komoditas tidak valid.');
-      if (!monthOrder.includes(periodeTanam)) throw new ApiError(400, 'Periode tanam tidak valid.');
-      if (!luasLahan || isNaN(luasLahan)) throw new ApiError(400, 'Luas lahan tidak valid.');
+        throw new ApiError(
+          400,
+          `Komoditas (${komoditas}) tidak valid. Data ke-${i - 1} (baris ${i})`
+        );
+      if (!monthOrder.includes(periodeTanam))
+        throw new ApiError(400, `Periode tanam tidak valid. Data ke-${i - 1} (baris ${i})`);
+      if (!luasLahan || isNaN(luasLahan))
+        throw new ApiError(400, `Luas lahan tidak valid. Data ke-${i - 1} (baris ${i})`);
       if (!prakiraanLuasPanen || isNaN(prakiraanLuasPanen))
-        throw new ApiError(400, 'Prakiraan luas panen tidak valid.');
+        throw new ApiError(400, `Prakiraan luas panen tidak valid. Data ke-${i - 1} (baris ${i})`);
       if (!prakiraanHasilPanen || isNaN(prakiraanHasilPanen))
-        throw new ApiError(400, 'Prakiraan hasil panen tidak valid.');
-      if (!monthOrder.includes(prakiraanBulanPanen))
-        throw new ApiError(400, 'Prakiraan bulan panen tidak valid.');
+        throw new ApiError(400, `Prakiraan hasil panen tidak valid. Data ke-${i - 1} (baris ${i})`);
+      if (prakiraanBulanPanen && !monthOrder.includes(prakiraanBulanPanen))
+        throw new ApiError(400, `Prakiraan bulan panen tidak valid. Data ke-${i - 1} (baris ${i})`);
       if (realisasiLuasPanen && isNaN(realisasiLuasPanen))
-        throw new ApiError(400, 'Realisasi luas panen tidak valid.');
+        throw new ApiError(400, `Realisasi luas panen tidak valid. Data ke-${i - 1} (baris ${i})`);
       if (realisasiHasilPanen && isNaN(realisasiHasilPanen))
-        throw new ApiError(400, 'Realisasi hasil panen tidak valid.');
+        throw new ApiError(400, `Realisasi hasil panen tidak valid. Data ke-${i - 1} (baris ${i})`);
       if (realisasiBulanPanen && !monthOrder.includes(realisasiBulanPanen))
-        throw new ApiError(400, 'Realisasi bulan panen tidak valid.');
+        throw new ApiError(400, `Realisasi bulan panen tidak valid. Data ke-${i - 1} (baris ${i})`);
 
       const kelompokTani = await kelompok.findOne({
         where: { id: fk_kelompokId }
       });
 
-      if (!kelompokTani) throw new ApiError(400, 'Kelompok tidak ditemukan.');
-      return dataTanaman.create({
+      if (!kelompokTani)
+        throw new ApiError(
+          400,
+          `Kelompok (${fk_kelompokId}) tidak ditemukan.  Data ke-${i - 1} (baris ${i})`
+        );
+      await dataTanaman.create({
         fk_kelompokId,
         kategori,
         komoditas,
