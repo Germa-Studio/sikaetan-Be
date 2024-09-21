@@ -1005,7 +1005,17 @@ const getPetani = async (req, res) => {
       const petanis = await dataPetani.findAll({
         where: {
           fk_penyuluhId: id
-        }
+        },
+        include: [
+          {
+            model: kecamatan,
+            as: 'kecamatanData'
+          },
+          {
+            model: desa,
+            as: 'desaData'
+          }
+        ]
       });
       res.status(200).json({
         message: 'Semua Data Petani',
