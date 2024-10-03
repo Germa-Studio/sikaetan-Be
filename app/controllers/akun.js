@@ -482,9 +482,18 @@ const getProfile = async (req, res) => {
       role = await dataPetani.findOne({
         where: { accountID: user.accountID },
         include: [
+          {
+            model: dataPenyuluh,
+            attributes: {
+              exclude: ['createdAt', 'updatedAt', 'password']
+            }
+          },
           { model: kecamatan, as: 'kecamatanData' },
           { model: desa, as: 'desaData' }
-        ]
+        ],
+        attributes: {
+          exclude: ['createdAt', 'updatedAt', 'password']
+        }
       });
     } else {
       role = await dataPenyuluh.findOne({
